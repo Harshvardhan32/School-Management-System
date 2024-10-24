@@ -1,0 +1,46 @@
+# Node.js dependencies
+/node_modules
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Build files (if applicable)
+/dist
+/build
+
+# Coverage directories (for testing)
+/coverage
+
+# Production files
+/server/database.sqlite
+/server/.env
+/server/logs/
+
+# Vite related (if using Vite in the project)
+.vite
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Ignore debug or local development files
+*.local
+*.test.*
+*.spec.*
+*.bak
+*.old
