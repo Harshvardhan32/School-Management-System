@@ -10,7 +10,7 @@ const dbConnect = async () => {
             console.log('Database Connection Failed!');
             console.log(error.message);
             process.exit(1);
-        })
+        });
 }
 
 module.exports = dbConnect;

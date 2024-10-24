@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const eventSchema = new Schema(
     {
-        eventName: {
+        title: {
             type: String,
             required: true,
             index: true
@@ -13,11 +13,22 @@ const eventSchema = new Schema(
             required: true,
             index: true
         },
-        date: {
+        class: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Class'
+            }
+        ],
+        startTime: {
             type: Date,
             required: true,
-            default: Date.now
+            index: true
         },
+        startTime: {
+            type: Date,
+            required: true,
+            index: true
+        }
     },
     { timestamps: true }
 );

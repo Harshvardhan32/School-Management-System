@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const subjectSchema = new mongoose.Schema(
+const subjectSchema = new Schema(
     {
         name: {
             type: String,
@@ -10,13 +11,15 @@ const subjectSchema = new mongoose.Schema(
         },
         class: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Class'
+                type: Schema.Types.ObjectId,
+                ref: 'Class',
+                required: true
             }
         ],
         teacher: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Teacher'
+            type: Schema.Types.ObjectId,
+            ref: 'Teacher',
+            required: true
         },
     },
     { timestamps: true }

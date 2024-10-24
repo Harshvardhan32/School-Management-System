@@ -1,18 +1,22 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const assignmentSchema = new Schema(
     {
-        title: {
-            type: String,
-            required: true,
-            unique: true,
-            index: true
+        subject: {
+            type: Schema.Types.ObjectId,
+            ref: 'Subject',
+            required: true
         },
-        description: {
-            type: String,
-            required: true,
-            index: true
+        class: {
+            type: Schema.Types.ObjectId,
+            ref: 'Class',
+            required: true
+        },
+        teacher: {
+            type: Schema.Types.ObjectId,
+            ref: 'Teacher',
+            required: true
         },
         assignedDate: {
             type: Date,
@@ -27,23 +31,6 @@ const assignmentSchema = new Schema(
                 },
                 message: props => `dueDate (${props.value}) should be later than or equal to assignedDate (${this.assignedDate})`
             }
-        },
-        class: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Class',
-                required: true
-            }
-        ],
-        subject: {
-            type: Schema.Types.ObjectId,
-            ref: 'Subject',
-            required: true
-        },
-        teacher: {
-            type: Schema.Types.ObjectId,
-            ref: 'Teacher',
-            required: true
         },
     },
     { timestamps: true }

@@ -14,14 +14,18 @@ const examSchema = new Schema(
             required: true,
             index: true
         },
-        date: {
+        startDate: {
             type: Date,
             required: true,
         },
-        class: [
+        endDate: {
+            type: Date,
+            required: true,
+        },
+        subjects: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Class',
+                ref: 'Subject',
                 required: true
             }
         ],
