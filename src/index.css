@@ -122,3 +122,7 @@ body {
 .rbc-event-label {
     color: gray !important;
 }
+
+.rbc-calendar {
+    min-height: 600px;
+}

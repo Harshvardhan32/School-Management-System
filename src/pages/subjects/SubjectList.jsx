@@ -1,10 +1,12 @@
-import { IoEyeOutline } from "react-icons/io5";
 import Pagination from "../../components/common/Pagination";
 import Table from "../../components/common/Table";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import { role, subjectsData } from "../../data/data";
+import { BiSortDown } from "react-icons/bi";
+import { AiOutlinePlus } from "react-icons/ai";
+import FormModal from "../../components/FormModal";
+import { FaRegEdit  } from "react-icons/fa";
 
 const SubjectList = () => {
 
@@ -31,15 +33,16 @@ const SubjectList = () => {
                 <td className="hidden sm:table-cell p-4">{item.teachers.join(', ')}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        <Link to={`/list/teachers/${item.id}`}>
+                        {/* <Link to={`/list/teachers/${item.id}`}>
                             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
                                 <IoEyeOutline fontSize={18} />
                             </button>
-                        </Link>
+                        </Link> */}
                         {role === 'admin' && (
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-pink-200">
-                                <RiDeleteBin6Line fontSize={18} />
-                            </button>
+                            <>
+                                <FormModal table='subject' type='update' Icon={FaRegEdit } data={item} />
+                                <FormModal table='subject' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                            </>
                         )}
                     </div>
                 </td>
@@ -61,15 +64,11 @@ const SubjectList = () => {
                             />
                         </button>
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/sort.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
+                            <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' && <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/plus.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
-                        </button>}
+                        {role === 'admin' &&
+                            <FormModal table='subject' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                        }
                     </div>
                 </div>
             </div>

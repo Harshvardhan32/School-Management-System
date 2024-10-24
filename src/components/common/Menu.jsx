@@ -18,6 +18,7 @@ const Menu = () => {
                                             <Link
                                                 to={item.href}
                                                 key={item.label}
+                                                title={item.label}
                                                 className='flex flex-row items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-[6px] hover:bg-emerald-100'
                                             >
                                                 <img src={item.icon} alt="" className='w-[20px] h-[20px]' />

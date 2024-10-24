@@ -19,6 +19,10 @@ import EventList from "./pages/events/EventList";
 import AnnouncementList from "./pages/announcements/AnnouncementList";
 import TeacherDetailsPage from "./pages/teacher/TeacherDetailsPage";
 import StudentDetailsPage from "./pages/student/StudentDetailsPage";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import MessageList from "./pages/messages/MessageList";
+import AttendanceList from "./pages/attendance/AttendanceList";
 
 function App() {
 
@@ -28,6 +32,8 @@ function App() {
                 {/* <Route path='/' element={<Login />} /> */}
                 <Route path="/" element={<Dashboard />} >
                     <Route path='/' element={<Admin />} />
+                    <Route path='/profile' element={<Profile />} />
+                    <Route path='/settings' element={<Settings />} />
                     <Route path='/student' element={<Student />} />
                     <Route path='/teacher' element={<Teacher />} />
                     <Route path='/parent' element={<Parent />} />
@@ -42,7 +48,9 @@ function App() {
                     <Route path='/list/exams' element={<ExamList />} />
                     <Route path='/list/assignments' element={<AssignmentList />} />
                     <Route path='/list/results' element={<ResultList />} />
+                    <Route path='/list/attendance' element={<AttendanceList />} />
                     <Route path='/list/events' element={<EventList />} />
+                    <Route path='/list/messages' element={<MessageList />} />
                     <Route path='/list/announcements' element={<AnnouncementList />} />
                 </Route>
                 <Route path="*" element={<ErrorPage />} />

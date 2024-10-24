@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Announcements from "../../components/Announcements";
 import BigCalendar from "../../components/BigCalender";
 import Performance from "../../components/Performance";
+import FormModal from "../../components/FormModal";
+import { FaRegEdit  } from "react-icons/fa";
 
 const StudentDetailsPage = () => {
 
@@ -21,7 +23,10 @@ const StudentDetailsPage = () => {
                                 className="w-36 h-36 rounded-full object-cover" />
                         </div>
                         <div className="w-2/3 flex flex-col justify-between gap-4">
-                            <h1 className="text-xl font-semibold">Leonard Snyder</h1>
+                            <div className="flex gap-2 items-center justify-between">
+                                <h1 className="text-xl font-semibold">Leonard Snyder</h1>
+                                <FormModal table='student' type='update' Icon={FaRegEdit } />
+                            </div>
                             <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p>
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
@@ -79,7 +84,7 @@ const StudentDetailsPage = () => {
                 </div>
                 {/* BOTTOM */}
                 <div className="mt-4 bg-white rounded-[6px] p-4 h-[800px]">
-                    <h1>Teacher&apos;s Schedule</h1>
+                    <h1>Student&apos;s Schedule</h1>
                     <BigCalendar />
                 </div>
             </div >
@@ -88,11 +93,11 @@ const StudentDetailsPage = () => {
                 <div className="bg-white p-4 rounded-[6px]">
                     <h1 className="text-xl font-semibold">Shortcuts</h1>
                     <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-700">
-                        <Link className="p-3 rounded-[6px] bg-pink-200" to={'/'}>Teacher&apos; Classes</Link>
-                        <Link className="p-3 rounded-[6px] bg-emerald-200" to={'/'}>Teacher&apos; Students</Link>
-                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/'}>Teacher&apos; Lessons</Link>
-                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/'}>Teacher&apos; Exams</Link>
-                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Teacher&apos; Assignments</Link>
+                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/'}>Student&apos;s Lessons</Link>
+                        <Link className="p-3 rounded-[6px] bg-emerald-200" to={'/'}>Student&apos;s Teachers</Link>
+                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/'}>Student&apos;s Exams</Link>
+                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Student&apos;s Assignments</Link>
+                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Student&apos;s Results</Link>
                     </div>
                 </div>
                 <Performance />

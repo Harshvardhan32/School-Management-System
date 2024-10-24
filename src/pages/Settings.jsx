@@ -1,10 +1,10 @@
-const AttendanceList = () => {
+const Settings = () => {
 
     return (
         <div className="bg-white p-4 rounded-[6px] flex-1 mx-4">
-            Attendance List
+            Settings
         </div>
     );
 }
 
-export default AttendanceList;
+export default Settings;

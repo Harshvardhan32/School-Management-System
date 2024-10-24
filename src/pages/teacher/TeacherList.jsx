@@ -5,6 +5,9 @@ import TableSearch from "../../components/common/TableSearch";
 import { role, teachersData } from "../../data/data";
 import { IoEyeOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BiSortDown } from "react-icons/bi";
+import FormModal from "../../components/FormModal";
 
 const TeacherList = () => {
 
@@ -64,15 +67,15 @@ const TeacherList = () => {
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         <Link to={`/list/teachers/${item.id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
+                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-100">
                                 <IoEyeOutline fontSize={18} />
                             </button>
                         </Link>
-                        {role === 'admin' && (
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-pink-200">
-                                <RiDeleteBin6Line fontSize={18} />
-                            </button>
-                        )}
+                        {role === 'admin' &&
+                            <>
+                                <FormModal table='teacher' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                            </>
+                        }
                     </div>
                 </td>
             </tr>
@@ -93,15 +96,11 @@ const TeacherList = () => {
                             />
                         </button>
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/sort.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
+                            <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' && <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/plus.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
-                        </button>}
+                        {role === 'admin' &&
+                            <FormModal table='teacher' type={'create'} Icon={AiOutlinePlus} />
+                        }
                     </div>
                 </div>
             </div>
