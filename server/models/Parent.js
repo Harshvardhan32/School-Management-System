@@ -9,6 +9,10 @@ const parentSchema = new Schema(
             required: true,
             index: true
         },
+        parentId: {
+            type: String,
+            required: true
+        },
         students: [
             {
                 type: Schema.Types.ObjectId,

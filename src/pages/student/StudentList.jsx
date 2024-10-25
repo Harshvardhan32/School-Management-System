@@ -14,36 +14,38 @@ const StudentList = () => {
     const column = [
         {
             header: 'Info',
-            accessor: 'info'
+            accessor: 'info',
+            className: 'p-4'
         },
         {
             header: 'Student ID',
             accessor: 'studentId',
-            className: 'hidden md:table-cell'
+            className: 'hidden md:table-cell p-4'
         },
         {
             header: 'Grade',
             accessor: 'grade',
-            className: 'hidden md:table-cell'
+            className: 'hidden md:table-cell p-4'
         },
         {
             header: 'Class',
             accessor: 'class',
-            className: 'hidden md:table-cell'
+            className: 'hidden md:table-cell p-4'
         },
         {
             header: 'Phone',
             accessor: 'phone',
-            className: 'hidden lg:table-cell'
+            className: 'hidden lg:table-cell p-4'
         },
         {
             header: 'Address',
             accessor: 'address',
-            className: 'hidden lg:table-cell'
+            className: 'hidden lg:table-cell p-4'
         },
         {
             header: 'Actions',
             accessor: 'action',
+            className: 'p-4'
         },
     ]
 

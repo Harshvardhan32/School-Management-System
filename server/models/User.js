@@ -37,11 +37,9 @@ const userSchema = new mongoose.Schema(
         },
         bloodType: {
             type: String,
-            required: true
         },
         dateOfBirth: {
             type: Date,
-            required: true
         },
         sex: {
             type: String,
@@ -52,9 +50,7 @@ const userSchema = new mongoose.Schema(
             trim: true
         },
     },
-    {
-        timestamps: true
-    }
+    { timestamps: true }
 );
 
 module.exports = mongoose.model('User', userSchema);

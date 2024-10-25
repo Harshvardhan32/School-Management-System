@@ -3,10 +3,9 @@ const { Schema } = mongoose;
 
 const subjectSchema = new Schema(
     {
-        name: {
+        subjectName: {
             type: String,
             required: true,
-            unique: true,
             index: true
         },
         class: [

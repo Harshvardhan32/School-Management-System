@@ -20,10 +20,17 @@ const studentSchema = new Schema(
             required: true,
             index: true
         },
+        fatherName: {
+            type: String,
+            required: true,
+        },
+        motherName: {
+            type: String,
+            required: true,
+        },
         parent: {
             type: Schema.Types.ObjectId,
             ref: 'Parent',
-            required: true
         },
         attendance: [
             {

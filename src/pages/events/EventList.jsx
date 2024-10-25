@@ -1,6 +1,5 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit  } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaRegEdit } from "react-icons/fa";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
@@ -15,11 +14,6 @@ const EventList = () => {
         {
             header: 'Title',
             accessor: 'title'
-        },
-        {
-            header: 'Class',
-            accessor: 'class',
-            className: 'hidden sm:table-cell'
         },
         {
             header: 'Date',
@@ -46,7 +40,6 @@ const EventList = () => {
         return (
             <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold">{item.title}</td>
-                <td className="hidden sm:table-cell p-4">{item.class}</td>
                 <td className="hidden md:table-cell p-4">{item.date}</td>
                 <td className="hidden md:table-cell p-4">{item.startTime}</td>
                 <td className="hidden md:table-cell p-4">{item.endTime}</td>
@@ -59,7 +52,7 @@ const EventList = () => {
                         </Link> */}
                         {role === 'admin' && (
                             <>
-                                <FormModal table='event' type='update' Icon={FaRegEdit } data={item} />
+                                <FormModal table='event' type='update' Icon={FaRegEdit} data={item} />
                                 <FormModal table='event' type='delete' Icon={RiDeleteBin6Line} data={item} />
                             </>
                         )}
