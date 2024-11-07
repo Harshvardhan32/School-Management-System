@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from "react-hot-toast";
+import SelectOption from "../common/SelectOption";
 
 const ClassForm = ({ type, data }) => {
 
@@ -15,6 +16,7 @@ const ClassForm = ({ type, data }) => {
 
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
     } = useForm({ resolver: zodResolver(schema), });
@@ -22,17 +24,26 @@ const ClassForm = ({ type, data }) => {
     const onSubmit = handleSubmit(data => {
         console.log(data);
         toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
-    })
+    });
+
+    const supervisors = [
+        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+    ];
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update the'} Class</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Class</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Class Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Class Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("className")}
                     />
                     {errors?.className && <p className="text-xs text-red-700 py-2">{errors?.className.message}</p>}
@@ -41,7 +52,8 @@ const ClassForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Capacity</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Capacity"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("capacity")}
                     />
                     {errors?.capacity && <p className="text-xs text-red-700 py-2">{errors?.capacity.message}</p>}
@@ -50,7 +62,7 @@ const ClassForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Grade</label>
                     <select
                         name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("grade")}
                     >
                         <option value="">Please Select</option>
@@ -65,23 +77,21 @@ const ClassForm = ({ type, data }) => {
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Supervisor</label>
-                    <select
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
-                        {...register("supervisor")}
-                    >
-                        <option value="">Please Select</option>
-                        <option value="Rahul">Rahul</option>
-                        <option value="John">John</option>
-                        <option value="Akash">Akash</option>
-                    </select>
+                    <SelectOption
+                        name='supervisor'
+                        control={control}
+                        options={supervisors}
+                        placeholder='Please Select'
+                        label='Supervisor'
+                    />
                     {errors?.supervisor && <p className="text-xs text-red-700 py-2">{errors?.supervisor.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Class Id</label>
+                    <label className="text-sm text-gray-500">Class ID</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Class ID"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("classId")}
                     />
                     {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId.message}</p>}

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import MultiSelectComponent from "../MultiSelectComponent";
 import * as z from 'zod';
 import toast from "react-hot-toast";
+import SelectOption from "../common/SelectOption";
 
 const SubjectForm = ({ type, data }) => {
 
@@ -18,6 +19,7 @@ const SubjectForm = ({ type, data }) => {
 
     const {
         register,
+        control,
         handleSubmit,
         getValues,
         setValue,
@@ -51,33 +53,38 @@ const SubjectForm = ({ type, data }) => {
     const selectedClass = getValues("classes");
     const selectedLesson = getValues("lessons");
 
+    const teachers = [
+        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+    ];
+
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Subject</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Subject</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Subject Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Subject Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("subject")}
                     />
                     {errors?.subject && <p className="text-xs text-red-700 py-2">{errors?.subject.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Teacher</label>
-                    <select
-                        name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
-                        {...register("teacher")}
-                    >
-                        <option value="">Please Select</option>
-                        <option value="Abhishek Kumar">Abhishek Kumar</option>
-                        <option value="Rahul Kumar">Rahul Kumar</option>
-                        <option value="Shivam Singh">Shivam Singh</option>
-                        <option value="Pradeep Pandey">Pradeep Pandey</option>
-                    </select>
-                    {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>}
+                    <SelectOption
+                        name='teacher'
+                        control={control}
+                        options={teachers}
+                        placeholder='Please Select'
+                        label='Teacher'
+                    />
+                    {/* {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>} */}
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">

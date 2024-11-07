@@ -20,10 +20,7 @@ const TeacherForm = ({ type, data }) => {
         phone: z.string().min(1, { message: 'Phone is required!' }),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        birthday: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
+        birthday: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         subjects: z.array(
             z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
@@ -46,6 +43,12 @@ const TeacherForm = ({ type, data }) => {
             classes: []
         },
     });
+
+    const classes = [
+        { value: 'class-1', label: 'Class 1' },
+        { value: 'class-2', label: 'Class 2' },
+        // Add more classes as needed
+    ];
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
@@ -86,14 +89,15 @@ const TeacherForm = ({ type, data }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Teacher</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Teacher</h1>
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Teacher ID</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Teacher ID"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("teacherId")}
                     />
                     {errors?.teacherId && <p className="text-xs text-red-700 py-2">{errors?.teacherId.message}</p>}
@@ -102,7 +106,8 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Email</label>
                     <input
                         type="email"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Email"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
                         defaultValue={data?.email}
                     />
@@ -114,7 +119,7 @@ const TeacherForm = ({ type, data }) => {
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
-                            className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 pr-9 rounded-[2px] text-sm"
+                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
                             {...register("password")}
                         />
                         <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
@@ -128,7 +133,8 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">First Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="First Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
                         defaultValue={data?.name.split(' ')[0]}
                     />
@@ -138,7 +144,8 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Last Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Last Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
                         defaultValue={data?.name.split(' ')[1]}
                     />
@@ -147,7 +154,8 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
                         type="tel"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Phone"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("phone")}
                         defaultValue={data?.phone}
                     />
@@ -159,7 +167,8 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Address</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Address"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
                         defaultValue={data?.address}
                     />
@@ -169,7 +178,7 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Blood Type</label>
                     <select
                         name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("bloodType")}
                         defaultValue={data?.name.split(' ')[0]}
                     >
@@ -189,7 +198,7 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Date of Birth</label>
                     <input
                         type="date"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("birthday")}
                     />
                     {errors.birthday && <p className="text-xs text-red-700 py-2">{errors.birthday.message}</p>}
@@ -200,7 +209,7 @@ const TeacherForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Sex</label>
                     <select
                         name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
                     >
                         <option value="">Please Select</option>
@@ -208,13 +217,13 @@ const TeacherForm = ({ type, data }) => {
                         <option value="female">Female</option>
                         <option value="others">Others</option>
                     </select>
-                    {errors.sex && <p className="text-xs text-red-700 py-2">{errors.sex.message}</p>}
+                    {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
                 </div>
                 <div className="flex gap-2 items-center flex-1 mt-7">
                     {/* Image preview */}
                     {
                         imagePreview &&
-                        <div className="w-12 h-12 rounded-full border-2 flex object-cover">
+                        <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-50 flex object-cover">
                             <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
                         </div>
                     }
@@ -234,7 +243,6 @@ const TeacherForm = ({ type, data }) => {
                             />
                         </div>
                         {errors.img && <p className="text-xs text-red-700 py-2">{errors.img.message}</p>}
-
                     </div>
                 </div>
             </div>

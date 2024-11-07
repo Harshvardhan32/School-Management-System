@@ -4,10 +4,10 @@ import Menu from "./Menu";
 const Sidebar = () => {
 
     return (
-        <div className="w-[16%] md:w-[8%] lg:w-[16%] xl:w-[14%] bg-white p-4">
+        <div className="min-w-[60px] w-[16%] md:w-[8%] lg:w-[16%] xl:w-[14%] bg-white dark:bg-slate-900 p-4">
             <Link to='/' className="flex items-center justify-evenly gap-2">
                 <img src={Logo} alt="Logo" className="w-[32px] h-[32px]" />
-                <span className="hidden lg:block font-bold">School ABCD</span>
+                <span className="hidden lg:block font-bold dark:text-gray-200">School ABCD</span>
             </Link>
             <Menu />
         </div>

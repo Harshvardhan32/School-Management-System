@@ -1,164 +1,179 @@
+import React, { useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from "react-hot-toast";
+import SelectOption from "../common/SelectOption"; // Adjust the path as necessary
+import { ThemeContext } from '../../utils/ThemeContext';
 
-const ResultForm = ({ type, data }) => {
+const ResultForm = ({ data, type }) => {
 
     const schema = z.object({
-        userName: z.string()
-            .min(3, { message: 'Username must be at least 3 character long!' })
-            .max(20, { message: "Username must be at most 20 characters long!" }),
-        email: z.string().email({ message: 'Invalid email address!' }),
-        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
-        firstName: z.string().min(1, { message: 'First name is required!' }),
-        lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
-        address: z.string().min(1, { message: 'Address is required!' }),
-        bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        birthday: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
-        sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
-        img: z.any().refine((files) => files?.length > 0, {
-            message: 'Image is required!',
-        }),
+        student: z.string().min(1, { message: 'Student is required!' }),
+        class: z.string().min(1, { message: 'Class is required!' }),
+        subject: z.string().min(1, { message: 'Subject is required!' }),
+        exam: z.string().min(1, { message: 'Exam is required!' }),
+        score: z.string().min(1, { message: 'Score is required!' }),
+        maxScore: z.string().min(1, { message: 'Max Score is required!' }),
+        percentage: z.string().min(1, { message: 'Percentage is required!' }),
+        grade: z.string().min(1, { message: 'Grade is required!' }),
+        finalGrade: z.string().min(1, { message: 'Final Grade is required!' }),
+        totalPercentage: z.string().min(1, { message: 'Total Percentage is required!' }),
+        remark: z.string()
     });
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({ resolver: zodResolver(schema), });
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
+        resolver: zodResolver(schema),
+    });
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
-    })
+    const students = [
+        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
+        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
+        // Add more students as needed
+    ];
+
+    const classes = [
+        { value: 'class-1', label: 'Class 1' },
+        { value: 'class-2', label: 'Class 2' },
+        // Add more classes as needed
+    ];
+
+    const subjects = [
+        { value: 'math', label: 'Mathematics' },
+        { value: 'science', label: 'Science' },
+        // Add more subjects as needed
+    ];
+
+    const exams = [
+        { value: 'Mid Term', label: 'Mid Term' },
+        { value: 'Final', label: 'Final' },
+    ];
+
+    const onSubmit = (data) => {
+        console.log('Submitted Data:', data);
+        toast.success(`Result ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+    };
 
     return (
-        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Result</h1>
-            <span className="text-xs font-medium text-gray-700">Authentication Information</span>
+        <form className="flex flex-col gap-8" onSubmit={handleSubmit(onSubmit)}>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Result</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Username</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("userName")}
-                    />
-                    {errors.userName && <p className="text-xs text-red-700 py-2">{errors.userName.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Email</label>
-                    <input
-                        type="email"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("email")}
-                        defaultValue={data?.email}
-                    />
-                    {errors.email && <p className="text-xs text-red-700 py-2">{errors.email.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Password</label>
-                    <input
-                        type="password"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("password")}
-                    />
-                    {errors.password && <p className="text-xs text-red-700 py-2">{errors.password.message}</p>}
-                </div>
-            </div>
-            <span className="text-xs font-medium text-gray-700">Personal Information</span>
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">First Name</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("firstName")}
-                    />
-                    {errors.firstName && <p className="text-xs text-red-700 py-2">{errors.firstName.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Last Name</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("lastName")}
+                    <SelectOption
+                        name='student'
+                        control={control}
+                        options={students}
+                        placeholder='Please Select'
+                        label='Student'
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Phone</label>
-                    <input
-                        type="tel"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("phone")}
-                        defaultValue={data?.phone}
+                    <SelectOption
+                        name='class'
+                        control={control}
+                        options={classes}
+                        placeholder='Please Select'
+                        label='Class'
                     />
-                    {errors.phone && <p className="text-xs text-red-700 py-2">{errors.phone.message}</p>}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <SelectOption
+                        name='subject'
+                        control={control}
+                        options={subjects}
+                        placeholder='Please Select'
+                        label='Subject'
+                    />
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Address</label>
+                    <SelectOption
+                        name='exam'
+                        control={control}
+                        options={exams}
+                        placeholder='Please Select'
+                        label='Exam'
+                    />
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Score</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("address")}
-                        defaultValue={data?.address}
+                        placeholder="Score"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("score")}
                     />
-                    {errors.address && <p className="text-xs text-red-700 py-2">{errors.address.message}</p>}
+                    {errors?.score && <p className="text-xs text-red-700 py-2">{errors?.score.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Blood Type</label>
-                    <select
-                        name=""
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("bloodType")}
-                    >
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                    </select>
-                    {errors.bloodType && <p className="text-xs text-red-700 py-2">{errors.bloodType.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Date of Birth</label>
+                    <label className="text-sm text-gray-500">Max Score</label>
                     <input
-                        type="date"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("birthday")}
+                        type="text"
+                        placeholder="Max Score"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("maxScore")}
                     />
-                    {errors.birthday && <p className="text-xs text-red-700 py-2">{errors.birthday.message}</p>}
+                    {errors?.maxScore && <p className="text-xs text-red-700 py-2">{errors?.maxScore.message}</p>}
                 </div>
-
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Sex</label>
-                    <select
-                        name=""
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("sex")}
-                    >
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="others">Others</option>
-                    </select>
-                    {errors.sex && <p className="text-xs text-red-700 py-2">{errors.sex.message}</p>}
+                    <label className="text-sm text-gray-500">Percentage</label>
+                    <input
+                        type="text"
+                        placeholder="Percentage"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("percentage")}
+                    />
+                    {errors?.percentage && <p className="text-xs text-red-700 py-2">{errors?.percentage.message}</p>}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Grade</label>
+                    <input
+                        type="text"
+                        placeholder="Grade"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("grade")}
+                    />
+                    {errors?.grade && <p className="text-xs text-red-700 py-2">{errors?.grade.message}</p>}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Final Grade</label>
+                    <input
+                        type="text"
+                        placeholder="Final Grade"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("finalGrade")}
+                    />
+                    {errors?.finalGrade && <p className="text-xs text-red-700 py-2">{errors?.finalGrade.message}</p>}
+                </div>
+            </div>
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Total Percentage</label>
+                    <input
+                        type="text"
+                        placeholder="Total Percentage"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("totalPercentage")}
+                    />
+                    {errors?.totalPercentage && <p className="text-xs text-red-700 py-2">{errors?.totalPercentage.message}</p>}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Remark</label>
+                    <textarea
+                        rows={2}
+                        placeholder="Remark"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("remark")}
+                    />
+                    {errors?.remark && <p className="text-xs text-red-700 py-2">{errors?.remark.message}</p>}
                 </div>
             </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );
-}
+};
 
 export default ResultForm;

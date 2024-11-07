@@ -23,11 +23,15 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import MessageList from "./pages/messages/MessageList";
 import AttendanceList from "./pages/attendance/AttendanceList";
+import { useContext } from "react";
+import { ThemeContext } from "./utils/ThemeContext";
 
 function App() {
 
+    const { darkMode } = useContext(ThemeContext);
+
     return (
-        <div>
+        <div className={`${darkMode && 'dark'}`}>
             <Routes>
                 {/* <Route path='/' element={<Login />} /> */}
                 <Route path="/" element={<Dashboard />} >

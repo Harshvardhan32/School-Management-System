@@ -1,7 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import toast from "react-hot-toast";
+import * as z from 'zod';
+import { useState } from "react";
+import MultiSelectComponent from "../MultiSelectComponent";
 
 const EventForm = ({ type, data }) => {
 
@@ -9,74 +11,101 @@ const EventForm = ({ type, data }) => {
         title: z.string()
             .min(3, { message: 'Title must be at least 3 character long!' })
             .max(70, { message: "Title must be at most 70 characters long!" }),
+        classes: z.array(
+            z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' }),
+        startDate: z.string().min(1, { message: 'Start date is required!' })
+            .refine((value) => {
+                const date = new Date(value);
+                return !isNaN(date.getTime());
+            }, { message: 'Invalid date!' }),
+        endDate: z.string().min(1, { message: 'End date is required!' })
+            .refine((value) => {
+                const date = new Date(value);
+                return !isNaN(date.getTime());
+            }, { message: 'Invalid date!' }),
         content: z.string().min(10, { message: 'Content must be at most 70 characters long!' }),
-        class: z.string().min(1, { message: 'Class is required!' }),
-        date: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
     });
 
     const {
         register,
         handleSubmit,
+        getValues,
+        setValue,
         formState: { errors },
-    } = useForm({ resolver: zodResolver(schema), });
+    } = useForm({
+        resolver: zodResolver(schema), defaultValues: {
+            classes: []
+        }
+    });
 
     const onSubmit = handleSubmit(data => {
+        const start = new Date(data?.startDate);
+        const end = new Date(data?.endDate);
+        if (end <= start) {
+            toast.error('End date must be later than start date!');
+            return;
+        }
         console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        toast.success(`Event ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
+
+    const [classOptions] = useState([
+        { name: '1A' },
+        { name: '1B' },
+        { name: '1C' },
+        { name: '2A' },
+        { name: '2B' },
+    ]);
+    const selectedClass = getValues("classes");
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Event</h1>
-            <span className="text-xs font-medium text-gray-700">Authentication Information</span>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Event</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Title</label>
                     <input
                         type="text"
-                        placeholder="Enter Event Title"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Event Title"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("title")}
                     />
                     {errors?.title && <p className="text-xs text-red-700 py-2">{errors?.title.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Class</label>
-                    <select
-                        name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
-                        {...register("class")}
-                    >
-                        <option value="">Please Select</option>
-                        <option value="1A">1A</option>
-                        <option value="1B">1B</option>
-                        <option value="2A">2A</option>
-                        <option value="2B">2B</option>
-                        <option value="3A">3A</option>
-                        <option value="3B">3B</option>
-                        <option value="3C">3C</option>
-                    </select>
-                    {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Date</label>
+                    <label className="text-sm text-gray-500">Start Date</label>
                     <input
                         type="datetime-local"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
-                        {...register("date")}
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("startDate")}
                     />
-                    {errors?.date && <p className="text-xs text-red-700 py-2">{errors?.date.message}</p>}
+                    {errors?.startDate && <p className="text-xs text-red-700 py-2">{errors?.startDate.message}</p>}
                 </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">End Date</label>
+                    <input
+                        type="datetime-local"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("endDate")}
+                    />
+                    {errors?.endDate && <p className="text-xs text-red-700 py-2">{errors?.endDate.message}</p>}
+                </div>
+            </div>
+            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Classes</label>
+                <MultiSelectComponent
+                    options={classOptions}
+                    selectedValue={selectedClass}
+                    setSelectedValue={(value) => setValue("classes", value)}
+                />
+                {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
             </div>
             <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm text-gray-500">Content</label>
                 <textarea
                     type="text"
                     rows={5}
-                    className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("content")}
                     defaultValue={data?.content}
                 />

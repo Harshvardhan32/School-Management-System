@@ -1,7 +1,5 @@
 const Login = () => {
 
-    
-
     return (
         <div className="w-screen h-screen bg-[#080710] flex justify-center items-center">
             <div className="w-[430px] h-[520px] absolute -translate-x-1/2 -translate-y-1/2 left-[50%] top-[50%]">
@@ -13,13 +11,13 @@ const Login = () => {
             >
                 <h3 className="text-[32px] font-medium leading-[42px] text-center">Login Here</h3>
 
-                <label htmlFor="username"
+                <label htmlFor="email"
                     className="block mt-8 text-[16px] font-medium"
-                >Username</label>
+                >Email</label>
                 <input
                     type="text"
                     placeholder="Email or Phone"
-                    id="username"
+                    id="email"
                     className="outline-none block h-[50px] w-full bg-white/10 rounded-[3px] px-[10px] mt-2 text-[14px] font-light"
                 />
 

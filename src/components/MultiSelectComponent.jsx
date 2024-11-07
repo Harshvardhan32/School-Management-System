@@ -1,7 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
+import { ThemeContext } from '../utils/ThemeContext';
 
 const MultiSelectComponent = ({ options, selectedValue, setSelectedValue }) => {
+
+    const darkModeStyles = {
+        searchBox: {
+            border: '2px solid #4B5563',
+            backgroundColor: '#1F2937',
+            color: '#F9FAFB',
+            fontSize: '14px',
+            minHeight: '40px',
+        },
+    };
+
+    const lightModeStyles = {
+        searchBox: {
+            border: '2px solid #D1D5DB',
+            backgroundColor: '#FFFFFF',
+            color: '#1F2937',
+            fontSize: '14px',
+            minHeight: '40px',
+        },
+    };
+
+    const { darkMode } = useContext(ThemeContext);
 
     const onSelect = (selectedList) => {
         setSelectedValue(selectedList);
@@ -18,13 +41,7 @@ const MultiSelectComponent = ({ options, selectedValue, setSelectedValue }) => {
             onSelect={onSelect}
             onRemove={onRemove}
             displayValue="name"
-            style={{
-                searchBox: {
-                    border: '2px solid #D1D5DB',
-                    fontSize: '14px',
-                    minHeight: '40px',
-                },
-            }}
+            style={darkMode ? darkModeStyles : lightModeStyles}
         />
 
     );

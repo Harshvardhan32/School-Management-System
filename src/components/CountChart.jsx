@@ -28,10 +28,10 @@ const CountChart = () => {
     };
 
     return (
-        <div className="bg-white rounded-[6px] w-full h-full p-4">
+        <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4">
             {/* TITLE */}
             <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold">Students</h1>
+                <h1 className="text-lg font-semibold dark:text-gray-200">Students</h1>
                 <img src="/moreDark.png" alt="" className="w-[20px] h-[20px]" />
             </div>
             {/* CHART */}
@@ -50,12 +50,12 @@ const CountChart = () => {
             <div className="flex justify-center gap-16">
                 <div className="flex flex-col gap-1">
                     <div className="w-5 h-5 bg-lamaGreen rounded-full"></div>
-                    <h1 className="font-bold">1,234</h1>
+                    <h1 className="font-bold dark:text-gray-200">1,234</h1>
                     <h2 className="text-xs text-gray-300">Boys (55%)</h2>
                 </div>
                 <div className="flex flex-col gap-1">
                     <div className="w-5 h-5 bg-lamaPink rounded-full"></div>
-                    <h1 className="font-bold">1,234</h1>
+                    <h1 className="font-bold dark:text-gray-200">1,234</h1>
                     <h2 className="text-xs text-gray-300">Girls (55%)</h2>
                 </div>
             </div>

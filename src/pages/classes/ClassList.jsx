@@ -39,18 +39,13 @@ const ClassList = () => {
 
     const renderRow = (item) => {
         return (
-            <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="flex flex-col p-4 font-semibold">{item.name}</td>
-                <td className="hidden sm:table-cell p-4">{item.capacity}</td>
-                <td className="hidden md:table-cell p-4">{item.grade}</td>
-                <td className="hidden sm:table-cell p-4">{item.supervisor}</td>
+            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{item.name}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.capacity}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.grade}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.supervisor}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {/* <Link to={`/list/teachers/${item.id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
-                                <FaRegEdit  fontSize={18} />
-                            </button>
-                        </Link> */}
                         {role === 'admin' && (
                             <>
                                 <FormModal table='class' type='update' Icon={FaRegEdit } data={item} />
@@ -64,10 +59,10 @@ const ClassList = () => {
     }
 
     return (
-        <div className="bg-white p-4 rounded-[6px] flex-1 mx-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
             {/* TOP */}
             <div className="flex items-center justify-between gap-4">
-                <h1 className="hidden md:block text-lg font-semibold">All Classes</h1>
+                <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Classes</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
                     <TableSearch />
                     <div className="flex items-center gap-4 self-end">

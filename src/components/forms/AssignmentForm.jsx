@@ -6,115 +6,119 @@ import toast from "react-hot-toast";
 const AssignmentForm = ({ type, data }) => {
 
     const schema = z.object({
-        userName: z.string()
-            .min(3, { message: 'Username must be at least 3 character long!' })
-            .max(20, { message: "Username must be at most 20 characters long!" }),
-        email: z.string().email({ message: 'Invalid email address!' }),
-        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
-        firstName: z.string().min(1, { message: 'First name is required!' }),
-        lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
-        address: z.string().min(1, { message: 'Address is required!' }),
-        bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        birthday: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
-        sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
-        img: z.any().refine((files) => files?.length > 0, {
-            message: 'Image is required!',
-        }),
+        subject: z.string().min(1, { message: 'Subject name is required!' }),
+        class: z.string().min(1, { message: 'Class is required!' }),
+        teacher: z.string().min(1, { message: 'Teacher is required!' }),
+        assignedDate: z.string()
+            .min(1, { message: 'Assigned date is required!' })
+            .refine((value) => {
+                const date = new Date(value);
+                return !isNaN(date.getTime());
+            }, { message: 'Invalid date!' }),
+        dueDate: z.string()
+            .min(1, { message: 'Due date is required!' })
+            .refine((value) => {
+                const date = new Date(value);
+                return !isNaN(date.getTime());
+            }, { message: 'Invalid date!' }),
     });
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm({ resolver: zodResolver(schema), });
+    } = useForm({ resolver: zodResolver(schema) });
 
     const onSubmit = handleSubmit(data => {
+        const start = new Date(data?.assignedDate);
+        const end = new Date(data?.dueDate);
+        if (end < start) {
+            toast.error('Due date must be later than assigned date!');
+            return;
+        }
         console.log(data);
         toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     })
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Assignment</h1>
-            <span className="text-xs font-medium text-gray-700">Authentication Information</span>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Assignment</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Username</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("userName")}
-                    />
-                    {errors.userName && <p className="text-xs text-red-700 py-2">{errors.userName.message}</p>}
+                    <label className="text-sm text-gray-500">Subject</label>
+                    <select
+                        name=""
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("subject")}
+                    >
+                        <option value="">Please Select</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="English">English</option>
+                    </select>
+                    {errors?.subject && <p className="text-xs text-red-700 py-2">{errors?.subject.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Email</label>
-                    <input
-                        type="email"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("email")}
-                        defaultValue={data?.email}
-                    />
-                    {errors.email && <p className="text-xs text-red-700 py-2">{errors.email.message}</p>}
+                    <label className="text-sm text-gray-500">Class</label>
+                    <select
+                        name=""
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("class")}
+                    >
+                        <option value="">Please Select</option>
+                        <option value="1A">1A</option>
+                        <option value="1B">1B</option>
+                        <option value="1C">1C</option>
+                        <option value="2A">2A</option>
+                        <option value="2B">2B</option>
+                        <option value="2C">2C</option>
+                    </select>
+                    {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Password</label>
-                    <input
-                        type="password"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("password")}
-                    />
-                    {errors.password && <p className="text-xs text-red-700 py-2">{errors.password.message}</p>}
-                </div>
-            </div>
-            <span className="text-xs font-medium text-gray-700">Personal Information</span>
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">First Name</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("firstName")}
-                    />
-                    {errors.firstName && <p className="text-xs text-red-700 py-2">{errors.firstName.message}</p>}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Last Name</label>
-                    <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("lastName")}
-                    />
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Phone</label>
-                    <input
-                        type="tel"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("phone")}
-                        defaultValue={data?.phone}
-                    />
-                    {errors.phone && <p className="text-xs text-red-700 py-2">{errors.phone.message}</p>}
+                    <label className="text-sm text-gray-500">Teacher</label>
+                    <select
+                        name=""
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("teacher")}
+                    >
+                        <option value="">Please Select</option>
+                        <option value="Rahul Kumar">Rahul Kumar</option>
+                        <option value="Satish Singh">Satish Singh</option>
+                        <option value="Rajnish">Rajnish</option>
+                        <option value="Vivek">Vivek</option>
+                        <option value="Sumit Singh">Sumit Singh</option>
+                    </select>
+                    {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>}
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Address</label>
+                    <label className="text-sm text-gray-500">Assigned Date</label>
                     <input
-                        type="text"
-                        className="min-w-[150px] w-full ring-[1.5px] ring-gray-300 p-2 rounded-[6px] text-sm"
-                        {...register("address")}
-                        defaultValue={data?.address}
+                        type="date"
+                        placeholder="Assigned Date"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("assignedDate")}
                     />
-                    {errors.address && <p className="text-xs text-red-700 py-2">{errors.address.message}</p>}
+                    {errors?.assignedDate && <p className="text-xs text-red-700 py-2">{errors?.assignedDate.message}</p>}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Due Date</label>
+                    <input
+                        type="date"
+                        placeholder="Due Date"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("dueDate")}
+                    />
+                    {errors?.dueDate && <p className="text-xs text-red-700 py-2">{errors?.dueDate.message}</p>}
                 </div>
             </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
-        </form>
+        </form >
     );
 }
 

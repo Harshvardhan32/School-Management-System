@@ -6,6 +6,7 @@ import MultiSelectComponent from "../MultiSelectComponent";
 import { useState } from "react";
 import * as z from 'zod';
 import toast from "react-hot-toast";
+import SelectOption from "../common/SelectOption";
 
 const StudentForm = ({ type, data }) => {
 
@@ -41,6 +42,7 @@ const StudentForm = ({ type, data }) => {
         handleSubmit,
         getValues,
         setValue,
+        control,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
@@ -64,6 +66,12 @@ const StudentForm = ({ type, data }) => {
         toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
 
+    const classes = [
+        { value: 'class-1', label: 'Class 1' },
+        { value: 'class-2', label: 'Class 2' },
+        // Add more classes as needed
+    ];
+
     const [subjectOptions] = useState([
         { name: 'English' },
         { name: 'Mathematics' },
@@ -78,7 +86,7 @@ const StudentForm = ({ type, data }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Student</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Student</h1>
             {/* Authentication Information */}
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -87,7 +95,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Student ID"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("studentId")}
                     />
                     {errors?.studentId && <p className="text-xs text-red-700 py-2">{errors?.studentId.message}</p>}
@@ -97,7 +105,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="email"
                         placeholder="Email"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
                         defaultValue={data?.email}
                     />
@@ -109,7 +117,7 @@ const StudentForm = ({ type, data }) => {
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
-                            className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 pr-9 rounded-[2px] text-sm"
+                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
                             {...register("password")}
                         />
                         <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
@@ -125,7 +133,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="First Name"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
                         defaultValue={data?.name.split(' ')[0]}
                     />
@@ -136,7 +144,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Last Name"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
                         defaultValue={data?.name.split(' ')[1]}
                     />
@@ -146,7 +154,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="tel"
                         placeholder="Phone"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("phone")}
                         defaultValue={data?.phone}
                     />
@@ -160,7 +168,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Father's Name"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("fatherName")}
                         defaultValue={data?.name.split(' ')[1]}
                     />
@@ -171,7 +179,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Mother's Name"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("motherName")}
                         defaultValue={data?.name.split(' ')[1]}
                     />
@@ -182,7 +190,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Address"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
                         defaultValue={data?.address}
                     />
@@ -194,7 +202,7 @@ const StudentForm = ({ type, data }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Sex</label>
                     <select
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
                     >
                         <option value="">Please Select</option>
@@ -207,7 +215,7 @@ const StudentForm = ({ type, data }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Blood Type</label>
                     <select
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("bloodType")}
                     >
                         <option value="">Please Select</option>
@@ -227,7 +235,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="date"
                         placeholder="Date of Birth"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("birthday")}
                     />
                     {errors?.birthday && <p className="text-xs text-red-700 py-2">{errors?.birthday.message}</p>}
@@ -262,10 +270,10 @@ const StudentForm = ({ type, data }) => {
                     </div>
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Class</label>
+                    {/* <label className="text-sm text-gray-500">Class</label>
                     <select
                         name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("class")}
                     >
                         <option value="">Please Select</option>
@@ -275,7 +283,14 @@ const StudentForm = ({ type, data }) => {
                         <option value="2A">2A</option>
                         <option value="2B">2B</option>
                         <option value="2C">2C</option>
-                    </select>
+                    </select> */}
+                    <SelectOption
+                        name='class'
+                        control={control}
+                        options={classes}
+                        placeholder='Please Select'
+                        label='Class'
+                    />
                     {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
@@ -283,7 +298,7 @@ const StudentForm = ({ type, data }) => {
                     <input
                         type="text"
                         placeholder="Roll Number"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("rollNumber")}
                     />
                     {errors?.rollNumber && <p className="text-xs text-red-700 py-2">{errors?.rollNumber.message}</p>}

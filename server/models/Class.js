@@ -6,7 +6,6 @@ const classSchema = new Schema(
         name: {
             type: String,
             required: true,
-            unique: true,
             index: true
         },
         capacity: {

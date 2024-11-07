@@ -8,7 +8,7 @@ const subjectSchema = new Schema(
             required: true,
             index: true
         },
-        class: [
+        classId: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Class',
@@ -20,6 +20,13 @@ const subjectSchema = new Schema(
             ref: 'Teacher',
             required: true
         },
+        lessons: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Lesson',
+                required: true
+            }
+        ]
     },
     { timestamps: true }
 );

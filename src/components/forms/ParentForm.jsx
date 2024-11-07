@@ -51,14 +51,15 @@ const ParentForm = ({ type, data }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold">{type === 'create' ? 'Create a new' : 'Update'} Parent</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Parent</h1>
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Parent ID</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Parent ID"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("parentId")}
                     />
                     {errors?.parentId && <p className="text-xs text-red-700 py-2">{errors?.parentId.message}</p>}
@@ -67,7 +68,8 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Email</label>
                     <input
                         type="email"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Email"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
                     />
                     {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email.message}</p>}
@@ -78,7 +80,7 @@ const ParentForm = ({ type, data }) => {
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
-                            className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 pr-9 rounded-[2px] text-sm"
+                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
                             {...register("password")}
                         />
                         <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
@@ -92,7 +94,8 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">First Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="First Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
                     />
                     {errors?.firstName && <p className="text-xs text-red-700 py-2">{errors?.firstName.message}</p>}
@@ -101,7 +104,8 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Last Name</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Last Name"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
                     />
                 </div>
@@ -109,7 +113,8 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
                         type="tel"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Phone"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("phone")}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
@@ -120,7 +125,8 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Address</label>
                     <input
                         type="text"
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        placeholder="Address"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
                     />
                     {errors?.address && <p className="text-xs text-red-700 py-2">{errors?.address.message}</p>}
@@ -129,7 +135,7 @@ const ParentForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Sex</label>
                     <select
                         name=""
-                        className="min-w-[150px] w-full outline-none ring-[1.5px] ring-gray-300 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
                     >
                         <option value="">Please Select</option>

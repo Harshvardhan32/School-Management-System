@@ -19,9 +19,9 @@ const FormModal = ({ table, type, Icon, data }) => {
     const [open, setOpen] = useState(false);
 
     const Form = () => {
-        return type === 'delete' && data.id ? (
+        return type === 'delete' && data?.id ? (
             <form action="" className="p-4 flex flex-col gap-4">
-                <span className="text-center font-medium">All data will be lost. Are you sure you want to delete this {table}?</span>
+                <span className="text-center font-medium dark:text-gray-200">All data will be lost. Are you sure you want to delete this {table}?</span>
                 <button className="bg-red-700 text-white py-2 px-4 rounded-[6px] border-none w-max self-center">Delete</button>
             </form>
         ) : (type === 'create' || type === 'update') && (
@@ -30,14 +30,13 @@ const FormModal = ({ table, type, Icon, data }) => {
                     table === 'parent' ? <ParentForm type={type} data={data} /> :
                         table === 'subject' ? <SubjectForm type={type} data={data} /> :
                             table === 'class' ? <ClassForm type={type} data={data} /> :
-                                table === 'lesson' ? <LessonForm type={type} data={data} /> :
+                                table === 'lesson' ? <LessonForm type={type} data={data} setOpen={setOpen} /> :
                                     table === 'exam' ? <ExamForm type={type} data={data} /> :
                                         table === 'assignment' ? <AssignmentForm type={type} data={data} /> :
                                             table === 'result' ? <ResultForm type={type} data={data} /> :
                                                 table === 'attendance' ? <AttendanceForm type={type} data={data} /> :
                                                     table === 'event' ? <EventForm type={type} data={data} /> :
-                                                        table === 'announcement' ? <AnnouncementForm type={type} data={data} /> :
-                                                            'Form not found!'
+                                                        table === 'announcement' && <AnnouncementForm type={type} data={data} />
         );
     }
 
@@ -51,7 +50,7 @@ const FormModal = ({ table, type, Icon, data }) => {
             </button>
             {open && (
                 <div className="fixed inset-0 z-[1000] !mt-0 grid place-items-center overflow-auto backdrop-blur-sm w-screen min-h-screen py-10 top-0 left-0 bg-black bg-opacity-60">
-                    <div className="bg-white p-4 rounded-[6px] relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
                         <Form />
                         <div className="absolute top-4 right-4 cursor-pointer" onClick={() => setOpen(false)}>
                             <RxCross2 fontSize={22} className="text-gray-500" />

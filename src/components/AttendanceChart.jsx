@@ -37,9 +37,9 @@ const AttendanceChart = () => {
     ];
 
     return (
-        <div className="bg-white rounded-[6px] w-full h-full p-4">
+        <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4">
             <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold">Attendance</h1>
+                <h1 className="text-lg font-semibold dark:text-gray-200">Attendance</h1>
                 <img src="/moreDark.png" alt="" className="w-[20px] h-[20px]" />
             </div>
             <div className="w-full h-full py-5">

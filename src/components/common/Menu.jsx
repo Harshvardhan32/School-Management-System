@@ -7,8 +7,8 @@ const Menu = () => {
     return (
         <div className='mt-4 text-sm'>
             {
-                menuData.map((data) => (
-                    <div className='flex flex-col gap-2' key={data.title}>
+                menuData?.map((data) => (
+                    <div className='flex flex-col gap-2' key={data?.title}>
                         <span className='hidden lg:block text-gray-400 font-light my-4'>{data.title}</span>
                         {
                             data.items.map((item) => {

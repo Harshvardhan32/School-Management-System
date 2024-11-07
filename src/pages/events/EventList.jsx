@@ -38,11 +38,11 @@ const EventList = () => {
 
     const renderRow = (item) => {
         return (
-            <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="flex flex-col p-4 font-semibold">{item.title}</td>
-                <td className="hidden md:table-cell p-4">{item.date}</td>
-                <td className="hidden md:table-cell p-4">{item.startTime}</td>
-                <td className="hidden md:table-cell p-4">{item.endTime}</td>
+            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{item.title}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.date}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.startTime}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.endTime}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         {/* <Link to={`/list/teachers/${item.id}`}>
@@ -63,10 +63,10 @@ const EventList = () => {
     }
 
     return (
-        <div className="bg-white p-4 rounded-[6px] flex-1 mx-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
             {/* TOP */}
             <div className="flex items-center justify-between gap-4">
-                <h1 className="hidden md:block text-lg font-semibold">All Events</h1>
+                <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Events</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
                     <TableSearch />
                     <div className="flex items-center gap-4 self-end">
