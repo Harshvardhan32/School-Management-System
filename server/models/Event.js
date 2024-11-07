@@ -13,7 +13,7 @@ const eventSchema = new Schema(
             required: true,
             index: true
         },
-        class: [
+        classId: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Class'

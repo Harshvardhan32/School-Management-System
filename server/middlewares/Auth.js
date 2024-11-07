@@ -1,4 +1,4 @@
-exports.auth = () => {
+exports.isAuth = () => {
 
 }
 

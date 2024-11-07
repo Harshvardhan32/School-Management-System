@@ -18,12 +18,6 @@ const announcementSchema = new Schema(
             required: true,
             default: Date.now
         },
-        recipients: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Class'
-            }
-        ]
     },
     { timestamps: true }
 );
