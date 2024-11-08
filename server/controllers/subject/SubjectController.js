@@ -29,6 +29,7 @@ exports.createSubject = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -58,6 +59,7 @@ exports.updateSubject = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -87,6 +89,7 @@ exports.deleteSubject = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -116,6 +119,7 @@ exports.getSubject = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -136,6 +140,7 @@ exports.getAllSubject = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }

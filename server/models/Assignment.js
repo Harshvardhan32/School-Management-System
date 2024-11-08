@@ -8,7 +8,7 @@ const assignmentSchema = new Schema(
             ref: 'Subject',
             required: true
         },
-        class: {
+        classId: {
             type: Schema.Types.ObjectId,
             ref: 'Class',
             required: true

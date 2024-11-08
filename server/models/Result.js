@@ -8,7 +8,7 @@ const resultSchema = new Schema(
             ref: 'Student',
             required: true
         },
-        class: {
+        classId: {
             type: Schema.Types.ObjectId,
             ref: 'Class',
             required: true
@@ -40,9 +40,10 @@ const resultSchema = new Schema(
                             required: true
                         },
                         grade: {
-                            type: Schema.Types.ObjectId,
+                            type: String,
+                            enum: ['A', 'B', 'C'],
                             required: true
-                        }
+                        },
                     }
                 ],
                 finalGrade: {

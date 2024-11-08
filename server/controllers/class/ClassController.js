@@ -2,7 +2,6 @@ const Class = require('../../models/Class');
 
 exports.createClass = async (req, res) => {
     try {
-
         const {
             name,
             capacity,
@@ -40,7 +39,8 @@ exports.createClass = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
-            message: "Internal server error!"
+            errorMessage: error.message,
+            message: "Internal Server Error!"
         })
     }
 }
@@ -95,7 +95,8 @@ exports.updateClass = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
-            message: "Internal server error!"
+            errorMessage: error.message,
+            message: "Internal Server Error!"
         })
     }
 }
@@ -124,7 +125,8 @@ exports.deleteClass = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
-            message: "Internal server error!"
+            errorMessage: error.message,
+            message: "Internal Server Error!"
         })
     }
 }
@@ -143,7 +145,8 @@ exports.getAllClasses = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
-            message: "Internal server error!"
+            errorMessage: error.message,
+            message: "Internal Server Error!"
         })
     }
 }

@@ -14,7 +14,7 @@ const studentSchema = new Schema(
             unique: true,
             index: true
         },
-        class: {
+        classId: {
             type: Schema.Types.ObjectId,
             ref: 'Class',
             required: true,
@@ -42,7 +42,6 @@ const studentSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Subject',
-                required: true
             }
         ],
         rollNumber: {

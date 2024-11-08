@@ -27,6 +27,7 @@ exports.createAnnouncement = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -65,6 +66,7 @@ exports.updateAnnouncement = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -94,6 +96,7 @@ exports.deleteAnnouncement = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
@@ -114,6 +117,7 @@ exports.getAllAnnouncement = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }

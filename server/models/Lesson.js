@@ -15,4 +15,4 @@ const lessonSchema = new Schema(
     { timestamps: true }
 );
 
-module.exports = mongoos.model('Lesson', lessonSchema);
+module.exports = mongoose.model('Lesson', lessonSchema);
