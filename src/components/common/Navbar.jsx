@@ -1,10 +1,12 @@
-import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
-import { useContext } from "react";
+import { CiDark, CiLight } from "react-icons/ci";
+import { useContext, useState } from "react";
 import { ThemeContext } from "../../utils/ThemeContext";
+import ProfilePopup from "./ProfilePopup";
 
 const Navbar = () => {
 
     const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+    const [openProfile, setOpenProfile] = useState(false);
 
     return (
         <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4">
@@ -18,16 +20,18 @@ const Navbar = () => {
                 />
             </div>
             {/* Icons And User */}
-            <div className="w-full flex items-center justify-end gap-6 px-6">
+            <div className="realtive w-full flex items-center justify-end gap-6 px-6">
                 {
                     darkMode ?
-                        <MdOutlineLightMode
+                        <CiLight
                             fontSize={25}
+                            fontWeight={700}
                             onClick={toggleDarkMode}
                             className="text-gray-500 cursor-pointer"
                         />
-                        : <MdOutlineDarkMode
+                        : <CiDark
                             fontSize={25}
+                            fontWeight={700}
                             onClick={toggleDarkMode}
                             className="text-gray-500 cursor-pointer"
                         />
@@ -43,8 +47,13 @@ const Navbar = () => {
                     <span className="text-xs leading-3 font-medium dark:text-gray-200">Rahul Singh</span>
                     <span className="text-[10px] text-gray-500 text-right">Admin</span>
                 </div>
-                <img src="/avatar.png" alt="" className="w-[36px] h-[36px] rounded-full" />
-
+                <img
+                    src="/avatar.png"
+                    alt=""
+                    onClick={() => setOpenProfile((prev) => !prev)}
+                    className="w-[36px] h-[36px] rounded-full cursor-pointer"
+                />
+                {openProfile && <ProfilePopup setOpenProfile={setOpenProfile} />}
             </div>
         </div>
     );

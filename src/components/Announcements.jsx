@@ -1,10 +1,12 @@
+import { Link } from "react-router-dom";
+
 const Announcements = () => {
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px]">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold dark:text-gray-200">Announcement</h1>
-                <span className="text-xs text-gray-400 cursor-pointer">View All</span>
+                <Link to='/list/announcements' className="text-xs text-gray-400">View All</Link>
             </div>
             <div className="flex flex-col gap-4 mt-4">
                 <div className="bg-emerald-200 dark:bg-emerald-500 rounded-[6px] p-4">

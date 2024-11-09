@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ThemeContext } from '../utils/ThemeContext';
 
 const FinanceChart = () => {
 
@@ -65,6 +67,16 @@ const FinanceChart = () => {
         },
     ];
 
+    const { darkMode } = useContext(ThemeContext);
+
+    const styles = {
+        backgroundColor: `${darkMode ? '#0F172A' : '#fff'}`,
+        color: `${darkMode ? '#fff' : '#000'}`,
+        padding: '10px',
+        borderRadius: '5px',
+        borderColor: 'lightgray'
+    }
+
     return (
         <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4">
             {/* TITLE */}
@@ -91,7 +103,7 @@ const FinanceChart = () => {
                             tickMargin={10} />
                         <YAxis axisLine={false} tick={{ fill: '#d1d5db' }} tickLine={false} tickMargin={20} />
                         <Tooltip
-                            contentStyle={{ borderRadius: '5px', borderColor: 'lightgray' }}
+                            contentStyle={styles}
                         />
                         <Legend
                             align="center"

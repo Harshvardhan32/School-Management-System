@@ -19,7 +19,7 @@ import EventList from "./pages/events/EventList";
 import AnnouncementList from "./pages/announcements/AnnouncementList";
 import TeacherDetailsPage from "./pages/teacher/TeacherDetailsPage";
 import StudentDetailsPage from "./pages/student/StudentDetailsPage";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile/Profile";
 import Settings from "./pages/Settings";
 import MessageList from "./pages/messages/MessageList";
 import AttendanceList from "./pages/attendance/AttendanceList";

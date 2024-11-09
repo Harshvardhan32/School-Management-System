@@ -1,13 +1,17 @@
-import { Legend, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { useContext } from "react";
+import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { ThemeContext } from "../utils/ThemeContext";
 
 const CountChart = () => {
 
+    const { darkMode } = useContext(ThemeContext);
+
     const data = [
-        {
-            name: 'Total',
-            count: 106,
-            fill: 'white',
-        },
+        // {
+        //     name: 'Total',
+        //     count: 106,
+        //     fill: `${darkMode ? '#0F172A' : 'white'}`,
+        // },
         {
             name: 'Girls',
             count: 50,
@@ -37,7 +41,7 @@ const CountChart = () => {
             {/* CHART */}
             <div className="relative w-full h-[75%]">
                 <ResponsiveContainer>
-                    <RadialBarChart cx="50%" cy="50%" innerRadius="40%" outerRadius="100%" barSize={35} data={data}>
+                    <RadialBarChart cx="50%" cy="50%" innerRadius="63%" outerRadius="100%" barSize={35} data={data}>
                         <RadialBar
                             background
                             dataKey="count"

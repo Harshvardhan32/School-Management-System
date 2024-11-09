@@ -1,6 +1,5 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegEdit  } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";

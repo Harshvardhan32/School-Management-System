@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ThemeContext } from "../utils/ThemeContext";
 
 const AttendanceChart = () => {
 
@@ -36,6 +38,16 @@ const AttendanceChart = () => {
         },
     ];
 
+    const { darkMode } = useContext(ThemeContext);
+
+    const styles = {
+        backgroundColor: `${darkMode ? '#0F172A' : '#fff'}`,
+        color: `${darkMode ? '#fff' : '#000'}`,
+        padding: '10px',
+        borderRadius: '5px',
+        borderColor: 'lightgray'
+    }
+
     return (
         <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4">
             <div className="flex justify-between items-center">
@@ -46,14 +58,13 @@ const AttendanceChart = () => {
                 <ResponsiveContainer width="100%" height="90%">
                     <BarChart
                         width={500}
-                        // height={300}
                         data={data}
                         barSize={20}
                     >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd" />
                         <XAxis dataKey="name" axisLine={false} tick={{ fill: '#d1d5db' }} tickLine={false} />
                         <YAxis axisLine={false} tick={{ fill: '#d1d5db' }} tickLine={false} />
-                        <Tooltip contentStyle={{ borderRadius: '5px', borderColor: 'lightgray' }} />
+                        <Tooltip contentStyle={styles} />
                         <Legend
                             align="left"
                             verticalAlign="top"

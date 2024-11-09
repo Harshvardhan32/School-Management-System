@@ -22,7 +22,27 @@ body {
     font-weight: 600;
 }
 
+.react-calendar__navigation__label:hover {
+    background-color: #bfe2ef !important;
+    color: black !important;
+}
+
+.react-calendar__navigation__arrow:hover {
+    background-color: #bfe2ef !important;
+    color: black !important;
+}
+
+.react-calendar__navigation__arrow:active {
+    background-color: #bfe2ef !important;
+    color: black !important;
+}
+
 .react-calendar__tile--active {
+    background-color: #C3EBFA !important;
+    color: black !important;
+}
+
+.react-calendar__tile:hover {
     background-color: #C3EBFA !important;
     color: black !important;
 }
