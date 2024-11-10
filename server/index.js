@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use('/api/v1', AnnouncementRoutes);
 app.use('/api/v1', AssignmentRoutes);
 app.use('/api/v1', AttendanceRoutes);
-app.use('/api/v1', AuthRoutes);
+app.use('/api/v1/auth', AuthRoutes);
 app.use('/api/v1', ClassRoutes);
 app.use('/api/v1', EventRoutes);
 app.use('/api/v1', ExamRoutes);

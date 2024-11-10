@@ -10,7 +10,8 @@ const adminSchema = new Schema(
         },
         adminId: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         }
     },
     { timestamps: true }

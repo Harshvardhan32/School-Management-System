@@ -1,7 +1,7 @@
 import Admin from "./pages/admin/Admin";
 import Dashboard from "./pages/Dashboard";
 import ErrorPage from "./pages/ErrorPage";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import { Routes, Route } from "react-router-dom";
 import Student from "./pages/student/Student";
 import Teacher from "./pages/teacher/Teacher";
@@ -25,6 +25,8 @@ import MessageList from "./pages/messages/MessageList";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import { useContext } from "react";
 import { ThemeContext } from "./utils/ThemeContext";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
 
@@ -33,9 +35,9 @@ function App() {
     return (
         <div className={`${darkMode && 'dark'}`}>
             <Routes>
-                {/* <Route path='/' element={<Login />} /> */}
+                <Route path='/' element={<Login />} />
                 <Route path="/" element={<Dashboard />} >
-                    <Route path='/' element={<Admin />} />
+                    <Route path='/admin' element={<Admin />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/settings' element={<Settings />} />
                     <Route path='/student' element={<Student />} />
@@ -57,6 +59,8 @@ function App() {
                     <Route path='/list/messages' element={<MessageList />} />
                     <Route path='/list/announcements' element={<AnnouncementList />} />
                 </Route>
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/update-password/:token" element={<ResetPassword />} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
         </div>

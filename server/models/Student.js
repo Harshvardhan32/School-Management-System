@@ -15,10 +15,11 @@ const studentSchema = new Schema(
             index: true
         },
         classId: {
-            type: Schema.Types.ObjectId,
-            ref: 'Class',
-            required: true,
-            index: true
+            type: String,
+            // type: Schema.Types.ObjectId,
+            // ref: 'Class',
+            // required: true,
+            // index: true
         },
         fatherName: {
             type: String,
@@ -45,7 +46,7 @@ const studentSchema = new Schema(
             }
         ],
         rollNumber: {
-            type: String,
+            type: Number,
             required: true,
             unique: true,
             index: true

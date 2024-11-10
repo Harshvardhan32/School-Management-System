@@ -9,23 +9,28 @@ import toast from "react-hot-toast";
 
 const TeacherForm = ({ type, data }) => {
 
+    const passwordSchema = (type) =>
+        type === 'create'
+            ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
+            : z.string().optional();
+
     const schema = z.object({
         teacherId: z.string()
             .min(3, { message: 'Teacher ID must be at least 3 character long!' })
             .max(20, { message: "Teacher ID must be at most 20 characters long!" }),
         email: z.string().email({ message: 'Invalid email address!' }),
-        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
+        password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        birthday: z.string().min(1, { message: 'Date of Birth is required!' }),
+        dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         subjects: z.array(
             z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
         classes: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' }),
+            z.object({ name: z.string(), })).min(0, { message: 'At least one class must be selected!' }),
         img: z.any().refine((files) => files?.length > 0, {
             message: 'Image is required!',
         }),
@@ -89,7 +94,7 @@ const TeacherForm = ({ type, data }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Teacher</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Teacher</h1>
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
@@ -109,23 +114,25 @@ const TeacherForm = ({ type, data }) => {
                         placeholder="Email"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
-                        defaultValue={data?.email}
                     />
                     {errors.email && <p className="text-xs text-red-700 py-2">{errors.email.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Password</label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                            {...register("password")}
-                        />
-                        <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                {
+                    type === 'create' &&
+                    <div className="flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Password"
+                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
+                                {...register("password")}
+                            />
+                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                        </div>
+                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
                     </div>
-                    {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
-                </div>
+                }
             </div>
             <span className="text-xs font-medium text-gray-700">Personal Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -199,12 +206,12 @@ const TeacherForm = ({ type, data }) => {
                     <input
                         type="date"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                        {...register("birthday")}
+                        {...register("dateOfBirth")}
                     />
-                    {errors.birthday && <p className="text-xs text-red-700 py-2">{errors.birthday.message}</p>}
+                    {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
                 </div>
             </div>
-            <div className="flex flex-wrap flex-1 justify-between items-center gap-4">
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Sex</label>
                     <select
@@ -246,7 +253,7 @@ const TeacherForm = ({ type, data }) => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-wrap flex-1 justify-between items-center gap-4">
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Classes</label>
                     <MultiSelectComponent
@@ -254,7 +261,6 @@ const TeacherForm = ({ type, data }) => {
                         selectedValue={selectedClass}
                         setSelectedValue={(value) => setValue("classes", value)}
                     />
-                    {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
                 </div>
                 <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Subjects</label>

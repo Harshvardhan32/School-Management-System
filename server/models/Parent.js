@@ -11,13 +11,14 @@ const parentSchema = new Schema(
         },
         parentId: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         students: [
             {
-                type: Schema.Types.ObjectId,
-                ref: 'Student',
-                required: true
+                // type: Schema.Types.ObjectId,
+                // ref: 'Student',
+                // required: true
             }
         ]
     },

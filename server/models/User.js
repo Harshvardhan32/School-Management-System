@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        profilePhoto: {
+        photo: {
             type: String,
             trim: true
         },

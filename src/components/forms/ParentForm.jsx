@@ -8,15 +8,20 @@ import toast from "react-hot-toast";
 
 const ParentForm = ({ type, data }) => {
 
+    const passwordSchema = (type) =>
+        type === 'create'
+            ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
+            : z.string().optional();
+
     const schema = z.object({
         parentId: z.string()
             .min(3, { message: 'Parent ID must be at least 3 character long!' })
             .max(20, { message: "Parent ID must be at most 20 characters long!" }),
         email: z.string().email({ message: 'Invalid email address!' }),
-        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
+        password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
         address: z.string().min(1, { message: 'Address is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         students: z.array(
@@ -74,19 +79,22 @@ const ParentForm = ({ type, data }) => {
                     />
                     {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Password</label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                            {...register("password")}
-                        />
-                        <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                {
+                    type === 'create' &&
+                    <div className="flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Password"
+                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
+                                {...register("password")}
+                            />
+                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                        </div>
+                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
                     </div>
-                    {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
-                </div>
+                }
             </div>
             <span className="text-xs font-medium text-gray-700">Personal Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">

@@ -29,10 +29,12 @@ exports.isAuth = async (req, res, next) => {
             });
         }
 
+        console.log("Is Auth verified!");
         // If JWT is valid, move on to the next middleware or request handler
         next();
     } catch (error) {
         console.log(error.message);
+        console.log("IS AUTH ERROR!");
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

@@ -52,7 +52,7 @@ const TeacherList = () => {
             <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex items-center gap-4 p-4">
                     <div>
-                        <img src={item.photo} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
+                        <img src={item.photo || '/noAvatar.png'} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
                     </div>
                     <div className="flex flex-col">
                         <h3 className="font-semibold dark:text-gray-200">{item.name}</h3>

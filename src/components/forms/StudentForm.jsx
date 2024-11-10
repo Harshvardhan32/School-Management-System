@@ -10,22 +10,27 @@ import SelectOption from "../common/SelectOption";
 
 const StudentForm = ({ type, data }) => {
 
+    const passwordSchema = (type) =>
+        type === 'create'
+            ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
+            : z.string().optional();
+
     const schema = z.object({
         studentId: z.string()
             .min(3, { message: 'Student Id must be at least 3 character long!' })
             .max(20, { message: "Student Id must be at most 20 characters long!" }),
         email: z.string().email({ message: 'Invalid email address!' }),
-        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
+        password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
         fatherName: z.string().min(1, { message: "Father's name is required!" }),
         motherName: z.string().min(1, { message: "Mother's name is required!" }),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        class: z.string().min(1, { message: 'Class is required!' }),
+        classId: z.string().min(1, { message: 'Class is required!' }),
         rollNumber: z.string().min(1, { message: 'Roll number is required!' }),
-        birthday: z.string().refine((value) => {
+        dateOfBirth: z.string().refine((value) => {
             const date = new Date(value);
             return !isNaN(date.getTime());
         }, { message: 'Invalid date!' }),
@@ -107,23 +112,25 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Email"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
-                        defaultValue={data?.email}
                     />
                     {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Password</label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                            {...register("password")}
-                        />
-                        <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                {
+                    type === 'create' &&
+                    <div className="flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Password"
+                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
+                                {...register("password")}
+                            />
+                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
+                        </div>
+                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
                     </div>
-                    {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
-                </div>
+                }
             </div>
             {/* Personal Information */}
             <span className="text-xs font-medium text-gray-700">Personal Information</span>
@@ -135,7 +142,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="First Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
-                        defaultValue={data?.name.split(' ')[0]}
                     />
                     {errors?.firstName && <p className="text-xs text-red-700 py-2">{errors?.firstName.message}</p>}
                 </div>
@@ -146,7 +152,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Last Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
-                        defaultValue={data?.name.split(' ')[1]}
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
@@ -156,7 +161,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Phone"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("phone")}
-                        defaultValue={data?.phone}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
                 </div>
@@ -170,7 +174,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Father's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("fatherName")}
-                        defaultValue={data?.name.split(' ')[1]}
                     />
                     {errors?.fatherName && <p className="text-xs text-red-700 py-2">{errors?.fatherName.message}</p>}
                 </div>
@@ -181,7 +184,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Mother's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("motherName")}
-                        defaultValue={data?.name.split(' ')[1]}
                     />
                     {errors?.motherName && <p className="text-xs text-red-700 py-2">{errors?.motherName.message}</p>}
                 </div>
@@ -192,7 +194,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder="Address"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
-                        defaultValue={data?.address}
                     />
                     {errors?.address && <p className="text-xs text-red-700 py-2">{errors?.address.message}</p>}
                 </div>
@@ -236,9 +237,9 @@ const StudentForm = ({ type, data }) => {
                         type="date"
                         placeholder="Date of Birth"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                        {...register("birthday")}
+                        {...register("dateOfBirth")}
                     />
-                    {errors?.birthday && <p className="text-xs text-red-700 py-2">{errors?.birthday.message}</p>}
+                    {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
                 </div>
             </div>
 
@@ -270,28 +271,14 @@ const StudentForm = ({ type, data }) => {
                     </div>
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
-                    {/* <label className="text-sm text-gray-500">Class</label>
-                    <select
-                        name=""
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                        {...register("class")}
-                    >
-                        <option value="">Please Select</option>
-                        <option value="1A">1A</option>
-                        <option value="1B">1B</option>
-                        <option value="1C">1C</option>
-                        <option value="2A">2A</option>
-                        <option value="2B">2B</option>
-                        <option value="2C">2C</option>
-                    </select> */}
                     <SelectOption
-                        name='class'
+                        name='classId'
                         control={control}
                         options={classes}
                         placeholder='Please Select'
                         label='Class'
                     />
-                    {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>}
+                    {/* {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>} */}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Roll Number</label>
