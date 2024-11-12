@@ -29,7 +29,6 @@ exports.isAuth = async (req, res, next) => {
             });
         }
 
-        console.log("Is Auth verified!");
         // If JWT is valid, move on to the next middleware or request handler
         next();
     } catch (error) {
@@ -139,7 +138,9 @@ exports.isAdminOrTeacher = (req, res, next) => {
 
         const { role } = req.user;
 
-        if (role !== 'Admin' || role !== 'Teacher') {
+        console.log("ROLE: ", role);
+
+        if (role !== 'Admin' && role !== 'Teacher') {
             return res.status(401).json({
                 success: false,
                 message: "This is a Protected Route for Admin and Teacher.",

@@ -3,9 +3,10 @@ const { Schema } = mongoose;
 
 const classSchema = new Schema(
     {
-        name: {
+        className: {
             type: String,
             required: true,
+            unique: true,
             index: true
         },
         capacity: {
@@ -14,8 +15,9 @@ const classSchema = new Schema(
             index: true
         },
         supervisor: {
-            type: String,
-            ref: 'Teacher'
+            type: Schema.Types.ObjectId,
+            ref: 'Teacher',
+            unique: true
         },
         teachers: [
             {
@@ -32,8 +34,7 @@ const classSchema = new Schema(
         subjects: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Subject',
-                required: true
+                ref: 'Subject'
             }
         ]
     },

@@ -7,6 +7,7 @@ const studentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true,
+            index: true
         },
         studentId: {
             type: String,
@@ -15,11 +16,10 @@ const studentSchema = new Schema(
             index: true
         },
         classId: {
-            type: String,
-            // type: Schema.Types.ObjectId,
-            // ref: 'Class',
-            // required: true,
-            // index: true
+            type: Schema.Types.ObjectId,
+            ref: 'Class',
+            required: true,
+            index: true
         },
         fatherName: {
             type: String,
@@ -32,35 +32,39 @@ const studentSchema = new Schema(
         parent: {
             type: Schema.Types.ObjectId,
             ref: 'Parent',
+            index: true
         },
         attendance: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Attendance'
+                ref: 'Attendance',
+                index: true
             }
         ],
         subjects: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Subject',
+                index: true
             }
         ],
         rollNumber: {
             type: Number,
             required: true,
             unique: true,
-            index: true
         },
         exams: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Exam'
+                ref: 'Exam',
+                index: true
             }
         ],
         assignments: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Assignment'
+                type: Schema.Types.ObjectId,
+                ref: 'Assignment',
+                index: true
             }
         ],
     },

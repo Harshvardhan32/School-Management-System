@@ -25,17 +25,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Mount all router with the API
-app.use('/api/v1', AnnouncementRoutes);
-app.use('/api/v1', AssignmentRoutes);
+app.use('/api/v1/announcement', AnnouncementRoutes);
+app.use('/api/v1/assignment', AssignmentRoutes);
 app.use('/api/v1', AttendanceRoutes);
 app.use('/api/v1/auth', AuthRoutes);
-app.use('/api/v1', ClassRoutes);
-app.use('/api/v1', EventRoutes);
+app.use('/api/v1/class', ClassRoutes);
+app.use('/api/v1/event', EventRoutes);
 app.use('/api/v1', ExamRoutes);
-app.use('/api/v1', LessonRoutes);
+app.use('/api/v1/lesson', LessonRoutes);
 app.use('/api/v1', ResultRoutes);
-app.use('/api/v1', SubjectRoutes);
-app.use('/api/v1', UserRoutes);
+app.use('/api/v1/subject', SubjectRoutes);
+app.use('/api/v1/user', UserRoutes);
 
 // Start the server
 app.listen(PORT, () => {

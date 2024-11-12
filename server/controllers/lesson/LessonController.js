@@ -3,16 +3,23 @@ const Lesson = require('../../models/Lesson');
 exports.createLesson = async (req, res) => {
     try {
 
-        const { title, description } = req.body;
+        const { title, description, subject } = req.body;
 
-        if (!title || !description) {
+        if (!title || !description || !subject) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const lessonResponse = await Lesson.create({ title, description });
+        const lessonRecord = await Lesson.create({
+            title,
+            description,
+            subject
+        });
+
+        const lessonResponse = await Lesson.findById(lessonRecord?._id)
+            // .populate('subject');
 
         return res.status(200).json({
             success: true,
@@ -24,6 +31,7 @@ exports.createLesson = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -32,16 +40,32 @@ exports.createLesson = async (req, res) => {
 exports.updateLesson = async (req, res) => {
     try {
 
-        const { lessonId, title, description } = req.body;
+        const { lessonId, title, description, subject } = req.body;
 
         if (!lessonId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Lesson ID is required!'
             })
         }
 
-        const updatedResponse = await Lesson.findByIdAndUpdate(lessonId, { title, description }, { new: true });
+        const lessonData = await Lesson.findById(lessonId);
+
+        if (!lessonData) {
+            return res.status(404).json({
+                success: false,
+                message: 'Lesson not found with the given ID!'
+            })
+        }
+
+        const updatedResponse = await Lesson.findByIdAndUpdate(lessonId,
+            {
+                title,
+                description,
+                subject
+            },
+            { new: true })
+        // .populate('subject');
 
         return res.status(200).json({
             success: true,
@@ -53,6 +77,7 @@ exports.updateLesson = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -90,7 +115,8 @@ exports.deleteLesson = async (req, res) => {
 exports.getAllLesson = async (req, res) => {
     try {
 
-        const allLessons = await Lesson.find();
+        const allLessons = await Lesson.find()
+        // .populate('subject');
 
         return res.status(200).json({
             success: true,
@@ -102,6 +128,7 @@ exports.getAllLesson = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }

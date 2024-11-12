@@ -15,16 +15,16 @@ const subjectSchema = new Schema(
                 required: true
             }
         ],
-        teacher: {
-            type: Schema.Types.ObjectId,
-            ref: 'Teacher',
-            required: true
-        },
+        teachers: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Teacher'
+            }
+        ],
         lessons: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Lesson',
-                required: true
+                ref: 'Lesson'
             }
         ]
     },

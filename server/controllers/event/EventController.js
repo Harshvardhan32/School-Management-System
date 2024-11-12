@@ -3,7 +3,7 @@ const Event = require('../../models/Event');
 exports.createEvent = async (req, res) => {
     try {
 
-        const { title, content, classId, startTime, endTime } = req.body;
+        const { title, content, startTime, endTime } = req.body;
 
         if (!title || !content || !startTime || !endTime) {
             return res.status(400).json({
@@ -12,7 +12,7 @@ exports.createEvent = async (req, res) => {
             })
         }
 
-        const eventResponse = await Event.create({ title, content, classId, startTime, endTime });
+        const eventResponse = await Event.create({ title, content, startTime, endTime });
 
         return res.status(200).json({
             success: true,
@@ -61,8 +61,25 @@ exports.deleteEvent = async (req, res) => {
 
         const { eventId } = req.body;
 
-        const deletedResponse = Event.findByIdAndDelete(eventId);
+        if (!eventId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Event ID is required!'
+            })
+        }
 
+        // Find the event with the given ID and delete the record
+        const deletedResponse = await Event.findByIdAndDelete(eventId);
+
+        // If no event was found with that ID
+        if (!deletedResponse) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found!'
+            });
+        }
+
+        // Send the successful response
         return res.status(200).json({
             success: true,
             data: deletedResponse,
@@ -73,6 +90,7 @@ exports.deleteEvent = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -81,7 +99,7 @@ exports.deleteEvent = async (req, res) => {
 exports.getAllEvent = async (req, res) => {
     try {
 
-        const allEvents = Event.find();
+        const allEvents = await Event.find();
 
         return res.status(200).json({
             success: false,

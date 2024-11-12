@@ -7,9 +7,9 @@ const {
     getAllEvent } = require('../controllers/event/EventController');
 const router = express.Router();
 
-router.post('/create/event', isAuth, isAdminOrTeacher, createEvent);
-router.put('/update/event', isAuth, isAdminOrTeacher, updateEvent);
-router.delete('/delete/event', isAuth, isAdminOrTeacher, deleteEvent);
+router.post('/create', isAuth, isAdminOrTeacher, createEvent);
+router.put('/update', isAuth, isAdminOrTeacher, updateEvent);
+router.delete('/delete', isAuth, isAdminOrTeacher, deleteEvent);
 router.get('/events', isAuth, getAllEvent);
 
 module.exports = router;

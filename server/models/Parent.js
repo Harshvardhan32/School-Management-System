@@ -16,9 +16,9 @@ const parentSchema = new Schema(
         },
         students: [
             {
-                // type: Schema.Types.ObjectId,
-                // ref: 'Student',
-                // required: true
+                type: Schema.Types.ObjectId,
+                ref: 'Student',
+                index: true
             }
         ]
     },

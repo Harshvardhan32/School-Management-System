@@ -35,9 +35,9 @@ function App() {
     return (
         <div className={`${darkMode && 'dark'}`}>
             <Routes>
-                <Route path='/' element={<Login />} />
+                {/* <Route path='/' element={<Login />} /> */}
                 <Route path="/" element={<Dashboard />} >
-                    <Route path='/admin' element={<Admin />} />
+                    <Route path='/' element={<Admin />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/settings' element={<Settings />} />
                     <Route path='/student' element={<Student />} />

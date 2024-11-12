@@ -1,12 +1,15 @@
-const { data } = require('autoprefixer');
 const Announcement = require('../../models/Announcement');
 
 exports.createAnnouncement = async (req, res) => {
     try {
 
-        const { title, content, date } = req.body;
+        const {
+            title,
+            content,
+            date
+        } = req.body;
 
-        if (!title || !content || !date) {
+        if (!title || !content) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -36,9 +39,14 @@ exports.createAnnouncement = async (req, res) => {
 exports.updateAnnouncement = async (req, res) => {
     try {
 
-        const { announcementId, title, content, date } = req.body;
+        const {
+            announcementId,
+            title,
+            content,
+            date
+        } = req.body;
 
-        if (!announcementId || !title || !content || !date) {
+        if (!announcementId) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -54,7 +62,7 @@ exports.updateAnnouncement = async (req, res) => {
             })
         }
 
-        const updatedResponse = Announcement.findByIdAndUpdate(announcementId, { title, content, date }, { new: true });
+        const updatedResponse = await Announcement.findByIdAndUpdate(announcementId, { title, content, date }, { new: true });
 
         return res.status(200).json({
             success: true,
@@ -80,7 +88,7 @@ exports.deleteAnnouncement = async (req, res) => {
         if (!announcementId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Announcement ID is required!'
             })
         }
 

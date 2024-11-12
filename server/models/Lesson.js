@@ -10,6 +10,10 @@ const lessonSchema = new Schema(
         description: {
             type: String,
             required: true,
+        },
+        subject: {
+            type: Schema.Types.ObjectId,
+            required: true
         }
     },
     { timestamps: true }

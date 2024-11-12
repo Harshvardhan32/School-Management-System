@@ -6,39 +6,52 @@ const Teacher = require('../../models/Teacher');
 exports.getUserDetails = async (req, res) => {
     try {
 
-        const { role, userId } = req.body;
+        const { role, id } = req.body;
 
-        if (!role || !userId) {
+        if (!role || !id) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const userResponse = {};
+        if (role !== 'Admin' && role !== 'Teacher' && role !== 'Student' && role !== 'Parent') {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid role specified!"
+            });
+        }
+
+        let userResponse;
         if (role === 'Admin') {
-            userResponse = await Admin.findOne({
-                userId
-            }).populate('userId').exec();
+
+            userResponse = await Admin.findById(id)
+                .populate('userId');
+
         } else if (role === 'Teacher') {
-            userResponse = await Teacher.findOne({ userId })
+
+            userResponse = await Teacher.findById(id)
                 .populate('userId')
-                .populate('classes')
-                .populate('subjects').exec();
+            // .populate('classes')
+            // .populate('subjects');
+
         } else if (role === 'Student') {
-            userResponse = await Student.findOne
-                ({ userId })
+
+            userResponse = await Student.findById(id)
                 .populate('userId')
-                .populate('classId')
-                .populate('parent')
-                .populate('attendance')
-                .populate('subjects')
-                .populate('exams')
-                .populate('assignments').exec();
+            // .populate('classId')
+            // .populate('parent')
+            // .populate('attendance')
+            // .populate('subjects')
+            // .populate('exams')
+            // .populate('assignments');
+
         } else if (role === 'Parent') {
-            userResponse = await Admin.findOne({ userId })
+
+            userResponse = await Parent.findById(id)
                 .populate('userId')
-                .populate('students').exec();
+            // .populate('students');
+
         }
 
         if (!userResponse) {
@@ -65,7 +78,10 @@ exports.getUserDetails = async (req, res) => {
 
 exports.getAllTeachers = async (req, res) => {
     try {
-        const allTeachers = await Teacher.find();
+        const allTeachers = await Teacher.find()
+            .populate('userId')
+        // .populate('classes')
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -84,7 +100,13 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getAllStudents = async (req, res) => {
     try {
-        const allStudents = await Student.find();
+        const allStudents = await Student.find()
+            .populate('userId')
+        // .populate('classId')
+        // .populate('attendance')
+        // .populate('subjects')
+        // .populate('exams')
+        // .populate('assignments');
 
         return res.status(200).json({
             success: true,
@@ -103,7 +125,9 @@ exports.getAllStudents = async (req, res) => {
 
 exports.getAllParents = async (req, res) => {
     try {
-        const allParents = await Parent.find();
+        const allParents = await Parent.find()
+            .populate('userId')
+        // .populate('students');
 
         return res.status(200).json({
             success: true,

@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { createLesson, updateLesson, deleteLesson, getAllLesson } = require('../controllers/lesson/LessonController');
-const { isAuth, isAdmin } = require('../middlewares/Auth');
+const {
+    createLesson,
+    updateLesson,
+    deleteLesson,
+    getAllLesson
+} = require('../controllers/lesson/LessonController');
+const { isAuth, isAdminOrTeacher } = require('../middlewares/Auth');
 
-router.post('/create/lesson', isAuth, isAdmin, createLesson);
-router.put('/update/lesson', isAuth, isAdmin, updateLesson);
-router.delete('/delete/lesson', isAuth, isAdmin, deleteLesson);
+router.post('/create', isAuth, isAdminOrTeacher, createLesson);
+router.put('/update', isAuth, isAdminOrTeacher, updateLesson);
+router.delete('/delete', isAuth, isAdminOrTeacher, deleteLesson);
 router.get('/lessons', isAuth, getAllLesson);
 
 module.exports = router;

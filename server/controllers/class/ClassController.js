@@ -1,33 +1,30 @@
 const Class = require('../../models/Class');
+const Teacher = require('../../models/Teacher');
 
 exports.createClass = async (req, res) => {
     try {
         const {
-            name,
+            className,
             capacity,
             supervisor,
-            students,
-            subjects
         } = req.body;
 
-        if (!name ||
+        if (!className ||
             !capacity ||
-            !supervisor ||
-            !students ||
-            !subjects) {
+            !supervisor) {
             return res.status(400).json({
                 success: true,
                 message: 'Please fill all required details!'
             })
         }
 
-        const classResponse = await Class.create({
-            name,
+        const classRecord = await Class.create({
+            className,
             capacity,
-            supervisor,
-            students,
-            subjects
+            supervisor
         });
+
+        const classResponse = await Class.findById(classRecord?._id).populate('supervisor');
 
         return res.status(200).json({
             success: true,
@@ -50,25 +47,23 @@ exports.updateClass = async (req, res) => {
 
         const {
             classId,
-            name,
+            className,
             capacity,
             supervisor,
+            teachers,
             students,
             subjects
         } = req.body;
 
-        if (!classId || !name ||
-            !capacity ||
-            !supervisor ||
-            !students ||
-            !subjects) {
+        if (!classId || !className ||
+            !capacity) {
             return res.status(400).json({
                 success: true,
                 message: 'Please fill all required details!'
             })
         }
 
-        const classData = Class.findById(classId);
+        const classData = await Class.findById(classId);
 
         if (!classData) {
             return res.status(404).json({
@@ -77,13 +72,18 @@ exports.updateClass = async (req, res) => {
             })
         }
 
-        const updatedResponse = Class.findByIdAndUpdate(classId, {
-            name,
+        const updatedResponse = await Class.findByIdAndUpdate(classId, {
+            className,
             capacity,
             supervisor,
+            teachers,
             students,
             subjects
         }, { new: true })
+        // .populate('supervisor')
+        // .populate('teachers')
+        // .populate('students')
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -113,6 +113,8 @@ exports.deleteClass = async (req, res) => {
             })
         }
 
+        // const classRecord = await Class.findById(classId);
+
         const deletedResponse = await Class.findByIdAndDelete(classId);
 
         return res.status(200).json({
@@ -134,7 +136,11 @@ exports.deleteClass = async (req, res) => {
 exports.getAllClasses = async (req, res) => {
     try {
 
-        const allClasses = await Class.find();
+        const allClasses = await Class.find()
+            .populate('supervisor')
+        // .populate('teachers')
+        // .populate('students')
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,

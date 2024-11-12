@@ -3,27 +3,44 @@ const Assignment = require('../../models/Assignment');
 exports.createAssignment = async (req, res) => {
     try {
 
-        const { subject, teacher, assignedDate, dueDate } = req.body;
+        const {
+            subject,
+            classId,
+            teacher,
+            assignedDate,
+            dueDate
+        } = req.body;
 
-        if (!subject || !teacher || !assignedDate || !dueDate) {
+        if (!subject || !classId || !teacher || !assignedDate || !dueDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const assignmentResponse = await Assignment.create({ subject, teacher, assignedDate, dueDate })
+        const assignmentRecord = await Assignment.create({
+            subject,
+            classId,
+            teacher,
+            assignedDate,
+            dueDate
+        });
+
+        const assignmentResponse = await Assignment.findById(assignmentRecord?._id)
+        // .populate('subject')
+        // .populate('classId')
+        // .populate('teacher');
 
         return res.status(200).json({
             success: true,
             data: assignmentResponse,
             message: 'Assignment created successfully!'
         })
-
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -32,20 +49,47 @@ exports.createAssignment = async (req, res) => {
 exports.updateAssignment = async (req, res) => {
     try {
 
-        const { classId, subject, teacher, assignedDate, dueDate } = req.body;
+        const {
+            assignmentId,
+            classId,
+            subject,
+            teacher,
+            assignedDate,
+            dueDate
+        } = req.body;
 
-        if (!classId) {
+        if (!assignmentId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Assignment ID is required!'
             })
         }
 
-        const updatedAssignment = await Assignment.findByIdAndUpdate(classId, { subject, teacher, assignedDate, dueDate }, { new: true })
+        const assignmentData = await Assignment.findById(assignmentId);
+
+        if (!assignmentData) {
+            return res.status(404).json({
+                success: false,
+                message: 'Assignment not found with the given ID!'
+            })
+        }
+
+        const updatedResponse = await Assignment.findByIdAndUpdate(assignmentId,
+            {
+                subject,
+                classId,
+                teacher,
+                assignedDate,
+                dueDate
+            },
+            { new: true })
+        // .populate('subject')
+        // .populate('classId')
+        // .populate('teacher');
 
         return res.status(200).json({
             success: true,
-            data: updatedAssignment,
+            data: updatedResponse,
             message: 'Assignment updated successfully!'
         })
 
@@ -53,6 +97,7 @@ exports.updateAssignment = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -90,18 +135,21 @@ exports.deleteAssignment = async (req, res) => {
 exports.getAllAssignment = async (req, res) => {
     try {
 
-        const allAssignments = await Assignment.find();
+        const allAssignments = await Assignment.find()
+        // .populate('subject')
+        // .populate('classId')
+        // .populate('teacher');
 
         return res.status(200).json({
             success: true,
             data: allAssignments,
             message: 'All assignment fetched successfully!'
         })
-
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }

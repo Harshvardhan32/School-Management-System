@@ -41,7 +41,7 @@ exports.signUp = async (req, res) => {
             })
         }
 
-        if (role !== 'Admin' || role !== 'Teacher' || role !== 'Student' || role !== 'Parent') {
+        if (role !== 'Admin' && role !== 'Teacher' && role !== 'Student' && role !== 'Parent') {
             return res.status(400).json({
                 success: false,
                 message: "Invalid role specified!"
