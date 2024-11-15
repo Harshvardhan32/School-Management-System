@@ -1,11 +1,7 @@
-import Admin from "./pages/admin/Admin";
 import Dashboard from "./pages/Dashboard";
 import ErrorPage from "./pages/ErrorPage";
 import Login from "./pages/Login";
 import { Routes, Route } from "react-router-dom";
-import Student from "./pages/student/Student";
-import Teacher from "./pages/teacher/Teacher";
-import Parent from "./pages/parent/Parent";
 import TeacherList from "./pages/teacher/TeacherList";
 import StudentList from "./pages/student/StudentList";
 import ParentList from "./pages/parent/ParentList";
@@ -27,22 +23,30 @@ import { useContext } from "react";
 import { ThemeContext } from "./utils/ThemeContext";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import { useSelector } from "react-redux";
+import HomeRoute from "./components/core/Auth/HomeRoute";
+import PrivateRoute from "./components/core/Auth/PrivateRoute";
+import OpenRoute from "./components/core/Auth/OpenRoute";
 
 function App() {
 
     const { darkMode } = useContext(ThemeContext);
+    const { token } = useSelector((state) => state?.auth);
 
     return (
         <div className={`${darkMode && 'dark'}`}>
             <Routes>
-                {/* <Route path='/' element={<Login />} /> */}
-                <Route path="/" element={<Dashboard />} >
-                    <Route path='/' element={<Admin />} />
+                {token === null && <Route path='/' element={<Login />} />}
+                <Route
+                    element={
+                        <PrivateRoute>
+                            <Dashboard />
+                        </PrivateRoute>
+                    }
+                >
+                    <Route path='/' element={<HomeRoute />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/settings' element={<Settings />} />
-                    <Route path='/student' element={<Student />} />
-                    <Route path='/teacher' element={<Teacher />} />
-                    <Route path='/parent' element={<Parent />} />
                     <Route path='/list/teachers' element={<TeacherList />} />
                     <Route path='/list/teachers/:id' element={<TeacherDetailsPage />} />
                     <Route path='/list/students' element={<StudentList />} />
@@ -59,8 +63,20 @@ function App() {
                     <Route path='/list/messages' element={<MessageList />} />
                     <Route path='/list/announcements' element={<AnnouncementList />} />
                 </Route>
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/update-password/:token" element={<ResetPassword />} />
+                <Route path="/forgot-password"
+                    element={
+                        <OpenRoute>
+                            <ForgotPassword />
+                        </OpenRoute>
+                    }
+                />
+                <Route path="/update-password/:token"
+                    element={
+                        <OpenRoute>
+                            <ResetPassword />
+                        </OpenRoute>
+                    }
+                />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
         </div>

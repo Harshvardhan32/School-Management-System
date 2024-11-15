@@ -8,23 +8,16 @@ import MultiSelectComponent from "../MultiSelectComponent";
 const ExamForm = ({ type, data }) => {
 
     const schema = z.object({
-        examTitle: z.string().min(1, { message: 'Exam title is required!' }),
+        examName: z.string().min(1, { message: 'Exam title is required!' }),
+        description: z.string().min(10, { message: 'Exam description must be atleast 10 character!' }),
         startDate: z.string()
-            .min(1, { message: 'Start date is required!' })
-            .refine((value) => {
-                const date = new Date(value);
-                return !isNaN(date.getTime()) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
-            }, { message: 'Invalid date format or date!' }),
+            .min(1, { message: 'Start date is required!' }),
         endDate: z.string()
-            .min(1, { message: 'End date is required!' })
-            .refine((value) => {
-                const date = new Date(value);
-                return !isNaN(date.getTime()) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
-            }, { message: 'Invalid date format or date!' }),
+            .min(1, { message: 'End date is required!' }),
         subjects: z.array(
             z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
     });
-    
+
     const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({
         resolver: zodResolver(schema), defaultValues: {
             subjects: [],
@@ -39,7 +32,7 @@ const ExamForm = ({ type, data }) => {
             return;
         }
         console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        toast.success(`Exam ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
 
     const [subjectOptions] = useState([
@@ -59,14 +52,14 @@ const ExamForm = ({ type, data }) => {
             <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Exam</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Exam Title</label>
+                    <label className="text-sm text-gray-500">Exam Name</label>
                     <input
                         type="text"
-                        placeholder="Exam Title"
+                        placeholder="Exam Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                        {...register("examTitle")}
+                        {...register("examName")}
                     />
-                    {errors?.examTitle && <p className="text-xs text-red-700 py-2">{errors?.examTitle.message}</p>}
+                    {errors?.examName && <p className="text-xs text-red-700 py-2">{errors?.examName.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Start Date</label>
@@ -97,6 +90,17 @@ const ExamForm = ({ type, data }) => {
                     />
                     {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                 </div>
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Description</label>
+                <textarea
+                    name=""
+                    placeholder="Description..."
+                    rows={3}
+                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                    {...register("description")}
+                ></textarea>
+                {errors?.description && <p className="text-xs text-red-700 py-2">{errors?.description.message}</p>}
             </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>

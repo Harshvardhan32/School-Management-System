@@ -1,7 +1,12 @@
 const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const helmet = require('helmet');
+const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 const dbConnect = require('./config/database');
 const cloudinaryConnect = require('./config/cloudinary');
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 // Import All routers
@@ -13,7 +18,7 @@ const ClassRoutes = require('./router/ClassRoutes');
 const EventRoutes = require('./router/EventRoutes');
 const ExamRoutes = require('./router/ExamRoutes');
 const LessonRoutes = require('./router/LessonRoutes');
-const ResultRoutes = require('./router/LessonRoutes');
+const ResultRoutes = require('./router/ResultRoutes');
 const SubjectRoutes = require('./router/SubjectRoutes');
 const UserRoutes = require('./router/UserRoutes');
 
@@ -23,28 +28,50 @@ const PORT = process.env.PORT || 8000;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
+app.use(morgan('dev'));
+app.use(helmet());
+app.use(cors());
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per window
+});
+app.use(limiter);
 
 // Mount all router with the API
 app.use('/api/v1/announcement', AnnouncementRoutes);
 app.use('/api/v1/assignment', AssignmentRoutes);
-app.use('/api/v1', AttendanceRoutes);
+app.use('/api/v1/attendance', AttendanceRoutes);
 app.use('/api/v1/auth', AuthRoutes);
 app.use('/api/v1/class', ClassRoutes);
 app.use('/api/v1/event', EventRoutes);
-app.use('/api/v1', ExamRoutes);
+app.use('/api/v1/exam', ExamRoutes);
 app.use('/api/v1/lesson', LessonRoutes);
-app.use('/api/v1', ResultRoutes);
+app.use('/api/v1/result', ResultRoutes);
 app.use('/api/v1/subject', SubjectRoutes);
 app.use('/api/v1/user', UserRoutes);
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server started successfully at port ${PORT}`);
-});
 
 // Homepage Route
 app.get('/', (req, res) => {
     res.send('<h1>This is homepage.</h1>')
+});
+
+// Global error handler 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        error: err.message,
+        message: 'Internal Server Error'
+    });
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server started successfully at port ${PORT}`);
 });
 
 cloudinaryConnect();

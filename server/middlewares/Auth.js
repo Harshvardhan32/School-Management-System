@@ -138,8 +138,6 @@ exports.isAdminOrTeacher = (req, res, next) => {
 
         const { role } = req.user;
 
-        console.log("ROLE: ", role);
-
         if (role !== 'Admin' && role !== 'Teacher') {
             return res.status(401).json({
                 success: false,

@@ -1,32 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { TbUpload } from "react-icons/tb";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import UploadProfilePicture from "../components/UploadProfilePicture";
+import UpdatePassword from "../components/UpdatePassword";
 import * as z from 'zod';
 
 const Settings = () => {
 
     const schema = z.object({
         userId: z.string()
-            .min(3, { message: 'Student Id must be at least 3 character long!' })
+            .min(3, { message: 'Student Id must be at least 3 characters long!' })
             .max(20, { message: "Student Id must be at most 20 characters long!" }),
-        email: z.string().email({ message: 'Invalid email address!' }),
-        firstName: z.string().min(1, { message: 'First name is required!' }),
+        firstName: z.string().optional(),
         lastName: z.string().optional(),
-        phone: z.string().min(1, { message: 'Phone is required!' }),
-        fatherName: z.string().min(1, { message: "Father's name is required!" }),
-        motherName: z.string().min(1, { message: "Mother's name is required!" }),
-        address: z.string().min(1, { message: 'Address is required!' }),
-        bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
-        class: z.string().min(1, { message: 'Class is required!' }),
-        rollNumber: z.string().min(1, { message: 'Roll number is required!' }),
-        dateOfBirth: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
-        sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+        sex: z.string().optional(),
+        dateOfBirth: z.string().optional(),
+        bloodType: z.string().optional(),
+        address: z.string().optional(),
+        rollNumber: z.string().optional(),
+        fatherName: z.string().optional(),
+        motherName: z.string().optional(),
     });
 
     const {
@@ -35,69 +31,30 @@ const Settings = () => {
         formState: { errors }
     } = useForm({ resolver: zodResolver(schema) });
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0]; // Get the uploaded file
-        if (file) {
-            const reader = new FileReader(); // Create a new FileReader instance
-            reader.onloadend = () => {
-                setImagePreview(reader.result); // Set the preview image
-            };
-            reader.readAsDataURL(file); // Convert the image to a data URL
+    const onSubmit = handleSubmit((data) => {
+        if (data?.phone !== '' && (data?.phone).length !== 10) {
+            toast.error('Phone number must be exactly 10 characters!');
+            return;
         }
-    };
-
-    const onSubmit = (data) => {
         console.log(data);
-    }
-
-    const [imagePreview, setImagePreview] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showOldPassword, setShowOldPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    });
 
     return (
         <div className="flex flex-col gap-2 mx-4 max-w-[1200px]">
             <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium">Edit Profile</p>
 
             <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row gap-4 items-center justify-between">
-                <div className="flex flex-wrap gap-4 items-center">
-                    <div>
-                        {
-                            imagePreview ?
-                                <img src={imagePreview} alt="Preview" className="w-[66px] h-[66px] rounded-full object-cover" />
-                                : <img src="/avatar.png" alt="" className="w-[66px] h-[66px] rounded-full object-cover" />
-                        }
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <p className="text-base dark:text-gray-200">Change Profile Picture</p>
-                        <div className="flex flex-row gap-4">
-                            <label className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px]">
-                                Select
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    id="img"
-                                    {...register("img", {
-                                        onChange: handleImageChange
-                                    })}
-                                />
-                            </label>
-                            <button className="flex gap-2 items-center bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">
-                                <span>Upload</span>
-                                <TbUpload fontSize={20} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <UploadProfilePicture />
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4">
+            <form onSubmit={onSubmit} className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4">
                 <p className="text-xl font-medium">Profile Information</p>
                 <div className="flex flex-wrap flex-1 justify-between gap-4">
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Admin ID</label>
                         <input
                             type="text"
+                            id="userId"
                             value={'2022B0124156'}
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 bg-gray-200 dark:bg-slate-900 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("userId")}
@@ -109,6 +66,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">First Name</label>
                         <input
                             type="text"
+                            id="firstName"
                             placeholder="First Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("firstName")}
@@ -119,6 +77,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Last Name</label>
                         <input
                             type="text"
+                            id="lastName"
                             placeholder="Last Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("lastName")}
@@ -130,6 +89,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Email</label>
                         <input
                             type="email"
+                            id="email"
                             placeholder="Email"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("email")}
@@ -139,9 +99,10 @@ const Settings = () => {
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Phone Number</label>
                         <input
-                            type="text"
+                            type="number"
+                            id="phone"
                             placeholder="Phone Number"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                             {...register("phone")}
                         />
                         {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
@@ -149,7 +110,7 @@ const Settings = () => {
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Sex</label>
                         <select
-                            name=""
+                            id="sex"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("sex")}
                         >
@@ -166,6 +127,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Date Of Birth</label>
                         <input
                             type="date"
+                            id="dateOfBirth"
                             placeholder="Date Of Birth"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("dateOfBirth")}
@@ -175,7 +137,7 @@ const Settings = () => {
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Blood Type</label>
                         <select
-                            name=""
+                            id="bloodType"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("bloodType")}
                         >
@@ -194,6 +156,7 @@ const Settings = () => {
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Address</label>
                         <input
+                            id="address"
                             type="text"
                             placeholder="Address"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
@@ -207,6 +170,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Roll Number</label>
                         <input
                             type="text"
+                            id="rollNumber"
                             value={'2200320126598'}
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 bg-gray-200 dark:bg-slate-900 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("rollNumber")}
@@ -218,6 +182,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Father Name</label>
                         <input
                             type="text"
+                            id="fatherName"
                             placeholder="Father Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("fatherName")}
@@ -228,6 +193,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Mother Name</label>
                         <input
                             type="text"
+                            id="motherName"
                             placeholder="Mother Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("motherName")}
@@ -240,54 +206,8 @@ const Settings = () => {
                     <button className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>
                 </div>
             </form>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4">
-                <p className="text-xl font-medium">Password</p>
-                <div className="flex flex-wrap flex-1 justify-between gap-4">
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Old Password</label>
-                        <div className="relative">
-                            <input
-                                type={showOldPassword ? 'text' : 'password'}
-                                placeholder="Old Password"
-                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                                {...register("oldPassword")}
-                            />
-                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowOldPassword((prev) => !prev)}>{showOldPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
-                        </div>
-                        {errors?.oldPassword && <p className="text-xs text-red-700 py-2">{errors?.oldPassword.message}</p>}
-                    </div>
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Password</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="Password"
-                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                                {...register("password")}
-                            />
-                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
-                        </div>
-                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
-                    </div>
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Confirm Password</label>
-                        <div className="relative">
-                            <input
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                placeholder="Confirm Password"
-                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm pr-9"
-                                {...register("confirmPassword")}
-                            />
-                            <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowConfirmPassword((prev) => !prev)}>{showConfirmPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
-                        </div>
-                        {errors?.confirmPassword && <p className="text-xs text-red-700 py-2">{errors?.confirmPassword.message}</p>}
-                    </div>
-                </div>
-                <div className="flex gap-4 items-center justify-end">
-                    <Link to='/profile' className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px]">Cancel</Link>
-                    <button className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>
-                </div>
-            </div>
+
+            <UpdatePassword />
         </div>
     );
 }

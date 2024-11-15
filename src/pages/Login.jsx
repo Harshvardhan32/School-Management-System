@@ -2,23 +2,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import * as z from 'zod';
+import { login } from "../services/operations/authAPI";
 
 const Login = () => {
 
     const schema = z.object({
-        email: z.string().email({ message: 'Invalid email address!' }),
+        userId: z.string().min(3, { message: 'User ID is required!' }),
         password: z.string().min(8, { message: 'Password must be at least 8 characters long!' })
-    })
+    });
 
     const { register, handleSubmit, formState: { errors }, } = useForm({ resolver: zodResolver(schema) });
 
-    const onSubmit = handleSubmit((data) => {
-        console.log(data);
-    })
-
     const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
+
+    const onSubmit = handleSubmit((data) => {
+        dispatch(login(data));
+        // console.log(data);
+    })
 
     return (
         <div className="w-full h-screen bg-[#080710] flex justify-center items-center p-4 sm:p-6 md:p-8">
@@ -33,15 +37,15 @@ const Login = () => {
                 <h3 className="text-2xl sm:text-3xl font-medium leading-tight sm:leading-[42px] text-center">Login Here</h3>
 
                 <div>
-                    <label htmlFor="email" className="block mt-8 text-sm sm:text-base font-medium">Email</label>
+                    <label htmlFor="userId" className="block mt-8 text-sm sm:text-base font-medium">User ID</label>
                     <input
                         type="text"
-                        placeholder="Email"
-                        id="email"
+                        placeholder="User ID"
+                        id="userId"
                         className="outline-none block h-[45px] sm:h-[50px] w-full bg-white/10 rounded-md px-[10px] mt-2 text-[14px] sm:text-[16px] font-light"
-                        {...register('email')}
+                        {...register('userId')}
                     />
-                    {errors?.email && <p className="text-xs sm:text-sm text-red-600 py-2">{errors?.email.message}</p>}
+                    {errors?.userId && <p className="text-xs sm:text-sm text-red-600 py-2">{errors?.userId.message}</p>}
                 </div>
 
                 <div className="relative">

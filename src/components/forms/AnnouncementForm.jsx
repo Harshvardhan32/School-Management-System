@@ -2,8 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from "react-hot-toast";
 import * as z from 'zod';
-import MultiSelectComponent from "../MultiSelectComponent";
-import { useState } from "react";
 
 const AnnouncementForm = ({ type, data }) => {
 
@@ -11,13 +9,7 @@ const AnnouncementForm = ({ type, data }) => {
         title: z.string()
             .min(1, { message: 'Title is required!' }),
         description: z.string().min(10, { message: 'Description must be at least 10 character long!' }),
-        date: z.string().min(1, { message: 'Date is required!' })
-            .refine((value) => {
-                const date = new Date(value);
-                return !isNaN(date.getTime());
-            }, { message: 'Invalid date!' }),
-        classes: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' }),
+        date: z.string().min(1, { message: 'Date is required!' }),
     });
 
     const {
@@ -32,16 +24,6 @@ const AnnouncementForm = ({ type, data }) => {
         }
     });
 
-    const [classOptions] = useState([
-        { name: '1A' },
-        { name: '2A' },
-        { name: '3A' },
-        { name: '1B' },
-        { name: '2B' },
-        { name: '3B' },
-    ]);
-    const selectedClasses = getValues("classes");
-
     const onSubmit = handleSubmit(data => {
         console.log(data);
         toast.success(`Announcement ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
@@ -49,12 +31,13 @@ const AnnouncementForm = ({ type, data }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Announcement</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Announcement</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Title</label>
+                    <label htmlFor="title" className="text-sm text-gray-500">Title</label>
                     <input
                         type="text"
+                        id="title"
                         placeholder="Title"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("title")}
@@ -63,9 +46,10 @@ const AnnouncementForm = ({ type, data }) => {
                 </div>
 
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Date</label>
+                    <label htmlFor="date" className="text-sm text-gray-500">Date</label>
                     <input
-                        type="date"
+                        type="datetime-local"
+                        id="date"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("date")}
                     />
@@ -73,21 +57,12 @@ const AnnouncementForm = ({ type, data }) => {
                 </div>
             </div>
             <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm text-gray-500">Classes</label>
-                <MultiSelectComponent
-                    options={classOptions}
-                    selectedValue={selectedClasses}
-                    setSelectedValue={(value) => setValue("classes", value)}
-                />
-                {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
-            </div>
-            <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm text-gray-500">Description</label>
+                <label htmlFor="description" className="text-sm text-gray-500">Description</label>
                 <textarea
                     rows={3}
+                    id="description"
                     className="mmin-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("description")}
-                    defaultValue={data?.email}
                 > </textarea>
                 {errors?.description && <p className="text-xs text-red-700 py-2">{errors?.description.message}</p>}
             </div>

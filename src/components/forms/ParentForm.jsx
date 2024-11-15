@@ -2,9 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { useState } from "react";
-import * as z from 'zod';
 import MultiSelectComponent from "../MultiSelectComponent";
 import toast from "react-hot-toast";
+import * as z from 'zod';
 
 const ParentForm = ({ type, data }) => {
 
@@ -12,6 +12,12 @@ const ParentForm = ({ type, data }) => {
         type === 'create'
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
+
+    const studentsSchema = (type) =>
+        type === 'update'
+            ? z.array(
+                z.object({ name: z.string(), })).min(1, { message: 'At least one student must be selected!' })
+            : z.array().optional();
 
     const schema = z.object({
         parentId: z.string()
@@ -24,8 +30,7 @@ const ParentForm = ({ type, data }) => {
         phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
         address: z.string().min(1, { message: 'Address is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
-        students: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one student must be selected!' }),
+        students: studentsSchema(type),
     });
 
     const {
@@ -42,7 +47,7 @@ const ParentForm = ({ type, data }) => {
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        toast.success(`Parent ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
 
     const [studentOptions] = useState([
@@ -154,16 +159,21 @@ const ParentForm = ({ type, data }) => {
                     {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
                 </div>
             </div>
-            <span className="text-xs font-medium text-gray-700">Student Information</span>
-            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                <label className="text-sm text-gray-500">Students</label>
-                <MultiSelectComponent
-                    options={studentOptions}
-                    selectedValue={selectedStudent}
-                    setSelectedValue={(value) => setValue("students", value)}
-                />
-                {errors?.students && <p className="text-xs text-red-700 py-2">{errors?.students.message}</p>}
-            </div>
+            {
+                type === 'update' &&
+                <>
+                    <span className="text-xs font-medium text-gray-700">Student Information</span>
+                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Students</label>
+                        <MultiSelectComponent
+                            options={studentOptions}
+                            selectedValue={selectedStudent}
+                            setSelectedValue={(value) => setValue("students", value)}
+                        />
+                        {errors?.students && <p className="text-xs text-red-700 py-2">{errors?.students.message}</p>}
+                    </div>
+                </>
+            }
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

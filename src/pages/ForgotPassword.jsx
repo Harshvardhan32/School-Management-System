@@ -1,9 +1,11 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
-import * as z from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import * as z from 'zod';
+import { resetPasswordToken } from "../services/operations/authAPI";
+import { useDispatch } from "react-redux";
 
 const ForgotPassword = () => {
 
@@ -11,32 +13,36 @@ const ForgotPassword = () => {
         email: z.string().email({ message: 'Invalid email address!' })
     });
 
-    const { getValues, register, handleSubmit, formState: { errors } } = useForm({
+    const {
+        getValues,
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
         resolver: zodResolver(schema)
     });
-    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
     const [emailSent, setEmailSent] = useState(false);
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
-        setEmailSent(true);
-        // navigate('/update-password/rtg4u54hjkcjutbygkf');
+        dispatch(resetPasswordToken(data?.email, setEmailSent));
     });
 
     return (
         <div className="w-screen h-screen bg-[#080710] flex justify-center items-center p-4 sm:p-6 md:p-8">
-            <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 w-[300px] h-[350px] sm:w-[430px] sm:h-[520px]">
-                <div className="absolute w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] rounded-full bg-gradient-to-b from-[#1845ad] to-[#23a2f6] -left-[30px] sm:-left-[50px] -top-[80px] sm:-top-[90px]"></div>
-                <div className="absolute w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] rounded-full bg-gradient-to-r from-[#ff512f] to-[#f09819] -right-[30px] sm:-right-[50px] -bottom-[80px] sm:-bottom-[90px]"></div>
+            <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 w-[300px] h-[350px] sm:w-[460px] sm:h-[520px]">
+                <div className="absolute w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] rounded-full bg-gradient-to-b from-[#1845ad] to-[#23a2f6] -left-[30px] sm:-left-[30px] -top-[80px] sm:-top-[40px]"></div>
+                <div className="absolute w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] rounded-full bg-gradient-to-r from-[#ff512f] to-[#f09819] -right-[30px] sm:-right-[30px] -bottom-[80px] sm:-bottom-[40px]"></div>
             </div>
             <div
-                className="relative w-full max-w-[320px] sm:max-w-[400px] bg-white/10 rounded-lg backdrop-blur-lg border border-white/10 shadow-[0_0_40px_rgba(8,7,16,0.6)] p-8 sm:py-[50px] sm:px-[35px] font-poppins text-white tracking-wide">
+                className="relative w-full max-w-[320px] sm:max-w-[430px] bg-white/10 rounded-lg backdrop-blur-lg border border-white/10 shadow-[0_0_40px_rgba(8,7,16,0.6)] p-8 sm:py-[50px] sm:px-[35px] font-poppins text-white tracking-wide">
                 <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-4">
                         <h3 className="text-[24px] sm:text-[32px] font-medium leading-[32px] sm:leading-[42px] text-center">
                             {emailSent ? 'Check Email' : 'Reset your password'}
                         </h3>
-                        <p className="text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-center mt-4">
+                        <p className="text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-center mt-4 break-words">
                             {emailSent
                                 ? `We have sent the reset email to ${getValues('email')}`
                                 : "We'll email you instructions to reset your password. If you don't have access to your email, we can try account recovery."

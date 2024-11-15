@@ -41,7 +41,7 @@ const resultSchema = new Schema(
                         },
                         grade: {
                             type: String,
-                            enum: ['A', 'B', 'C'],
+                            enum: ['A', 'B', 'C', 'D', 'E', 'F'],
                             required: true
                         },
                     }

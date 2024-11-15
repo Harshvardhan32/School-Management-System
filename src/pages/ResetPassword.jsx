@@ -3,15 +3,18 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { IoArrowBack } from 'react-icons/io5';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as z from 'zod';
+import { resetPassword } from '../services/operations/authAPI';
+import { useDispatch } from 'react-redux';
 
 const ResetPassword = () => {
+
     const schema = z.object({
         password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
         confirmPassword: z.string().min(8, { message: 'Confirm Password must be at least 8 characters long!' })
     }).refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords do not match!",
+        message: "Both Password do not match!",
         path: ["confirmPassword"],
     });
 
@@ -20,12 +23,16 @@ const ResetPassword = () => {
     });
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const location = useLocation();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const onSubmit = handleSubmit((data) => {
         console.log(data);
-        // navigate('/');
+        const token = location.pathname.split('/').at(-1);
+        dispatch(resetPassword(data, token));
+        navigate('/');
     });
 
     return (

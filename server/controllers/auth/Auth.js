@@ -1,3 +1,4 @@
+const cloudinary = require('cloudinary').v2;
 const Teacher = require('../../models/Teacher');
 const Student = require('../../models/Student');
 const Admin = require('../../models/Admin');
@@ -17,27 +18,18 @@ exports.signUp = async (req, res) => {
             lastName,
             email,
             password,
-            confirmPassword,
             phone,
             address,
             role,
             bloodType,
             dateOfBirth,
             sex,
-            photo
         } = req.body;
 
-        if (!firstName || !email || !password || !confirmPassword || !phone || !address || !role || !sex) {
+        if (!firstName || !email || !password || !phone || !address || !role || !sex) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
-            })
-        }
-
-        if (password !== confirmPassword) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password and Confirm Password do not match. Please try again.'
             })
         }
 
@@ -59,7 +51,7 @@ exports.signUp = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const image = photo ? photo : `https://api.dicebear.com/8.x/initials/svg?seed=${firstName} ${lastName}`
+        const image = `https://api.dicebear.com/8.x/initials/svg?seed=${firstName} ${lastName}`
 
         const user = await User.create({
             firstName,
@@ -72,7 +64,7 @@ exports.signUp = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
-            profilePhoto: image
+            photo: image
         });
 
         let userResponse = {};
@@ -216,11 +208,26 @@ exports.login = async (req, res) => {
             })
         }
 
-        const user = await Admin.findOne({ adminId: userId }).populate('userId')
-            || await Teacher.findOne({ teacherId: userId }).populate('userId')
-            || await Student.findOne({ studentId: userId }).populate('userId')
-            || await Parent.findOne({ parentId: userId }).populate('userId');
+        // Find user with provided userId
+        const user = await Admin.findOne({ adminId: userId })
+            .populate('userId')
+            || await Teacher.findOne({ teacherId: userId })
+                .populate('userId')
+            // .populate('classes')
+            // .populate('subjects')
+            || await Student.findOne({ studentId: userId })
+                .populate('userId')
+            // .populate('classId')
+            // .populate('parent')
+            // .populate('attendance')
+            // .populate('subjects')
+            // .populate('exams')
+            // .populate('assignments')
+            || await Parent.findOne({ parentId: userId })
+                .populate('userId')
+                // .populate('students');
 
+        // If user not found with provided userId
         if (user === null) {
             return res.status(400).json({
                 success: false,
@@ -229,7 +236,7 @@ exports.login = async (req, res) => {
         }
 
         // Generate JWT token and Compare Password
-        if (await bcrypt.compare(password, user?.userId?.password)) {
+        if (await bcrypt.compare(password, user?.userId.password)) {
             const token = jwt.sign(
                 {
                     email: user?.userId?.email,
@@ -243,8 +250,11 @@ exports.login = async (req, res) => {
             )
 
             // Save token to user document in database
+            const updatedUser = await User.findByIdAndUpdate(user?.userId._id, { token }, { new: true });
+
+            updatedUser.password = undefined;
             user.token = token;
-            user.password = undefined;
+            user.userId = updatedUser;
 
             // Set cookie for token and return success response
             const options = {
@@ -380,7 +390,11 @@ exports.resetPassword = async (req, res) => {
             });
         }
 
+        console.log("TOken: ", token);
+
         const userDetails = await User.findOne({ token });
+
+        console.log("USERDETAILS: ", userDetails);
 
         if (!userDetails) {
             return res.status(404).json({

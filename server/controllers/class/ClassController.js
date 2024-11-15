@@ -1,30 +1,25 @@
 const Class = require('../../models/Class');
 const Teacher = require('../../models/Teacher');
 
+// Function to create class
 exports.createClass = async (req, res) => {
     try {
         const {
             className,
             capacity,
-            supervisor,
         } = req.body;
 
-        if (!className ||
-            !capacity ||
-            !supervisor) {
+        if (!className || !capacity) {
             return res.status(400).json({
                 success: true,
                 message: 'Please fill all required details!'
             })
         }
 
-        const classRecord = await Class.create({
+        const classResponse = await Class.create({
             className,
             capacity,
-            supervisor
         });
-
-        const classResponse = await Class.findById(classRecord?._id).populate('supervisor');
 
         return res.status(200).json({
             success: true,
@@ -40,8 +35,9 @@ exports.createClass = async (req, res) => {
             message: "Internal Server Error!"
         })
     }
-}
+};
 
+// Function to update class
 exports.updateClass = async (req, res) => {
     try {
 
@@ -89,8 +85,7 @@ exports.updateClass = async (req, res) => {
             success: true,
             data: updatedResponse,
             message: 'Class update successfully!'
-        })
-
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -99,8 +94,9 @@ exports.updateClass = async (req, res) => {
             message: "Internal Server Error!"
         })
     }
-}
+};
 
+// Function to delete class
 exports.deleteClass = async (req, res) => {
     try {
 
@@ -131,8 +127,9 @@ exports.deleteClass = async (req, res) => {
             message: "Internal Server Error!"
         })
     }
-}
+};
 
+// Function to get all class
 exports.getAllClasses = async (req, res) => {
     try {
 

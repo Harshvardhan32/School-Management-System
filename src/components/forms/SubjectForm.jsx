@@ -8,9 +8,14 @@ import SelectOption from "../common/SelectOption";
 
 const SubjectForm = ({ type, data }) => {
 
+    const teacherSchema = (type) =>
+        type === 'update'
+            ? z.string().min(1, { message: 'Teacher name is required!' })
+            : z.string().optional();
+
     const schema = z.object({
         subject: z.string().min(1, { message: 'Subject name is required!' }),
-        teacher: z.string().min(1, { message: 'Teacher name is required!' }),
+        teacher: teacherSchema(type),
         lessons: z.array(
             z.object({ name: z.string(), })).min(1, { message: 'At least one lesson must be selected!' }),
         classes: z.array(
@@ -33,7 +38,7 @@ const SubjectForm = ({ type, data }) => {
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        toast.success(`Subject ${type === 'create' ? 'Created' : 'Updated'} Successfully.`);
     });
 
     const [classOptions] = useState([
@@ -76,18 +81,6 @@ const SubjectForm = ({ type, data }) => {
                     />
                     {errors?.subject && <p className="text-xs text-red-700 py-2">{errors?.subject.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <SelectOption
-                        name='teacher'
-                        control={control}
-                        options={teachers}
-                        placeholder='Please Select'
-                        label='Teacher'
-                    />
-                    {/* {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>} */}
-                </div>
-            </div>
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Classes</label>
                     <MultiSelectComponent
@@ -97,6 +90,21 @@ const SubjectForm = ({ type, data }) => {
                     />
                     {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
                 </div>
+            </div>
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
+                {
+                    type === 'update' &&
+                    <div className="flex flex-col gap-2 flex-1">
+                        <SelectOption
+                            name='teacher'
+                            control={control}
+                            options={teachers}
+                            placeholder='Please Select'
+                            label='Teacher'
+                        />
+                        {/* {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>} */}
+                    </div>
+                }
                 <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Lessons</label>
                     <MultiSelectComponent

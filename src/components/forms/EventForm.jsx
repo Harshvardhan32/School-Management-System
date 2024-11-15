@@ -11,19 +11,11 @@ const EventForm = ({ type, data }) => {
         title: z.string()
             .min(3, { message: 'Title must be at least 3 character long!' })
             .max(70, { message: "Title must be at most 70 characters long!" }),
+        content: z.string().min(20, { message: 'Content must be at least 20 characters long!' }),
+        startDate: z.string().min(1, { message: 'Start date is required!' }),
+        endDate: z.string().min(1, { message: 'End date is required!' }),
         classes: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' }),
-        startDate: z.string().min(1, { message: 'Start date is required!' })
-            .refine((value) => {
-                const date = new Date(value);
-                return !isNaN(date.getTime());
-            }, { message: 'Invalid date!' }),
-        endDate: z.string().min(1, { message: 'End date is required!' })
-            .refine((value) => {
-                const date = new Date(value);
-                return !isNaN(date.getTime());
-            }, { message: 'Invalid date!' }),
-        content: z.string().min(10, { message: 'Content must be at most 70 characters long!' }),
+            z.object({ name: z.string(), })).optional(),
     });
 
     const {
@@ -56,6 +48,7 @@ const EventForm = ({ type, data }) => {
         { name: '2A' },
         { name: '2B' },
     ]);
+
     const selectedClass = getValues("classes");
 
     return (
@@ -63,7 +56,7 @@ const EventForm = ({ type, data }) => {
             <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Event</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Title</label>
+                    <label className="text-sm text-gray-500">Event Title</label>
                     <input
                         type="text"
                         placeholder="Event Title"
@@ -105,9 +98,9 @@ const EventForm = ({ type, data }) => {
                 <textarea
                     type="text"
                     rows={5}
+                    placeholder="Content..."
                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("content")}
-                    defaultValue={data?.content}
                 />
                 {errors?.content && <p className="text-xs text-red-700 py-2">{errors?.content.message}</p>}
             </div>

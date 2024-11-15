@@ -5,11 +5,11 @@ exports.createAnnouncement = async (req, res) => {
 
         const {
             title,
-            content,
+            description,
             date
         } = req.body;
 
-        if (!title || !content) {
+        if (!title || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -17,7 +17,7 @@ exports.createAnnouncement = async (req, res) => {
         }
 
         const announcementResponse = await Announcement.create({
-            title, content, date
+            title, description, date
         });
 
         return res.status(200).json({
@@ -42,7 +42,7 @@ exports.updateAnnouncement = async (req, res) => {
         const {
             announcementId,
             title,
-            content,
+            description,
             date
         } = req.body;
 
@@ -62,7 +62,7 @@ exports.updateAnnouncement = async (req, res) => {
             })
         }
 
-        const updatedResponse = await Announcement.findByIdAndUpdate(announcementId, { title, content, date }, { new: true });
+        const updatedResponse = await Announcement.findByIdAndUpdate(announcementId, { title, description, date }, { new: true });
 
         return res.status(200).json({
             success: true,

@@ -21,6 +21,7 @@ const assignmentSchema = new Schema(
         assignedDate: {
             type: Date,
             required: true,
+            default: Date.now
         },
         dueDate: {
             type: Date,

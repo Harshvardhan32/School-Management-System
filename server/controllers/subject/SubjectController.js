@@ -5,9 +5,9 @@ exports.createSubject = async (req, res) => {
 
         const {
             subjectName,
-            classId } = req.body;
+            classId, lessons } = req.body;
 
-        if (!subjectName || !classId) {
+        if (!subjectName || !classId || !lessons) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all required details!"
@@ -16,11 +16,13 @@ exports.createSubject = async (req, res) => {
 
         const subjectRecord = await Subject.create({
             subjectName,
-            classId
+            classId,
+            lessons
         });
 
         const subjectResponse = await Subject.findById(subjectRecord?._id)
-        // .populate('classId');
+        // .populate('classId')
+        // .populate('lessons');
 
         return res.status(200).json({
             success: true,

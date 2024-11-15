@@ -3,7 +3,13 @@ const Exam = require('../../models/Exam');
 exports.createExam = async (req, res) => {
     try {
 
-        const { examName, description, startDate, endDate, subjects } = req.body;
+        const {
+            examName,
+            description,
+            startDate,
+            endDate,
+            subjects
+        } = req.body;
 
         if (!examName || !description || !startDate || !endDate || !subjects) {
             return res.status(400).json({
@@ -12,18 +18,27 @@ exports.createExam = async (req, res) => {
             })
         }
 
-        const examResponse = await Exam.create({ examName, description, startDate, endDate, subjects });
+        const examRecord = await Exam.create({
+            examName,
+            description,
+            startDate,
+            endDate,
+            subjects
+        });
+
+        const examResponse = await Exam.findById(examRecord?._id)
+            // .populate('subjects');
 
         return res.status(200).json({
             success: true,
             data: examResponse,
             message: 'Exam created successfully!'
         })
-
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: true,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -34,14 +49,32 @@ exports.updateExam = async (req, res) => {
 
         const { examId, examName, description, startDate, endDate, subjects } = req.body;
 
-        if (!examId || !examName || !description || !startDate || !endDate || !subjects) {
+        if (!examId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Exam ID is required!'
             })
         }
 
-        const updatedResponse = await Exam.findByIdAndUpdate(examId, { examName, description, startDate, endDate, subjects }, { new: true });
+        const examData = await Exam.findById(examId);
+
+        if (!examData) {
+            return res.status(404).json({
+                success: false,
+                message: 'Exam not found with the given ID!'
+            })
+        }
+
+        const updatedResponse = await Exam.findByIdAndUpdate(examId,
+            {
+                examName,
+                description,
+                startDate,
+                endDate,
+                subjects
+            },
+            { new: true })
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -53,6 +86,7 @@ exports.updateExam = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: true,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -82,6 +116,7 @@ exports.deleteExam = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: true,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -90,7 +125,8 @@ exports.deleteExam = async (req, res) => {
 exports.getAllExam = async (req, res) => {
     try {
 
-        const allExams = await Exam.find();
+        const allExams = await Exam.find()
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -102,6 +138,7 @@ exports.getAllExam = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: true,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }

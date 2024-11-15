@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 const LogoutModal = ({ setLogoutModal }) => {
 
     const logoutHandler = () => {
-        toast.success('Logout successfully!');
+        toast.success('Logout Successfully!');
         setLogoutModal(false);
     }
 

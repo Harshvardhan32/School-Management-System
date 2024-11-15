@@ -1,19 +1,35 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SlCloudUpload } from "react-icons/sl";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import MultiSelectComponent from "../MultiSelectComponent";
-import { useState } from "react";
-import * as z from 'zod';
 import toast from "react-hot-toast";
 import SelectOption from "../common/SelectOption";
+import * as z from 'zod';
 
 const StudentForm = ({ type, data }) => {
 
+    // Password zod schema for create and update 
     const passwordSchema = (type) =>
         type === 'create'
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
+
+    // Subject zod schema for create and update 
+    const subjectsSchema = (type) =>
+        type === 'update'
+            ? z.array(
+                z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
+            : z.array().optional();
+
+    // Image zod schema for create and update 
+    const imageSchema = (type) =>
+        type === 'update'
+            ? z.any().refine((files) => files?.length > 0, {
+                message: 'Image is required!',
+            })
+            : z.any().optional();
 
     const schema = z.object({
         studentId: z.string()
@@ -30,16 +46,10 @@ const StudentForm = ({ type, data }) => {
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         classId: z.string().min(1, { message: 'Class is required!' }),
         rollNumber: z.string().min(1, { message: 'Roll number is required!' }),
-        dateOfBirth: z.string().refine((value) => {
-            const date = new Date(value);
-            return !isNaN(date.getTime());
-        }, { message: 'Invalid date!' }),
+        dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
-        subjects: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
-        img: z.any().refine((files) => files?.length > 0, {
-            message: 'Image is required!',
-        }),
+        subjects: subjectsSchema(type),
+        img: imageSchema(type),
     });
 
     const {
@@ -92,6 +102,7 @@ const StudentForm = ({ type, data }) => {
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Student</h1>
+
             {/* Authentication Information */}
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -132,6 +143,7 @@ const StudentForm = ({ type, data }) => {
                     </div>
                 }
             </div>
+
             {/* Personal Information */}
             <span className="text-xs font-medium text-gray-700">Personal Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -244,32 +256,35 @@ const StudentForm = ({ type, data }) => {
             </div>
 
             <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="flex gap-2 items-center flex-1 mt-5">
-                    {/* Image preview */}
-                    {
-                        imagePreview &&
-                        <div className="w-12 h-12 rounded-full border-2 flex object-cover">
-                            <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                {
+                    type === 'update' &&
+                    <div className="flex gap-2 items-center flex-1 mt-5">
+                        {/* Image preview */}
+                        {
+                            imagePreview &&
+                            <div className="w-12 h-12 rounded-full border-2 flex object-cover">
+                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                            </div>
+                        }
+                        <div className="flex flex-col gap-2">
+                            <div className="flex flex-row gap-2 justify-center items-center">
+                                <label htmlFor="img" className="min-w-[150px] w-full outline-none text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
+                                    <SlCloudUpload fontSize={25} />
+                                    <span>Upload a photo</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    id="img"
+                                    {...register("img", {
+                                        onChange: handleImageChange
+                                    })}
+                                />
+                            </div>
+                            {errors?.img && <p className="text-xs text-red-700 py-2">{errors?.img.message}</p>}
                         </div>
-                    }
-                    <div className="flex flex-col gap-2">
-                        <div className="flex flex-row gap-2 justify-center items-center">
-                            <label htmlFor="img" className="min-w-[150px] w-full outline-none text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
-                                <SlCloudUpload fontSize={25} />
-                                <span>Upload a photo</span>
-                            </label>
-                            <input
-                                type="file"
-                                className="hidden"
-                                id="img"
-                                {...register("img", {
-                                    onChange: handleImageChange
-                                })}
-                            />
-                        </div>
-                        {errors?.img && <p className="text-xs text-red-700 py-2">{errors?.img.message}</p>}
                     </div>
-                </div>
+                }
                 <div className="flex flex-col gap-2 flex-1">
                     <SelectOption
                         name='classId'
@@ -278,7 +293,6 @@ const StudentForm = ({ type, data }) => {
                         placeholder='Please Select'
                         label='Class'
                     />
-                    {/* {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>} */}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Roll Number</label>
@@ -291,18 +305,20 @@ const StudentForm = ({ type, data }) => {
                     {errors?.rollNumber && <p className="text-xs text-red-700 py-2">{errors?.rollNumber.message}</p>}
                 </div>
             </div>
-
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="min-w-[150px] w-full outline-none flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Subjects</label>
-                    <MultiSelectComponent
-                        options={subjectOptions}
-                        selectedValue={selectedSubject}
-                        setSelectedValue={(value) => setValue("subjects", value)}
-                    />
-                    {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
+            {
+                type === 'update' &&
+                <div className="flex flex-wrap flex-1 justify-between gap-4">
+                    <div className="min-w-[150px] w-full outline-none flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Subjects</label>
+                        <MultiSelectComponent
+                            options={subjectOptions}
+                            selectedValue={selectedSubject}
+                            setSelectedValue={(value) => setValue("subjects", value)}
+                        />
+                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
+                    </div>
                 </div>
-            </div>
+            }
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

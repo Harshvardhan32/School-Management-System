@@ -1,0 +1,32 @@
+[
+    {
+        "student": "64c1f0b1a1b1cfc1d8b1e1a1",
+        "classId": "64c1f0b1a1b1cfc1d8b1e1b1",
+        "date": "2023-11-01",
+        "status": "Present"
+    },
+    {
+        "student": "64c1f0b1a1b1cfc1d8b1e1a2",
+        "classId": "64c1f0b1a1b1cfc1d8b1e1b2",
+        "date": "2023-11-02",
+        "status": "Absent"
+    },
+    {
+        "student": "64c1f0b1a1b1cfc1d8b1e1a3",
+        "classId": "64c1f0b1a1b1cfc1d8b1e1b3",
+        "date": "2023-11-03",
+        "status": "Excused"
+    },
+    {
+        "student": "64c1f0b1a1b1cfc1d8b1e1a4",
+        "classId": "64c1f0b1a1b1cfc1d8b1e1b4",
+        "date": "2023-11-04",
+        "status": "Present"
+    },
+    {
+        "student": "64c1f0b1a1b1cfc1d8b1e1a5",
+        "classId": "64c1f0b1a1b1cfc1d8b1e1b5",
+        "date": "2023-11-05",
+        "status": "Absent"
+    }
+]

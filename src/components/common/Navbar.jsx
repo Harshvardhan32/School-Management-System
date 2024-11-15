@@ -20,7 +20,7 @@ const Navbar = () => {
                 />
             </div>
             {/* Icons And User */}
-            <div className="realtive w-full flex items-center justify-end gap-6 px-6">
+            <div className="realtive w-full flex items-center justify-end gap-4 pr-4">
                 {
                     darkMode ?
                         <CiLight

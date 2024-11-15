@@ -1,17 +1,15 @@
 import axios from 'axios';
+export const axiosInstance = axios.create({});
 
-const apiConnect = (url, method, token, bodyData, params) => {
-    axios.create({
-        baseURL: process.env.REACT_APP_BASE_URL + url,
-        method: method,
+const apiConnector = (method, url, bodyData, header, params) => {
+    return axiosInstance({
+        method: `${method}`,
+        url: `${url}`,
         timeout: 10000,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: bodyData || null,
-        params: params || null,
+        headers: header ? header : null,
+        data: bodyData ? bodyData : null,
+        params: params ? params : null,
     });
 }
 
-export default apiConnect;
+export default apiConnector;

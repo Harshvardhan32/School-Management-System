@@ -1,9 +1,15 @@
 const Attendance = require('../../models/Attendance');
 
+// Function to create attendance
 exports.createAttendance = async (req, res) => {
     try {
 
-        const { student, classId, date, status } = req.body;
+        const {
+            student,
+            classId,
+            date,
+            status
+        } = req.body;
 
         if (!student || !classId || !date || !status) {
             return res.status(400).json({
@@ -12,7 +18,17 @@ exports.createAttendance = async (req, res) => {
             })
         }
 
-        const attendanceResponse = await Attendance.create({ student, classId, date, status });
+        const attendanceRecord = await Attendance.create({
+            student,
+            classId,
+            date,
+            status
+        });
+
+        const attendanceResponse = await Attendance.findById(attendanceRecord?._id)
+        // .populate('student')
+        // .populate('classId')
+        // ;
 
         return res.status(200).json({
             success: true,
@@ -24,44 +40,60 @@ exports.createAttendance = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
 }
 
+// Function to update attendance
 exports.updateAttendance = async (req, res) => {
     try {
 
-        const { attendanceId, student, classId, date, status } = req.body;
+        const {
+            attendanceId,
+            student,
+            classId,
+            date,
+            status
+        } = req.body;
 
         if (!attendanceId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Attendance ID is required!'
             })
         }
 
-        const oldAttendanceRes = await Attendance.findById(attendanceId);
+        const attendanceData = await Attendance.findById(attendanceId);
 
-        if (!oldAttendanceRes) {
+        if (!attendanceData) {
             return res.status(404).json({
                 success: false,
-                message: 'Record not found with this ID!'
+                message: 'Attendance not found with the given ID!'
             })
         }
 
-        const updatedAttendance = await Attendance.findByIdAndUpdate(attendanceId, { student, classId, date, status }, { new: true });
+        const updatedResponse = await Attendance.findByIdAndUpdate(attendanceId, {
+            student,
+            classId,
+            date,
+            status
+        }, { new: true })
+            // .populate('student')
+            // .populate('classId')
+            ;
 
         return res.status(200).json({
             success: true,
-            data: updatedAttendance,
+            data: updatedResponse,
             message: 'Attendance updated successfully!'
-        })
-
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -75,7 +107,7 @@ exports.deleteAttendance = async (req, res) => {
         if (!attendanceId) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Attendance ID is required!'
             })
         }
 
@@ -96,50 +128,25 @@ exports.deleteAttendance = async (req, res) => {
     }
 }
 
-exports.getAttendance = async (req, res) => {
-    try {
-
-        const { attendanceId } = req.body;
-
-        if (!attendanceId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please fill all required details!'
-            })
-        }
-
-        const attendanceResponse = await Attendance.findById(attendanceId);
-
-        return res.status(200).json({
-            success: true,
-            data: attendanceResponse,
-            message: 'Attendance data fetched successfully!'
-        })
-
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal Server Error!'
-        })
-    }
-}
-
+// Function to get all attendance
 exports.getAllAttendance = async (req, res) => {
     try {
 
-        const allAttendance = await Attendance.find();
+        const allAttendance = await Attendance.find()
+            // .populate('student')
+            // .populate('classId')
+            ;
 
         return res.status(200).json({
             success: true,
             data: allAttendance,
             message: 'All attendance fetched successfully!'
-        })
-
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }

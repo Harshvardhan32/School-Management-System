@@ -9,10 +9,33 @@ import toast from "react-hot-toast";
 
 const TeacherForm = ({ type, data }) => {
 
+    // Password zod schema for create and update 
     const passwordSchema = (type) =>
         type === 'create'
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
+
+    // Classes zod schema for create and update 
+    const classesSchema = (type) =>
+        type === 'update'
+            ? z.array(
+                z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' })
+            : z.array().optional();
+
+    // Subject zod schema for create and update 
+    const subjectsSchema = (type) =>
+        type === 'update'
+            ? z.array(
+                z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
+            : z.array().optional();
+
+    // Subject zod schema for create and update 
+    const imageSchema = (type) =>
+        type === 'update'
+            ? z.any().refine((files) => files?.length > 0, {
+                message: 'Image is required!',
+            })
+            : z.any().optional();
 
     const schema = z.object({
         teacherId: z.string()
@@ -27,13 +50,9 @@ const TeacherForm = ({ type, data }) => {
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
-        subjects: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
-        classes: z.array(
-            z.object({ name: z.string(), })).min(0, { message: 'At least one class must be selected!' }),
-        img: z.any().refine((files) => files?.length > 0, {
-            message: 'Image is required!',
-        }),
+        subjects: subjectsSchema(type),
+        classes: classesSchema(type),
+        photo: imageSchema(type),
     });
 
     const {
@@ -57,7 +76,7 @@ const TeacherForm = ({ type, data }) => {
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        toast.success(`Teacher ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
 
     const handleImageChange = (e) => {
@@ -95,6 +114,8 @@ const TeacherForm = ({ type, data }) => {
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Teacher</h1>
+
+            {/* Authentication Information */}
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
@@ -134,6 +155,8 @@ const TeacherForm = ({ type, data }) => {
                     </div>
                 }
             </div>
+
+            {/* Personal Information */}
             <span className="text-xs font-medium text-gray-700">Personal Information</span>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
@@ -226,52 +249,59 @@ const TeacherForm = ({ type, data }) => {
                     </select>
                     {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
                 </div>
-                <div className="flex gap-2 items-center flex-1 mt-7">
-                    {/* Image preview */}
-                    {
-                        imagePreview &&
-                        <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-50 flex object-cover">
-                            <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                {
+                    type === 'update' &&
+                    <div className="flex gap-2 items-center flex-1 mt-7">
+                        {/* Image preview */}
+                        {
+                            imagePreview &&
+                            <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-50 flex object-cover">
+                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                            </div>
+                        }
+                        <div className="flex flex-col gap-2">
+                            <div className="flex flex-row gap-2 justify-center items-center">
+                                <label htmlFor="img" className="min-w-[150px] w-full text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
+                                    <SlCloudUpload fontSize={25} />
+                                    <span>Upload a photo</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    id="img"
+                                    {...register("photo", {
+                                        onChange: handleImageChange
+                                    })}
+                                />
+                            </div>
+                            {errors?.photo && <p className="text-xs text-red-700 py-2">{errors?.photo.message}</p>}
                         </div>
-                    }
-                    <div className="flex flex-col gap-2">
-                        <div className="flex flex-row gap-2 justify-center items-center">
-                            <label htmlFor="img" className="min-w-[150px] w-full text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
-                                <SlCloudUpload fontSize={25} />
-                                <span>Upload a photo</span>
-                            </label>
-                            <input
-                                type="file"
-                                className="hidden"
-                                id="img"
-                                {...register("img", {
-                                    onChange: handleImageChange
-                                })}
-                            />
-                        </div>
-                        {errors.img && <p className="text-xs text-red-700 py-2">{errors.img.message}</p>}
+                    </div>
+                }
+            </div>
+            {
+                type === 'update' &&
+                <div className="flex flex-wrap flex-1 justify-between gap-4">
+                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Classes</label>
+                        <MultiSelectComponent
+                            options={classOptions}
+                            selectedValue={selectedClass}
+                            setSelectedValue={(value) => setValue("classes", value)}
+                        />
+                        {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
+                    </div>
+                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Subjects</label>
+                        <MultiSelectComponent
+                            options={subjectOptions}
+                            selectedValue={selectedSubject}
+                            setSelectedValue={(value) => setValue("subjects", value)}
+                        />
+                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                     </div>
                 </div>
-            </div>
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Classes</label>
-                    <MultiSelectComponent
-                        options={classOptions}
-                        selectedValue={selectedClass}
-                        setSelectedValue={(value) => setValue("classes", value)}
-                    />
-                </div>
-                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Subjects</label>
-                    <MultiSelectComponent
-                        options={subjectOptions}
-                        selectedValue={selectedSubject}
-                        setSelectedValue={(value) => setValue("subjects", value)}
-                    />
-                    {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
-                </div>
-            </div>
+            }
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

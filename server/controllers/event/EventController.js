@@ -3,7 +3,7 @@ const Event = require('../../models/Event');
 exports.createEvent = async (req, res) => {
     try {
 
-        const { title, content, startTime, endTime } = req.body;
+        const { title, content, startTime, endTime, classes } = req.body;
 
         if (!title || !content || !startTime || !endTime) {
             return res.status(400).json({
