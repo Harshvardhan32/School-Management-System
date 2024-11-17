@@ -1,9 +1,14 @@
-import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
+import { logout } from "../services/operations/authAPI";
 
 const LogoutModal = ({ setLogoutModal }) => {
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const logoutHandler = () => {
-        toast.success('Logout Successfully!');
+        dispatch(logout(navigate));
         setLogoutModal(false);
     }
 

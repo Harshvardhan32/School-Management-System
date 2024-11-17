@@ -1,71 +1,92 @@
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import MultiSelectComponent from "../MultiSelectComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllClasses } from "../../services/operations/classAPI";
+import { getAllTeachers } from "../../services/operations/teacherAPI";
 import * as z from 'zod';
-import toast from "react-hot-toast";
-import SelectOption from "../common/SelectOption";
+import { createSubject } from "../../services/operations/subjectAPI";
 
-const SubjectForm = ({ type, data }) => {
-
-    const teacherSchema = (type) =>
-        type === 'update'
-            ? z.string().min(1, { message: 'Teacher name is required!' })
-            : z.string().optional();
+const SubjectForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
-        subject: z.string().min(1, { message: 'Subject name is required!' }),
-        teacher: teacherSchema(type),
-        lessons: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one lesson must be selected!' }),
-        classes: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' }),
+        subjectName: z.string().min(1, { message: 'Subject name is required!' }),
+        classId: z.array(z.string()).min(1, { message: 'Class is required!' }),
+        teachers: z.array(z.string()).optional(),
+        lessons: z.array(z.string()).optional(),
     });
 
     const {
         register,
-        control,
         handleSubmit,
         getValues,
         setValue,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema), defaultValues: {
+        resolver: zodResolver(schema),
+        defaultValues: {
+            classId: [],
+            teachers: [],
             lessons: [],
-            classes: []
         },
     });
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
-        toast.success(`Subject ${type === 'create' ? 'Created' : 'Updated'} Successfully.`);
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
+
+    useEffect(() => {
+        dispatch(getAllClasses(token));
+        if (type === 'update') {
+            dispatch(getAllTeachers(token));
+        }
+    }, [dispatch, token, type]);
+
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
+        if (type === 'create') {
+            dispatch(createSubject(formData, token, setOpen));
+        } else {
+            // console.log("Form Data: ", formData);
+        }
     });
 
-    const [classOptions] = useState([
-        { name: '1A' },
-        { name: '1B' },
-        { name: '1C' },
-        { name: '2A' },
-        { name: '2B' },
-    ]);
+    const { lessons } = useSelector(state => state?.lesson);
+    const { classes } = useSelector(state => state?.class);
+    const { teachers } = useSelector(state => state?.teacher);
 
-    const [lessonOptions] = useState([
-        { name: 'Newton laws of motion' },
-        { name: 'Electrostatic' },
-        { name: 'Input Output Devices' },
-    ]);
+    // Options for teachers, students, and subjects
+    const classOptions = useMemo(() => {
+        return (classes?.map((item) => ({
+            id: item?._id,
+            name: item?.className,
+        })) || []);
+    }, [classes]);
 
-    const selectedClass = getValues("classes");
-    const selectedLesson = getValues("lessons");
+    const teacherOptions = useMemo(() => {
+        return (teachers?.map((item) => ({
+            id: item?._id,
+            name: item?.userId?.firstName + " " + item?.userId?.lastName,
+        })) || []);
+    }, [teachers]);
 
-    const teachers = [
-        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
-        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
-        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
-        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
-        { value: '603d2149e5f4d32f948c4567', label: 'John Doe' },
-        { value: '603d2149e5f4d32f948c4568', label: 'Jane Smith' },
-    ];
+    const lessonOptions = useMemo(() => {
+        return (lessons?.map((item) => ({
+            id: item?._id,
+            name: item?.title,
+        })) || []);
+    }, [lessons]);
+
+    // Retrieve selected values from the form state
+    const selectedClasses = getValues("classId")?.map((id) =>
+        classOptions.find((option) => option.id === id)
+    );
+    const selectedTeachers = getValues("teachers")?.map((id) =>
+        teacherOptions.find((option) => option.id === id)
+    );
+    const selectedLessons = getValues("lessons")?.map((id) =>
+        lessonOptions.find((option) => option.id === id)
+    );
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -77,44 +98,53 @@ const SubjectForm = ({ type, data }) => {
                         type="text"
                         placeholder="Subject Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                        {...register("subject")}
+                        {...register("subjectName")}
                     />
-                    {errors?.subject && <p className="text-xs text-red-700 py-2">{errors?.subject.message}</p>}
+                    {errors?.subjectName && <p className="text-xs text-red-700 py-2">{errors?.subjectName.message}</p>}
                 </div>
-                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Classes</label>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Class</label>
                     <MultiSelectComponent
                         options={classOptions}
-                        selectedValue={selectedClass}
-                        setSelectedValue={(value) => setValue("classes", value)}
+                        selectedValue={selectedClasses}
+                        setSelectedValue={(value) =>
+                            setValue(
+                                "classId",
+                                value.map((item) => item.id)
+                            )}
                     />
-                    {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
+                    {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId.message}</p>}
                 </div>
             </div>
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                {
-                    type === 'update' &&
+            {
+                type === 'update' &&
+                <div className="flex flex-wrap flex-1 justify-between gap-4">
                     <div className="flex flex-col gap-2 flex-1">
-                        <SelectOption
-                            name='teacher'
-                            control={control}
-                            options={teachers}
-                            placeholder='Please Select'
-                            label='Teacher'
+                        <label className="text-sm text-gray-500">Teacher</label>
+                        <MultiSelectComponent
+                            options={teacherOptions}
+                            selectedValue={selectedTeachers}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "teachers",
+                                    value.map((item) => item.id)
+                                )}
                         />
-                        {/* {errors?.teacher && <p className="text-xs text-red-700 py-2">{errors?.teacher.message}</p>} */}
                     </div>
-                }
-                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Lessons</label>
-                    <MultiSelectComponent
-                        options={lessonOptions}
-                        selectedValue={selectedLesson}
-                        setSelectedValue={(value) => setValue("lessons", value)}
-                    />
-                    {errors?.lessons && <p className="text-xs text-red-700 py-2">{errors?.lessons.message}</p>}
+                    <div className="flex flex-col gap-2 flex-1">
+                        <label className="text-sm text-gray-500">Lessons</label>
+                        <MultiSelectComponent
+                            options={lessonOptions}
+                            selectedValue={selectedLessons}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "lessons",
+                                    value.map((item) => item.id)
+                                )}
+                        />
+                    </div>
                 </div>
-            </div>
+            }
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

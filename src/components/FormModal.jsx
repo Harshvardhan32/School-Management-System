@@ -25,18 +25,18 @@ const FormModal = ({ table, type, Icon, data }) => {
                 <button className="bg-red-700 text-white py-2 px-4 rounded-[6px] border-none w-max self-center">Delete</button>
             </form>
         ) : (type === 'create' || type === 'update') && (
-            table === 'student' ? <StudentForm type={type} data={data} /> :
-                table === 'teacher' ? <TeacherForm type={type} data={data} /> :
-                    table === 'parent' ? <ParentForm type={type} data={data} /> :
-                        table === 'subject' ? <SubjectForm type={type} data={data} /> :
-                            table === 'class' ? <ClassForm type={type} data={data} /> :
+            table === 'student' ? <StudentForm type={type} data={data} setOpen={setOpen} /> :
+                table === 'teacher' ? <TeacherForm type={type} data={data} setOpen={setOpen} /> :
+                    table === 'parent' ? <ParentForm type={type} data={data} setOpen={setOpen} /> :
+                        table === 'subject' ? <SubjectForm type={type} data={data} setOpen={setOpen} /> :
+                            table === 'class' ? <ClassForm type={type} data={data} setOpen={setOpen} /> :
                                 table === 'lesson' ? <LessonForm type={type} data={data} setOpen={setOpen} /> :
-                                    table === 'exam' ? <ExamForm type={type} data={data} /> :
-                                        table === 'assignment' ? <AssignmentForm type={type} data={data} /> :
-                                            table === 'result' ? <ResultForm type={type} data={data} /> :
-                                                table === 'attendance' ? <AttendanceForm type={type} data={data} /> :
-                                                    table === 'event' ? <EventForm type={type} data={data} /> :
-                                                        table === 'announcement' && <AnnouncementForm type={type} data={data} />
+                                    table === 'exam' ? <ExamForm type={type} data={data} setOpen={setOpen} /> :
+                                        table === 'assignment' ? <AssignmentForm type={type} data={data} setOpen={setOpen} /> :
+                                            table === 'result' ? <ResultForm type={type} data={data} setOpen={setOpen} /> :
+                                                table === 'attendance' ? <AttendanceForm type={type} data={data} setOpen={setOpen} /> :
+                                                    table === 'event' ? <EventForm type={type} data={data} setOpen={setOpen} /> :
+                                                        table === 'announcement' && <AnnouncementForm type={type} data={data} setOpen={setOpen} />
         );
     }
 

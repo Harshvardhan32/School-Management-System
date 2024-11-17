@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SlCloudUpload } from "react-icons/sl";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import MultiSelectComponent from "../MultiSelectComponent";
-import { useState } from "react";
+import { createUser } from "../../services/operations/userAPI";
+import { useDispatch } from "react-redux";
 import * as z from 'zod';
-import toast from "react-hot-toast";
 
-const TeacherForm = ({ type, data }) => {
+const TeacherForm = ({ type, data, setOpen }) => {
 
     // Password zod schema for create and update 
     const passwordSchema = (type) =>
@@ -29,14 +29,6 @@ const TeacherForm = ({ type, data }) => {
                 z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
             : z.array().optional();
 
-    // Subject zod schema for create and update 
-    const imageSchema = (type) =>
-        type === 'update'
-            ? z.any().refine((files) => files?.length > 0, {
-                message: 'Image is required!',
-            })
-            : z.any().optional();
-
     const schema = z.object({
         teacherId: z.string()
             .min(3, { message: 'Teacher ID must be at least 3 character long!' })
@@ -45,14 +37,14 @@ const TeacherForm = ({ type, data }) => {
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
+        role: z.string().default('Teacher'),
         subjects: subjectsSchema(type),
         classes: classesSchema(type),
-        photo: imageSchema(type),
     });
 
     const {
@@ -68,15 +60,21 @@ const TeacherForm = ({ type, data }) => {
         },
     });
 
+    const dispatch = useDispatch();
+
     const classes = [
         { value: 'class-1', label: 'Class 1' },
         { value: 'class-2', label: 'Class 2' },
-        // Add more classes as needed
     ];
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Teacher ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        if (type === 'create') {
+            dispatch(createUser(data));
+        } else {
+            // dispatch(updateAnnouncement());
+        }
+        setOpen(false);
     });
 
     const handleImageChange = (e) => {
@@ -109,7 +107,6 @@ const TeacherForm = ({ type, data }) => {
     const selectedSubject = getValues("subjects");
     const selectedClass = getValues("classes");
     const [showPassword, setShowPassword] = useState(false);
-    const [imagePreview, setImagePreview] = useState(null);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -166,7 +163,6 @@ const TeacherForm = ({ type, data }) => {
                         placeholder="First Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
-                        defaultValue={data?.name.split(' ')[0]}
                     />
                     {errors.firstName && <p className="text-xs text-red-700 py-2">{errors.firstName.message}</p>}
                 </div>
@@ -177,17 +173,15 @@ const TeacherForm = ({ type, data }) => {
                         placeholder="Last Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
-                        defaultValue={data?.name.split(' ')[1]}
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
-                        type="tel"
+                        type="number"
                         placeholder="Phone"
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
-                        defaultValue={data?.phone}
                     />
                     {errors.phone && <p className="text-xs text-red-700 py-2">{errors.phone.message}</p>}
                 </div>
@@ -200,7 +194,6 @@ const TeacherForm = ({ type, data }) => {
                         placeholder="Address"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
-                        defaultValue={data?.address}
                     />
                     {errors.address && <p className="text-xs text-red-700 py-2">{errors.address.message}</p>}
                 </div>
@@ -210,7 +203,6 @@ const TeacherForm = ({ type, data }) => {
                         name=""
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("bloodType")}
-                        defaultValue={data?.name.split(' ')[0]}
                     >
                         <option value="">Please Select</option>
                         <option value="A+">A+</option>
@@ -249,35 +241,6 @@ const TeacherForm = ({ type, data }) => {
                     </select>
                     {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
                 </div>
-                {
-                    type === 'update' &&
-                    <div className="flex gap-2 items-center flex-1 mt-7">
-                        {/* Image preview */}
-                        {
-                            imagePreview &&
-                            <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-50 flex object-cover">
-                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
-                            </div>
-                        }
-                        <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 justify-center items-center">
-                                <label htmlFor="img" className="min-w-[150px] w-full text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
-                                    <SlCloudUpload fontSize={25} />
-                                    <span>Upload a photo</span>
-                                </label>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    id="img"
-                                    {...register("photo", {
-                                        onChange: handleImageChange
-                                    })}
-                                />
-                            </div>
-                            {errors?.photo && <p className="text-xs text-red-700 py-2">{errors?.photo.message}</p>}
-                        </div>
-                    </div>
-                }
             </div>
             {
                 type === 'update' &&

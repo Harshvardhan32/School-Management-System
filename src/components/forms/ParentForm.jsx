@@ -3,10 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { useState } from "react";
 import MultiSelectComponent from "../MultiSelectComponent";
-import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { createUser } from "../../services/operations/userAPI";
 import * as z from 'zod';
 
-const ParentForm = ({ type, data }) => {
+const ParentForm = ({ type, data, setOpen }) => {
 
     const passwordSchema = (type) =>
         type === 'create'
@@ -27,9 +28,10 @@ const ParentForm = ({ type, data }) => {
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
         address: z.string().min(1, { message: 'Address is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
+        role: z.string().default('Parent'),
         students: studentsSchema(type),
     });
 
@@ -45,9 +47,16 @@ const ParentForm = ({ type, data }) => {
         },
     });
 
+    const dispatch = useDispatch();
+
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Parent ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        if (type === 'create') {
+            dispatch(createUser(data));
+        } else {
+            // dispatch(updateAnnouncement());
+        }
+        setOpen(false);
     });
 
     const [studentOptions] = useState([
@@ -125,9 +134,9 @@ const ParentForm = ({ type, data }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
-                        type="tel"
+                        type="number"
                         placeholder="Phone"
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}

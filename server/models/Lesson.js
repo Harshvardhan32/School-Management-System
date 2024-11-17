@@ -13,6 +13,7 @@ const lessonSchema = new Schema(
         },
         subject: {
             type: Schema.Types.ObjectId,
+            ref: 'Subject',
             required: true
         }
     },

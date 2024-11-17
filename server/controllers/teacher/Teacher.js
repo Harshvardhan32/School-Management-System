@@ -2,7 +2,10 @@ const Teacher = require('../../models/Teacher');
 
 exports.getAllTeachers = async (req, res) => {
     try {
-        const allTeachers = await Teacher.find();
+        const allTeachers = await Teacher.find()
+            .populate('userId')
+            .populate('classes')
+            .populate('subjects');
 
         return res.status(200).json({
             success: true,

@@ -10,7 +10,7 @@ const {
     RESET_PASSWORD_API
 } = authEndPoints;
 
-export function login(data) {
+export const login = (data) => {
     return async (dispatch) => {
         const toastId = toast.loading("Loading...");
         dispatch(setLoading(true));
@@ -47,7 +47,18 @@ export function login(data) {
     };
 }
 
-export function resetPasswordToken(email, setEmailSent) {
+export const logout = (navigate) => {
+    return (dispatch) => {
+        dispatch(setToken(null));
+        dispatch(setUser(null));
+        localStorage.removeItem('token');
+        localStorage.removeItem('token');
+        toast.success("Logout Successfully!");
+        navigate('/');
+    }
+}
+
+export const resetPasswordToken = (email, setEmailSent) => {
     return async (dispatch) => {
         const toastId = toast.loading("Loading...");
         dispatch(setLoading(true));
@@ -74,7 +85,7 @@ export function resetPasswordToken(email, setEmailSent) {
     }
 }
 
-export function resetPassword(data, token) {
+export const resetPassword = (data, token) => {
     return async (dispatch) => {
         const toastId = toast.loading("Loading...");
         dispatch(setLoading(true));

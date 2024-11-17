@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SlCloudUpload } from "react-icons/sl";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import MultiSelectComponent from "../MultiSelectComponent";
-import toast from "react-hot-toast";
 import SelectOption from "../common/SelectOption";
+import { createUser } from "../../services/operations/userAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllClasses } from "../../services/operations/classAPI";
 import * as z from 'zod';
 
-const StudentForm = ({ type, data }) => {
+const StudentForm = ({ type, data, setOpen }) => {
 
     // Password zod schema for create and update 
     const passwordSchema = (type) =>
@@ -23,14 +24,6 @@ const StudentForm = ({ type, data }) => {
                 z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
             : z.array().optional();
 
-    // Image zod schema for create and update 
-    const imageSchema = (type) =>
-        type === 'update'
-            ? z.any().refine((files) => files?.length > 0, {
-                message: 'Image is required!',
-            })
-            : z.any().optional();
-
     const schema = z.object({
         studentId: z.string()
             .min(3, { message: 'Student Id must be at least 3 character long!' })
@@ -39,7 +32,7 @@ const StudentForm = ({ type, data }) => {
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
         fatherName: z.string().min(1, { message: "Father's name is required!" }),
         motherName: z.string().min(1, { message: "Mother's name is required!" }),
         address: z.string().min(1, { message: 'Address is required!' }),
@@ -48,8 +41,8 @@ const StudentForm = ({ type, data }) => {
         rollNumber: z.string().min(1, { message: 'Roll number is required!' }),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
+        role: z.string().default('Student'),
         subjects: subjectsSchema(type),
-        img: imageSchema(type),
     });
 
     const {
@@ -65,27 +58,19 @@ const StudentForm = ({ type, data }) => {
         },
     });
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0]; // Get the uploaded file
-        if (file) {
-            const reader = new FileReader(); // Create a new FileReader instance
-            reader.onloadend = () => {
-                setImagePreview(reader.result); // Set the preview image
-            };
-            reader.readAsDataURL(file); // Convert the image to a data URL
-        }
-    };
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
-        toast.success(`Class ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
-    });
+    useEffect(() => {
+        dispatch(getAllClasses(token));
+    }, [])
 
-    const classes = [
-        { value: 'class-1', label: 'Class 1' },
-        { value: 'class-2', label: 'Class 2' },
-        // Add more classes as needed
-    ];
+    const { classes } = useSelector(state => state?.class);
+
+    const classOptions = classes?.map((item) => ({
+        id: item?._id,
+        name: item?.className
+    }));
 
     const [subjectOptions] = useState([
         { name: 'English' },
@@ -96,8 +81,17 @@ const StudentForm = ({ type, data }) => {
     ]);
 
     const [showPassword, setShowPassword] = useState(false);
-    const [imagePreview, setImagePreview] = useState(null);
     const selectedSubject = getValues("subjects");
+
+    const onSubmit = handleSubmit(data => {
+        console.log(data);
+        if (type === 'create') {
+            // dispatch(createUser(data));
+        } else {
+            // dispatch(updateAnnouncement());
+        }
+        setOpen(false);
+    });
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -169,9 +163,9 @@ const StudentForm = ({ type, data }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
-                        type="tel"
+                        type="number"
                         placeholder="Phone"
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
@@ -256,40 +250,11 @@ const StudentForm = ({ type, data }) => {
             </div>
 
             <div className="flex flex-wrap flex-1 justify-between gap-4">
-                {
-                    type === 'update' &&
-                    <div className="flex gap-2 items-center flex-1 mt-5">
-                        {/* Image preview */}
-                        {
-                            imagePreview &&
-                            <div className="w-12 h-12 rounded-full border-2 flex object-cover">
-                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
-                            </div>
-                        }
-                        <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 justify-center items-center">
-                                <label htmlFor="img" className="min-w-[150px] w-full outline-none text-sm text-gray-500 flex items-center gap-2 cursor-pointer">
-                                    <SlCloudUpload fontSize={25} />
-                                    <span>Upload a photo</span>
-                                </label>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    id="img"
-                                    {...register("img", {
-                                        onChange: handleImageChange
-                                    })}
-                                />
-                            </div>
-                            {errors?.img && <p className="text-xs text-red-700 py-2">{errors?.img.message}</p>}
-                        </div>
-                    </div>
-                }
                 <div className="flex flex-col gap-2 flex-1">
                     <SelectOption
                         name='classId'
                         control={control}
-                        options={classes}
+                        options={classOptions}
                         placeholder='Please Select'
                         label='Class'
                     />

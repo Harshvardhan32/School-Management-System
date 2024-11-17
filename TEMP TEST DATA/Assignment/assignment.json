@@ -1,0 +1,37 @@
+[
+    {
+        "subject": "645c80f96f1e3a7b9c123a01",
+        "classId": "645c81f96f1e3a7b9c123a02",
+        "teacher": "645c82f96f1e3a7b9c123a03",
+        "assignedDate": "2024-11-10",
+        "dueDate": "2024-11-17"
+    },
+    {
+        "subject": "645c83f96f1e3a7b9c123a04",
+        "classId": "645c84f96f1e3a7b9c123a05",
+        "teacher": "645c85f96f1e3a7b9c123a06",
+        "assignedDate": "2024-11-11",
+        "dueDate": "2024-11-18"
+    },
+    {
+        "subject": "645c86f96f1e3a7b9c123a07",
+        "classId": "645c87f96f1e3a7b9c123a08",
+        "teacher": "645c88f96f1e3a7b9c123a09",
+        "assignedDate": "2024-11-12",
+        "dueDate": "2024-11-19"
+    },
+    {
+        "subject": "645c89f96f1e3a7b9c123a10",
+        "classId": "645c90f96f1e3a7b9c123a11",
+        "teacher": "645c91f96f1e3a7b9c123a12",
+        "assignedDate": "2024-11-13",
+        "dueDate": "2024-11-20"
+    },
+    {
+        "subject": "645c92f96f1e3a7b9c123a13",
+        "classId": "645c93f96f1e3a7b9c123a14",
+        "teacher": "645c94f96f1e3a7b9c123a15",
+        "assignedDate": "2024-11-14",
+        "dueDate": "2024-11-21"
+    }
+]

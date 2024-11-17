@@ -1,0 +1,89 @@
+[
+    {
+        "className": "10 - A",
+        "capacity": 30,
+        "supervisor": "645cb0f96f1e3a7b9c123b01",
+        "teachers": [
+            "645cb1f96f1e3a7b9c123b02",
+            "645cb2f96f1e3a7b9c123b03"
+        ],
+        "students": [
+            "645cb3f96f1e3a7b9c123b04",
+            "645cb4f96f1e3a7b9c123b05",
+            "645cb5f96f1e3a7b9c123b06"
+        ],
+        "subjects": [
+            "645cb6f96f1e3a7b9c123b07",
+            "645cb7f96f1e3a7b9c123b08"
+        ]
+    },
+    {
+        "className": "10 - B",
+        "capacity": 28,
+        "supervisor": "645cb8f96f1e3a7b9c123b09",
+        "teachers": [
+            "645cb9f96f1e3a7b9c123b10",
+            "645cbaF96f1e3a7b9c123b11"
+        ],
+        "students": [
+            "645cbbf96f1e3a7b9c123b12",
+            "645cbcf96f1e3a7b9c123b13"
+        ],
+        "subjects": [
+            "645cbdF96f1e3a7b9c123b14",
+            "645cbeF96f1e3a7b9c123b15"
+        ]
+    },
+    {
+        "className": "11 - A",
+        "capacity": 32,
+        "supervisor": "645cc0f96f1e3a7b9c123b16",
+        "teachers": [
+            "645cc1f96f1e3a7b9c123b17",
+            "645cc2f96f1e3a7b9c123b18"
+        ],
+        "students": [
+            "645cc3f96f1e3a7b9c123b19",
+            "645cc4f96f1e3a7b9c123b20",
+            "645cc5f96f1e3a7b9c123b21"
+        ],
+        "subjects": [
+            "645cc6f96f1e3a7b9c123b22",
+            "645cc7f96f1e3a7b9c123b23"
+        ]
+    },
+    {
+        "className": "11 - B",
+        "capacity": 35,
+        "supervisor": "645cc8f96f1e3a7b9c123b24",
+        "teachers": [
+            "645cc9f96f1e3a7b9c123b25",
+            "645ccaF96f1e3a7b9c123b26"
+        ],
+        "students": [
+            "645ccbf96f1e3a7b9c123b27",
+            "645ccdf96f1e3a7b9c123b28"
+        ],
+        "subjects": [
+            "645cceF96f1e3a7b9c123b29",
+            "645ccfF96f1e3a7b9c123b30"
+        ]
+    },
+    {
+        "className": "12 - A",
+        "capacity": 25,
+        "supervisor": "645cd0f96f1e3a7b9c123b31",
+        "teachers": [
+            "645cd1f96f1e3a7b9c123b32",
+            "645cd2f96f1e3a7b9c123b33"
+        ],
+        "students": [
+            "645cd3f96f1e3a7b9c123b34",
+            "645cd4f96f1e3a7b9c123b35"
+        ],
+        "subjects": [
+            "645cd5f96f1e3a7b9c123b36",
+            "645cd6f96f1e3a7b9c123b37"
+        ]
+    }
+]

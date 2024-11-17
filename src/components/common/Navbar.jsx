@@ -2,11 +2,15 @@ import { CiDark, CiLight } from "react-icons/ci";
 import { useContext, useState } from "react";
 import { ThemeContext } from "../../utils/ThemeContext";
 import ProfilePopup from "./ProfilePopup";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
 
     const { darkMode, toggleDarkMode } = useContext(ThemeContext);
     const [openProfile, setOpenProfile] = useState(false);
+
+    const { user } = useSelector((state) => state?.profile);
+    const { announcements } = useSelector(state => state?.announcement);
 
     return (
         <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4">
@@ -41,11 +45,11 @@ const Navbar = () => {
                 </div>
                 <div className="relative rounded-full text-gray-400 cursor-pointer w-7 h-7 flex items-center justify-center">
                     <img src="/announcement.png" alt="" className="w-[20px] h-[20px]" />
-                    <span className="absolute -top-3 -right-3 w-5 h-5 rounded-full text-xs flex justify-center items-center bg-lamaGreen text-gray-800">0</span>
+                    <span className="absolute -top-3 -right-3 w-5 h-5 rounded-full text-xs flex justify-center items-center bg-lamaGreen text-gray-800">{announcements?.length}</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xs leading-3 font-medium dark:text-gray-200">Rahul Singh</span>
-                    <span className="text-[10px] text-gray-500 text-right">Admin</span>
+                    <span className="text-xs leading-3 font-medium dark:text-gray-200">{user?.userId.firstName} {user?.userId.lastName}</span>
+                    <span className="text-[10px] text-gray-500 text-right">{user?.userId.role}</span>
                 </div>
                 <img
                     src="/avatar.png"
@@ -53,7 +57,7 @@ const Navbar = () => {
                     onClick={() => setOpenProfile((prev) => !prev)}
                     className="w-[36px] h-[36px] rounded-full cursor-pointer"
                 />
-                {openProfile && <ProfilePopup setOpenProfile={setOpenProfile} />}
+                {openProfile && <ProfilePopup setOpenProfile={setOpenProfile} role={user?.userId.role} />}
             </div>
         </div>
     );

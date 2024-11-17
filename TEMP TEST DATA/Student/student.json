@@ -1,0 +1,262 @@
+[
+    {
+        "firstName": "Ava",
+        "lastName": "Taylor",
+        "email": "ava.taylor@example.com",
+        "password": "password123",
+        "phone": "9845089003",
+        "address": "456 Maple Street, Boston, MA, USA",
+        "role": "Student",
+        "bloodType": "O+",
+        "dateOfBirth": "2010-04-15",
+        "sex": "Female",
+        "parent": "645c21f96f1e3a7b9c123abc",
+        "attendance": [
+            {
+                "date": "2024-11-10",
+                "status": "Present",
+                "_id": "645c22f96f1e3a7b9c123abd"
+            },
+            {
+                "date": "2024-11-11",
+                "status": "Absent",
+                "_id": "645c22f96f1e3a7b9c123abe"
+            }
+        ],
+        "subjects": [
+            {
+                "name": "Mathematics",
+                "_id": "645c23f96f1e3a7b9c123abf"
+            },
+            {
+                "name": "Science",
+                "_id": "645c23f96f1e3a7b9c123ac0"
+            }
+        ],
+        "exams": [
+            {
+                "name": "Midterm Exam",
+                "score": 85,
+                "_id": "645c24f96f1e3a7b9c123ac1"
+            }
+        ],
+        "assignments": [
+            {
+                "title": "Algebra Homework",
+                "status": "Completed",
+                "_id": "645c25f96f1e3a7b9c123ac2"
+            }
+        ],
+        "studentId": "S101",
+        "classId": "645c20f96f1e3a7b9c123abc",
+        "fatherName": "David Taylor",
+        "motherName": "Laura Taylor",
+        "rollNumber": 12
+    },
+    {
+        "firstName": "Ethan",
+        "lastName": "White",
+        "email": "ethan.white@example.com",
+        "password": "password123",
+        "phone": "9845089003",
+        "address": "789 Oak Avenue, Manchester, UK",
+        "role": "Student",
+        "bloodType": "A-",
+        "dateOfBirth": "2009-09-10",
+        "sex": "Male",
+        "parent": "645c26f96f1e3a7b9c123ac3",
+        "attendance": [
+            {
+                "date": "2024-11-10",
+                "status": "Present",
+                "_id": "645c27f96f1e3a7b9c123ac4"
+            },
+            {
+                "date": "2024-11-11",
+                "status": "Present",
+                "_id": "645c27f96f1e3a7b9c123ac5"
+            }
+        ],
+        "subjects": [
+            {
+                "name": "English",
+                "_id": "645c28f96f1e3a7b9c123ac6"
+            },
+            {
+                "name": "History",
+                "_id": "645c28f96f1e3a7b9c123ac7"
+            }
+        ],
+        "exams": [
+            {
+                "name": "Final Exam",
+                "score": 90,
+                "_id": "645c29f96f1e3a7b9c123ac8"
+            }
+        ],
+        "assignments": [
+            {
+                "title": "Essay Writing",
+                "status": "In Progress",
+                "_id": "645c30f96f1e3a7b9c123ac9"
+            }
+        ],
+        "studentId": "S102",
+        "classId": "645c31f96f1e3a7b9c123aca",
+        "fatherName": "Robert White",
+        "motherName": "Emma White",
+        "rollNumber": 5
+    },
+    {
+        "firstName": "Sophia",
+        "lastName": "Clark",
+        "email": "sophia.clark@example.com",
+        "password": "password123",
+        "phone": "9845089003",
+        "address": "12 Green Street, New Delhi, India",
+        "role": "Student",
+        "bloodType": "B+",
+        "dateOfBirth": "2011-07-23",
+        "sex": "Female",
+        "parent": "645c32f96f1e3a7b9c123acb",
+        "attendance": [
+            {
+                "date": "2024-11-10",
+                "status": "Absent",
+                "_id": "645c33f96f1e3a7b9c123acc"
+            },
+            {
+                "date": "2024-11-11",
+                "status": "Present",
+                "_id": "645c33f96f1e3a7b9c123acd"
+            }
+        ],
+        "subjects": [
+            {
+                "name": "Biology",
+                "_id": "645c34f96f1e3a7b9c123ace"
+            },
+            {
+                "name": "Chemistry",
+                "_id": "645c34f96f1e3a7b9c123acf"
+            }
+        ],
+        "exams": [
+            {
+                "name": "Unit Test",
+                "score": 78,
+                "_id": "645c35f96f1e3a7b9c123ad0"
+            }
+        ],
+        "assignments": [
+            {
+                "title": "Lab Report",
+                "status": "Completed",
+                "_id": "645c36f96f1e3a7b9c123ad1"
+            }
+        ],
+        "studentId": "S103",
+        "classId": "645c37f96f1e3a7b9c123ad2",
+        "fatherName": "James Clark",
+        "motherName": "Olivia Clark",
+        "rollNumber": 18
+    },
+    {
+        "firstName": "Mia",
+        "lastName": "Lewis",
+        "email": "mia.lewis@example.com",
+        "password": "password123",
+        "phone": "9845089003",
+        "address": "34 Champs Elysees, Paris, France",
+        "role": "Student",
+        "bloodType": "AB-",
+        "dateOfBirth": "2012-01-12",
+        "sex": "Female",
+        "parent": "645c38f96f1e3a7b9c123ad3",
+        "attendance": [
+            {
+                "date": "2024-11-10",
+                "status": "Present",
+                "_id": "645c39f96f1e3a7b9c123ad4"
+            }
+        ],
+        "subjects": [
+            {
+                "name": "Geography",
+                "_id": "645c40f96f1e3a7b9c123ad5"
+            },
+            {
+                "name": "Art",
+                "_id": "645c40f96f1e3a7b9c123ad6"
+            }
+        ],
+        "exams": [
+            {
+                "name": "Quarterly Exam",
+                "score": 88,
+                "_id": "645c41f96f1e3a7b9c123ad7"
+            }
+        ],
+        "assignments": [
+            {
+                "title": "Map Drawing",
+                "status": "Completed",
+                "_id": "645c42f96f1e3a7b9c123ad8"
+            }
+        ],
+        "studentId": "S104",
+        "classId": "645c43f96f1e3a7b9c123ad9",
+        "fatherName": "Benjamin Lewis",
+        "motherName": "Sophia Lewis",
+        "rollNumber": 25
+    },
+    {
+        "firstName": "Lucas",
+        "lastName": "Martinez",
+        "email": "lucas.martinez@example.com",
+        "password": "password123",
+        "phone": "9845089003",
+        "address": "98 Berliner Strasse, Berlin, Germany",
+        "role": "Student",
+        "bloodType": "O-",
+        "dateOfBirth": "2008-05-30",
+        "sex": "Male",
+        "parent": "645c44f96f1e3a7b9c123ada",
+        "attendance": [
+            {
+                "date": "2024-11-10",
+                "status": "Present",
+                "_id": "645c45f96f1e3a7b9c123adb"
+            }
+        ],
+        "subjects": [
+            {
+                "name": "Physics",
+                "_id": "645c46f96f1e3a7b9c123adc"
+            },
+            {
+                "name": "Computer Science",
+                "_id": "645c46f96f1e3a7b9c123add"
+            }
+        ],
+        "exams": [
+            {
+                "name": "Semester Exam",
+                "score": 92,
+                "_id": "645c47f96f1e3a7b9c123ade"
+            }
+        ],
+        "assignments": [
+            {
+                "title": "Programming Assignment",
+                "status": "Pending",
+                "_id": "645c48f96f1e3a7b9c123adf"
+            }
+        ],
+        "studentId": "S105",
+        "classId": "645c49f96f1e3a7b9c123ae0",
+        "fatherName": "Carlos Martinez",
+        "motherName": "Elena Martinez",
+        "rollNumber": 9
+    }
+]

@@ -134,53 +134,6 @@ exports.getUserDetails = async (req, res) => {
     }
 }
 
-exports.getAllTeachers = async (req, res) => {
-    try {
-        const allTeachers = await Teacher.find()
-            .populate('userId')
-        // .populate('classes')
-        // .populate('subjects');
-
-        return res.status(200).json({
-            success: true,
-            data: allTeachers,
-            message: 'All teacher fetched successfully!'
-        })
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            success: false,
-            errorMessage: error.message,
-            message: 'Internal Server Error!'
-        })
-    }
-}
-
-exports.getAllStudents = async (req, res) => {
-    try {
-        const allStudents = await Student.find()
-            .populate('userId')
-        // .populate('classId')
-        // .populate('attendance')
-        // .populate('subjects')
-        // .populate('exams')
-        // .populate('assignments');
-
-        return res.status(200).json({
-            success: true,
-            data: allStudents,
-            message: 'All student fetched successfully!'
-        })
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            success: false,
-            errorMessage: error.message,
-            message: 'Internal Server Error!'
-        })
-    }
-}
-
 exports.getAllParents = async (req, res) => {
     try {
         const allParents = await Parent.find()

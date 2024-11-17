@@ -3,7 +3,7 @@ import { MdSettings, MdOutlineLogout } from "react-icons/md";
 import LogoutModal from "../LogoutModal";
 import { Link } from "react-router-dom";
 
-const ProfilePopup = ({ setOpenProfile }) => {
+const ProfilePopup = ({ setOpenProfile, role }) => {
 
     const [logoutModal, setLogoutModal] = useState(false);
 
@@ -14,7 +14,7 @@ const ProfilePopup = ({ setOpenProfile }) => {
                     <div>
                         <img src="/avatar.png" alt="" className="w-[36px] h-[36px] rounded-full" />
                     </div>
-                    <span>Admin</span>
+                    <span>{role}</span>
                 </Link>
                 <Link to='/settings' onClick={() => setOpenProfile(false)} className="flex flex-row gap-4 items-center dark:text-gray-200 text-sm border-b-[1px] border-gray-300 h-[60px] p-4">
                     <MdSettings fontSize={18} />

@@ -225,7 +225,7 @@ exports.login = async (req, res) => {
             // .populate('assignments')
             || await Parent.findOne({ parentId: userId })
                 .populate('userId')
-                // .populate('students');
+        // .populate('students');
 
         // If user not found with provided userId
         if (user === null) {

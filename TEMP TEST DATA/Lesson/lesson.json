@@ -1,0 +1,27 @@
+[
+    {
+        "title": "Introduction to Algebra",
+        "description": "This lesson will cover the basics of algebra, including variables, constants, and equations.",
+        "subject": "645f10f96f1e3a7b9c123e01"
+    },
+    {
+        "title": "Human Anatomy - Overview",
+        "description": "An introductory lesson on the human body, covering major systems like the circulatory, digestive, and respiratory systems.",
+        "subject": "645f11f96f1e3a7b9c123e02"
+    },
+    {
+        "title": "Shakespeare's Hamlet - Act 1",
+        "description": "We will study Act 1 of Shakespeare's Hamlet, analyzing character development and key themes.",
+        "subject": "645f12f96f1e3a7b9c123e03"
+    },
+    {
+        "title": "The Industrial Revolution",
+        "description": "This lesson covers the significant changes in industry, technology, and society during the Industrial Revolution.",
+        "subject": "645f13f96f1e3a7b9c123e04"
+    },
+    {
+        "title": "Basic Geometry - Shapes and Angles",
+        "description": "An introduction to geometry, including different types of shapes and the properties of angles.",
+        "subject": "645f14f96f1e3a7b9c123e05"
+    }
+]

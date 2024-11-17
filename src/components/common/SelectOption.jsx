@@ -5,10 +5,15 @@ import { ThemeContext } from '../../utils/ThemeContext';
 import customStyles from '../../utils/CustomStyles';
 
 const SelectOption = ({ name, control, options, placeholder, label }) => {
-
-    const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+    const { darkMode } = useContext(ThemeContext);
 
     const styles = customStyles(darkMode);
+
+    // Map options to match React-Select's expected format
+    const mappedOptions = options.map(option => ({
+        value: option.id,
+        label: option.name,
+    }));
 
     return (
         <div className="flex flex-col gap-2">
@@ -20,9 +25,9 @@ const SelectOption = ({ name, control, options, placeholder, label }) => {
                     <>
                         <Select
                             {...field}
-                            options={options}
+                            options={mappedOptions}
                             placeholder={placeholder}
-                            value={options.find(option => option.value === field.value) || null}
+                            value={mappedOptions.find(option => option.value === field.value) || null}
                             onChange={(selectedOption) => field.onChange(selectedOption?.value)}
                             onBlur={field.onBlur}
                             isSearchable

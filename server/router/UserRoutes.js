@@ -2,11 +2,11 @@ const express = require('express');
 const {
     updateProfilePicture,
     getUserDetails,
-    getAllTeachers,
-    getAllStudents,
     getAllParents
 } = require('../controllers/user/User');
 const { isAuth } = require('../middlewares/Auth');
+const { getAllTeachers } = require('../controllers/teacher/Teacher');
+const { getAllStudents } = require('../controllers/student/Student');
 const router = express.Router();
 
 router.put('/update-profile-picture', isAuth, updateProfilePicture);

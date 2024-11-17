@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
 import menuData from '../../data/MenuData';
-import { role } from '../../data/data'
 import { useState } from 'react';
 import LogoutModal from '../LogoutModal';
+import { useSelector } from 'react-redux';
 
 const Menu = () => {
 
     const [logoutModal, setLogoutModal] = useState(false);
+    const { user } = useSelector((state) => state?.profile);
+
+    const role = user?.userId.role;
 
     return (
         <>

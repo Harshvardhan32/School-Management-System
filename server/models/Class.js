@@ -17,7 +17,6 @@ const classSchema = new Schema(
         supervisor: {
             type: Schema.Types.ObjectId,
             ref: 'Teacher',
-            unique: true
         },
         teachers: [
             {

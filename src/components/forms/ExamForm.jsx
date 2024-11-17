@@ -1,11 +1,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import toast from "react-hot-toast";
-import { useState } from "react";
 import MultiSelectComponent from "../MultiSelectComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllSubjects } from "../../services/operations/subjectAPI";
+import * as z from 'zod';
+import { useEffect, useMemo } from "react";
 
-const ExamForm = ({ type, data }) => {
+const ExamForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
         examName: z.string().min(1, { message: 'Exam title is required!' }),
@@ -24,6 +26,13 @@ const ExamForm = ({ type, data }) => {
         }
     });
 
+    const dispatch = useDispatch();
+    const { token } = useSelector((state) => state?.auth);
+
+    useEffect(() => {
+        dispatch(getAllSubjects(token));
+    }, []);
+
     const onSubmit = handleSubmit(data => {
         const start = new Date(data?.startDate);
         const end = new Date(data?.endDate);
@@ -32,20 +41,20 @@ const ExamForm = ({ type, data }) => {
             return;
         }
         console.log(data);
-        toast.success(`Exam ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
     });
 
-    const [subjectOptions] = useState([
-        { name: 'Physics' },
-        { name: 'Chemistry' },
-        { name: 'Mathematics' },
-        { name: 'Biology' },
-        { name: 'History' },
-        { name: 'Hindi' },
-        { name: 'English' },
-    ]);
+    const { subjects } = useSelector(state => state?.subject);
 
-    const selectedSubject = getValues("subjects");
+    const subjectOptions = useMemo(() => {
+        return subjects?.map((item) => ({
+            id: item?._id,
+            name: item?.subjectName,
+        })) || [];
+    }, [subjects]);
+
+    const selectedSubjects = getValues("subjects")?.map((id) =>
+        subjectOptions.find((option) => option.id === id)
+    );
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -85,7 +94,7 @@ const ExamForm = ({ type, data }) => {
                     <label className="text-sm text-gray-500">Subjects</label>
                     <MultiSelectComponent
                         options={subjectOptions}
-                        selectedValue={selectedSubject}
+                        selectedValue={selectedSubjects}
                         setSelectedValue={(value) => setValue("subjects", value)}
                     />
                     {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}

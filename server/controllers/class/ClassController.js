@@ -56,7 +56,7 @@ exports.updateClass = async (req, res) => {
             return res.status(400).json({
                 success: true,
                 message: 'Please fill all required details!'
-            })
+            });
         }
 
         const classData = await Class.findById(classId);
@@ -65,7 +65,7 @@ exports.updateClass = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Class not found with the given ID!'
-            })
+            });
         }
 
         const updatedResponse = await Class.findByIdAndUpdate(classId, {
@@ -76,10 +76,10 @@ exports.updateClass = async (req, res) => {
             students,
             subjects
         }, { new: true })
-        // .populate('supervisor')
-        // .populate('teachers')
-        // .populate('students')
-        // .populate('subjects');
+            .populate('supervisor')
+            .populate('teachers')
+            .populate('students')
+            // .populate('subjects');
 
         return res.status(200).json({
             success: true,

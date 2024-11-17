@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import toast from "react-hot-toast";
+import { createAnnouncement, updateAnnouncement } from "../../services/operations/announcementAPI";
+import { useDispatch, useSelector } from "react-redux";
 import * as z from 'zod';
 
-const AnnouncementForm = ({ type, data }) => {
+const AnnouncementForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
         title: z.string()
@@ -19,14 +20,20 @@ const AnnouncementForm = ({ type, data }) => {
         setValue,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema), defaultValues: {
-            classes: [],
-        }
+        resolver: zodResolver(schema)
     });
+
+    const dispatch = useDispatch();
+    const { token } = useSelector((state) => state?.auth);
 
     const onSubmit = handleSubmit(data => {
         console.log(data);
-        toast.success(`Announcement ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+        if (type === 'create') {
+            dispatch(createAnnouncement(data, token));
+        } else {
+            dispatch(updateAnnouncement());
+        }
+        setOpen(false);
     })
 
     return (

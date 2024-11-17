@@ -1,14 +1,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import toast from "react-hot-toast";
 import SelectOption from "../common/SelectOption";
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllSubjects } from "../../services/operations/subjectAPI";
+import * as z from 'zod';
+import { createLesson } from "../../services/operations/lessonAPI";
 
 const LessonForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
         title: z.string().min(1, { message: 'Lesson title is required!' }),
-        description: z.string().optional().default(''),
+        description: z.string().min(5, { message: 'Description must be at least 5 character long!' }),
         subject: z.string().min(1, { message: 'Subject is required!' })
     });
 
@@ -19,16 +22,30 @@ const LessonForm = ({ type, data, setOpen }) => {
         formState: { errors },
     } = useForm({ resolver: zodResolver(schema), });
 
-    const classes = [
-        { value: 'hf67e6rcg7cgfr7gc7hfhg', label: 'Physics' },
-        { value: 'hf67e6rcg6h36tdgc7hfhg', label: 'Chemistry' },
-    ];
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
-        toast.success(`Lesson ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
-        // setOpen(false);
+    useEffect(() => {
+        dispatch(getAllSubjects(token));
+    }, []);
+
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
+        if (type === 'create') {
+            dispatch(createLesson(formData, token, setOpen));
+        } else {
+            // console.log("Form Data: ", formData);
+        }
     })
+
+    const { subjects } = useSelector(state => state?.subject);
+
+    const subjectOptions = useMemo(() => {
+        return subjects?.map((item) => ({
+            id: item?._id,
+            name: item?.subjectName,
+        })) || [];
+    }, [subjects]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -48,11 +65,10 @@ const LessonForm = ({ type, data, setOpen }) => {
                     <SelectOption
                         name='subject'
                         control={control}
-                        options={classes}
+                        options={subjectOptions}
                         placeholder='Please Select'
                         label='Subject'
                     />
-                    {/* {errors?.subject && <p className="text-xs text-red-700 py-2">{errors?.subject.message}</p>} */}
                 </div>
             </div>
             <div className="flex flex-col gap-2 flex-1">
