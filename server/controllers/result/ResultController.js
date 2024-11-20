@@ -62,19 +62,13 @@ exports.createResult = async (req, res) => {
         });
 
         // Create the result record
-        const resultRecord = await Result.create({
+        const resultResponse = await Result.create({
             student: studentId,
             classId: classObjId,
             subjectResults: processedSubjectResults,
             overallPercentage,
             remarks
         });
-
-        const resultResponse = await Result.findById(resultRecord._id)
-        // .populate('student')
-        // .populate('classId')
-        // .populate('subjectResults.subject')
-        // .populate('subjectResults.examResults.exam');
 
         return res.status(200).json({
             success: true,

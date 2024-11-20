@@ -284,7 +284,9 @@ const StudentForm = ({ type, data, setOpen }) => {
                     </div>
                 </div>
             }
-            <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">
+                {type === 'create' ? 'Create' : 'Update'}
+            </button>
         </form>
     );
 }

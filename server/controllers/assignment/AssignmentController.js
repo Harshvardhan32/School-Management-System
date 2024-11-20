@@ -18,18 +18,13 @@ exports.createAssignment = async (req, res) => {
             })
         }
 
-        const assignmentRecord = await Assignment.create({
+        const assignmentResponse = await Assignment.create({
             subject,
             classId,
             teacher,
             assignedDate,
             dueDate
         });
-
-        const assignmentResponse = await Assignment.findById(assignmentRecord?._id)
-        // .populate('subject')
-        // .populate('classId')
-        // .populate('teacher');
 
         return res.status(200).json({
             success: true,
@@ -136,9 +131,9 @@ exports.getAllAssignment = async (req, res) => {
     try {
 
         const allAssignments = await Assignment.find()
-        // .populate('subject')
-        // .populate('classId')
-        // .populate('teacher');
+            .populate('subject')
+            .populate('classId')
+            .populate('teacher');
 
         return res.status(200).json({
             success: true,

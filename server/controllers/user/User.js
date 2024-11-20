@@ -138,7 +138,7 @@ exports.getAllParents = async (req, res) => {
     try {
         const allParents = await Parent.find()
             .populate('userId')
-        // .populate('students');
+            .populate('students');
 
         return res.status(200).json({
             success: true,

@@ -1,37 +1,59 @@
-const customStyles = (darkMode) => ({
-    
-    control: (base) => ({
-        ...base,
-        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-        color: darkMode ? '#cbd5e1' : '#1e293b',
-        borderColor: darkMode ? '#475569' : '#d1d5db',
+const customStyles = (isDarkMode) => ({
+    control: (provided) => ({
+        ...provided,
+        backgroundColor: isDarkMode ? '#1E293B' : 'white',
+        borderColor: isDarkMode ? '#6b7280' : '#d1d5db',
+        borderWidth: '1.5px',
         boxShadow: 'none',
-        '&:hover': {
-            borderColor: darkMode ? '#64748b' : '#9ca3af'
-        }
+        color: isDarkMode ? '#E5E7EB' : '#1f2937',
+        ':hover': {
+            borderColor: isDarkMode ? '#6b7280' : '#d1d5db'
+        },
     }),
-    menu: (base) => ({
-        ...base,
-        backgroundColor: darkMode ? '#334155' : '#ffffff'
+    menu: (provided) => ({
+        ...provided,
+        backgroundColor: isDarkMode ? '#2d3748' : 'white',
+        color: isDarkMode ? '#E5E7EB' : '#1f2937',
     }),
-    option: (base, state) => ({
-        ...base,
+    option: (provided, state) => ({
+        ...provided,
         backgroundColor: state.isSelected
-            ? (darkMode ? '#475569' : '#e2e8f0')
-            : state.isFocused
-                ? (darkMode ? '#64748b' : '#f1f5f9')
-                : darkMode
-                    ? '#334155'
-                    : '#ffffff',
-        color: state.isSelected ? '#ffffff' : darkMode ? '#e2e8f0' : '#1e293b',
-        '&:hover': {
-            backgroundColor: darkMode ? '#475569' : '#f1f5f9'
-        }
+            ? isDarkMode
+                ? '#6B7280'
+                : 'rgba(81, 223, 195, 1)'
+            : 'transparent',
+        color: state.isSelected
+            ? 'white'
+            : isDarkMode
+                ? '#e2e8f0'
+                : '#1f2937',
+        ':hover': {
+            backgroundColor: isDarkMode ? '#4B5563' : 'rgba(81, 223, 195, 0.5)',
+        },
     }),
-    singleValue: (base) => ({
-        ...base,
-        color: darkMode ? '#e2e8f0' : '#1e293b'
-    })
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        color: isDarkMode ? '#E5E7EB' : '#1f2937',
+        ':hover': {
+            color: isDarkMode ? '#E5E7EB' : '#1f2937',
+        },
+    }),
+    indicatorSeparator: (provided) => ({
+        ...provided,
+        backgroundColor: '#E5E7EB',
+    }),
+    input: (provided) => ({
+        ...provided,
+        color: isDarkMode ? '#E5E7EB' : '#1f2937',
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: isDarkMode ? '#A0AEC0' : '#6B7280',
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: isDarkMode ? '#E5E7EB' : 'black',
+    }),
 });
 
 export default customStyles;

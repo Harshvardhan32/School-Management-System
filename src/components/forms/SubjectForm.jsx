@@ -5,8 +5,8 @@ import MultiSelectComponent from "../MultiSelectComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
-import * as z from 'zod';
 import { createSubject } from "../../services/operations/subjectAPI";
+import * as z from 'zod';
 
 const SubjectForm = ({ type, data, setOpen }) => {
 
@@ -40,7 +40,7 @@ const SubjectForm = ({ type, data, setOpen }) => {
         if (type === 'update') {
             dispatch(getAllTeachers(token));
         }
-    }, [dispatch, token, type]);
+    }, []);
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
@@ -53,7 +53,7 @@ const SubjectForm = ({ type, data, setOpen }) => {
 
     const { lessons } = useSelector(state => state?.lesson);
     const { classes } = useSelector(state => state?.class);
-    const { teachers } = useSelector(state => state?.teacher);
+    const { teachers } = useSelector(state => state?.user);
 
     // Options for teachers, students, and subjects
     const classOptions = useMemo(() => {

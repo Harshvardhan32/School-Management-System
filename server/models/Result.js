@@ -46,8 +46,9 @@ const resultSchema = new Schema(
                         },
                     }
                 ],
-                finalGrade: {
+                subjectGrade: {
                     type: String,
+                    enum: ['A', 'B', 'C', 'D', 'E', 'F'],
                     required: true
                 }
             }

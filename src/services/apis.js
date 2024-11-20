@@ -27,6 +27,12 @@ export const teacherEndPoints = {
     // GET_TEACHER_DETAILS: BASE_URL + '/api/v1/class/classes',
 }
 
+// PARENT ENDPOINTS
+export const parentEndPoints = {
+    ALL_PARENTS_API: BASE_URL + '/api/v1/user/parents',
+    // GET_TEACHER_DETAILS: BASE_URL + '/api/v1/class/classes',
+}
+
 // SUBJECT ENDPOINTS
 export const subjectEndPoints = {
     CREATE_SUBJECT_API: BASE_URL + '/api/v1/subject/create',
@@ -50,12 +56,52 @@ export const classEndPoints = {
     ALL_CLASSES_API: BASE_URL + '/api/v1/class/classes',
 }
 
+// ASSIGNMENT ENDPOINTS
+export const assignmentEndPoints = {
+    CREATE_ASSIGNMENT_API: BASE_URL + '/api/v1/assignment/create',
+    UPDATE_ASSIGNMENT_API: BASE_URL + '/api/v1/assignment/update',
+    DELETE_ASSIGNMENT_API: BASE_URL + '/api/v1/assignment/delete',
+    ALL_ASSIGNMENTS_API: BASE_URL + '/api/v1/assignment/assignments',
+}
+
+// RESULT ENDPOINTS
+export const resultEndPoints = {
+    CREATE_RESULT_API: BASE_URL + '/api/v1/result/create',
+    UPDATE_RESULT_API: BASE_URL + '/api/v1/result/update',
+    DELETE_RESULT_API: BASE_URL + '/api/v1/result/delete',
+    ALL_RESULTS_API: BASE_URL + '/api/v1/result/results',
+}
+
+// EXAM ENDPOINTS
+export const examEndPoints = {
+    CREATE_EXAM_API: BASE_URL + '/api/v1/exam/create',
+    UPDATE_EXAM_API: BASE_URL + '/api/v1/exam/update',
+    DELETE_EXAM_API: BASE_URL + '/api/v1/exam/delete',
+    ALL_EXAMS_API: BASE_URL + '/api/v1/exam/exams',
+}
+
+// ATTENDANCE ENDPOINTS
+export const attendanceEndPoints = {
+    CREATE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/create',
+    UPDATE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/update',
+    DELETE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/delete',
+    ALL_ATTENDANCES_API: BASE_URL + '/api/v1/attendance/attendances',
+}
+
 // ANNOUNCEMENT ENDPOINTS
 export const announcementEndPoints = {
     CREATE_ANNOUNCEMENT_API: BASE_URL + '/api/v1/announcement/create',
     UPDATE_ANNOUNCEMENT_API: BASE_URL + '/api/v1/announcement/update',
     DELETE_ANNOUNCEMENT_API: BASE_URL + '/api/v1/announcement/delete',
     ALL_ANNOUNCEMENTS_API: BASE_URL + '/api/v1/announcement/announcements',
+}
+
+// ANNOUNCEMENT ENDPOINTS
+export const eventEndPoints = {
+    CREATE_EVENT_API: BASE_URL + '/api/v1/event/create',
+    UPDATE_EVENT_API: BASE_URL + '/api/v1/event/update',
+    DELETE_EVENT_API: BASE_URL + '/api/v1/event/delete',
+    ALL_EVENTS_API: BASE_URL + '/api/v1/event/events',
 }
 
 // SETTINGS PAGE API

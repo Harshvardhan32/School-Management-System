@@ -1,4 +1,5 @@
 const Attendance = require('../../models/Attendance');
+const Student = require('../../models/Student');
 
 // Function to create attendance
 exports.createAttendance = async (req, res) => {
@@ -18,17 +19,16 @@ exports.createAttendance = async (req, res) => {
             })
         }
 
-        const attendanceRecord = await Attendance.create({
+        const attendanceResponse = await Attendance.create({
             student,
             classId,
             date,
             status
         });
 
-        const attendanceResponse = await Attendance.findById(attendanceRecord?._id)
-        // .populate('student')
-        // .populate('classId')
-        // ;
+        await Student.findById(student,
+            { $push: { attendance: attendanceResponse?._id } }
+            , { new: true });
 
         return res.status(200).json({
             success: true,
@@ -133,9 +133,8 @@ exports.getAllAttendance = async (req, res) => {
     try {
 
         const allAttendance = await Attendance.find()
-            // .populate('student')
-            // .populate('classId')
-            ;
+            .populate('student')
+            .populate('classId');
 
         return res.status(200).json({
             success: true,

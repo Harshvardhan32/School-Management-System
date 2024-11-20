@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
 import * as z from 'zod';
 import { useEffect, useMemo } from "react";
+import { createExam } from "../../services/operations/examAPI";
 
 const ExamForm = ({ type, data, setOpen }) => {
 
@@ -17,7 +18,7 @@ const ExamForm = ({ type, data, setOpen }) => {
         endDate: z.string()
             .min(1, { message: 'End date is required!' }),
         subjects: z.array(
-            z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' }),
+            z.string()).min(1, { message: 'At least one subject must be selected!' }),
     });
 
     const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({
@@ -33,14 +34,19 @@ const ExamForm = ({ type, data, setOpen }) => {
         dispatch(getAllSubjects(token));
     }, []);
 
-    const onSubmit = handleSubmit(data => {
-        const start = new Date(data?.startDate);
-        const end = new Date(data?.endDate);
+    const onSubmit = handleSubmit(formData => {
+        const start = new Date(formData?.startDate);
+        const end = new Date(formData?.endDate);
         if (end <= start) {
             toast.error('End date must be later than start date!');
             return;
         }
-        console.log(data);
+        console.log(formData);
+        if (type === 'create') {
+            dispatch(createExam(formData, token, setOpen))
+        } else {
+            // console.log(formData);
+        }
     });
 
     const { subjects } = useSelector(state => state?.subject);
@@ -95,7 +101,12 @@ const ExamForm = ({ type, data, setOpen }) => {
                     <MultiSelectComponent
                         options={subjectOptions}
                         selectedValue={selectedSubjects}
-                        setSelectedValue={(value) => setValue("subjects", value)}
+                        setSelectedValue={(value) =>
+                            setValue(
+                                "subjects",
+                                value.map((item) => item.id)
+                            )
+                        }
                     />
                     {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                 </div>

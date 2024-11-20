@@ -3,16 +3,16 @@ const Event = require('../../models/Event');
 exports.createEvent = async (req, res) => {
     try {
 
-        const { title, content, startTime, endTime, classes } = req.body;
+        const { title, content, startDate, endDate, classes } = req.body;
 
-        if (!title || !content || !startTime || !endTime) {
+        if (!title || !content || !startDate || !endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const eventResponse = await Event.create({ title, content, startTime, endTime });
+        const eventResponse = await Event.create({ title, content, startDate, endDate });
 
         return res.status(200).json({
             success: true,
@@ -31,16 +31,16 @@ exports.createEvent = async (req, res) => {
 
 exports.updateEvent = async (req, res) => {
     try {
-        const { eventId, title, content, classId, startTime, endTime } = req.body;
+        const { eventId, title, content, classId, startDate, endDate } = req.body;
 
-        if (!eventId || !title || !content || !startTime || !endTime) {
+        if (!eventId || !title || !content || !startDate || !endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const updatedResponse = await Event.findByIdAndUpdate(eventId, { title, content, classId, startTime, endTime }, { new: true });
+        const updatedResponse = await Event.findByIdAndUpdate(eventId, { title, content, classId, startDate, endDate }, { new: true });
 
         return res.status(200).json({
             success: true,

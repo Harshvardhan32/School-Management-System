@@ -2,18 +2,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from "react-hot-toast";
 import SelectOption from "../common/SelectOption";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllClasses } from "../../services/operations/classAPI";
+import { getAllSubjects } from "../../services/operations/subjectAPI";
+import { getAllTeachers } from "../../services/operations/teacherAPI";
+import { useEffect, useMemo } from "react";
+import { createAssignment } from "../../services/operations/assignmentAPI";
 import * as z from 'zod';
 
-const AssignmentForm = ({ type, data }) => {
+const AssignmentForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
         subject: z.string().min(1, { message: 'Subject is required!' }),
         classId: z.string().min(1, { message: 'Class is required!' }),
         teacher: z.string().min(1, { message: 'Teacher is required!' }),
-        assignedDate: z.string()
-            .min(1, { message: 'Assigned date is required!' }),
-        dueDate: z.string()
-            .min(1, { message: 'Due date is required!' }),
+        assignedDate: z.string().min(1, { message: 'Assigned date is required!' }),
+        dueDate: z.string().min(1, { message: 'Due date is required!' }),
     });
 
     const {
@@ -25,45 +29,55 @@ const AssignmentForm = ({ type, data }) => {
         resolver: zodResolver(schema)
     });
 
-    const subjects = [
-        { value: 'Physics', label: 'Physics' },
-        { value: 'Chemistry', label: 'Chemistry' },
-        { value: 'Mathmetics', label: 'Mathematics' },
-        { value: 'Biology', label: 'Biology' },
-        { value: 'History', label: 'History' },
-        { value: 'Hindi', label: 'Hindi' },
-        { value: 'English', label: 'English' }
-    ];
+    const dispatch = useDispatch();
+    const { token } = useSelector((state) => state?.auth);
 
-    const classes = [
-        { value: 'class-1', label: 'Class 1' },
-        { value: 'class-2', label: 'Class 2' },
-        { value: 'class-3', label: 'Class 3' },
-        { value: 'class-4', label: 'Class 4' },
-        { value: 'class-5', label: 'Class 5' },
-        { value: 'class-6', label: 'Class 6' },
-        { value: 'class-7', label: 'Class 7' },
-    ];
+    useEffect(() => {
+        dispatch(getAllSubjects(token));
+        dispatch(getAllClasses(token));
+        dispatch(getAllTeachers(token));
+    }, []);
 
-    const teachers = [
-        { value: 'teacher-1', label: 'Mr. Smith' },
-        { value: 'teacher-2', label: 'Ms. Johnson' },
-        { value: 'teacher-3', label: 'Mrs. Williams' },
-        { value: 'teacher-4', label: 'Mr. Brown' },
-        { value: 'teacher-5', label: 'Ms. Jones' },
-        { value: 'teacher-6', label: 'Mr. Garcia' },
-        { value: 'teacher-7', label: 'Mrs. Miller' },
-    ];
+    const { teachers } = useSelector(state => state?.user);
+    const { classes } = useSelector(state => state?.class);
+    const { subjects } = useSelector(state => state?.subject);
 
-    const onSubmit = handleSubmit(data => {
-        const start = new Date(data?.assignedDate);
-        const end = new Date(data?.dueDate);
+    // Options for Subjects, Classs, and Teachers
+    const subjectOptions = useMemo(() => {
+        return subjects?.map((item) => ({
+            id: item?._id,
+            name: item?.subjectName,
+        })) || [];
+    }, [subjects]);
+
+    const classOptions = useMemo(() => {
+        return classes?.map((item) => ({
+            id: item?._id,
+            name: item?.className,
+        })) || [];
+    }, [classes]);
+
+    const teacherOptions = useMemo(() => {
+        return teachers?.map((item) => ({
+            id: item?._id,
+            name: item?.userId.firstName + " " + item?.userId.lastName,
+        })) || [];
+    }, [teachers]);
+
+    const onSubmit = handleSubmit(formData => {
+        const start = new Date(formData?.assignedDate);
+        const end = new Date(formData?.dueDate);
         if (end < start) {
             toast.error('Due date must be later than assigned date!');
             return;
         }
-        console.log(data);
-        toast.success(`Assignment ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
+
+        if (type === 'create') {
+            dispatch(createAssignment(formData, token, setOpen));
+        } else {
+            // console.log("Form Data: ", formData);
+        }
+        console.log(formData);
     })
 
     return (
@@ -71,17 +85,10 @@ const AssignmentForm = ({ type, data }) => {
             <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Assignment</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                    {/* <SelectOption
-                        name='subject'
-                        control={control}
-                        options={subjects}
-                        placeholder='Please Select'
-                        label='Subject'
-                    /> */}
                     <SelectOption
                         name='subject'
                         control={control}
-                        options={subjects}
+                        options={subjectOptions}
                         placeholder='Please Select'
                         label='Subject'
                     />
@@ -90,7 +97,7 @@ const AssignmentForm = ({ type, data }) => {
                     <SelectOption
                         name='classId'
                         control={control}
-                        options={classes}
+                        options={classOptions}
                         placeholder='Please Select'
                         label='Class'
                     />
@@ -99,11 +106,10 @@ const AssignmentForm = ({ type, data }) => {
                     <SelectOption
                         name='teacher'
                         control={control}
-                        options={teachers}
+                        options={teacherOptions}
                         placeholder='Please Select'
                         label='Teacher'
                     />
-                    {/* {errors?.class && <p className="text-xs text-red-700 py-2">{errors?.class.message}</p>} */}
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">

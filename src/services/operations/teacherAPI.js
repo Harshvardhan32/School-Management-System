@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setTeachers } from "../../slices/teacherSlice";
+import { setLoading, setTeachers } from "../../slices/userSlice";
 import { teacherEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 

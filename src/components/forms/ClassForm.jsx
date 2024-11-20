@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import SelectOption from "../common/SelectOption";
 import MultiSelectComponent from "../MultiSelectComponent";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createClass } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,18 +50,8 @@ const ClassForm = ({ type, data, setOpen }) => {
         }
     }, []);
 
-    // Handle form submission
-    const onSubmit = handleSubmit((formData) => {
-        if (type === 'create') {
-            dispatch(createClass(formData, token));
-        } else {
-            console.log("Form Data: ", formData);
-        }
-        // setOpen(false);
-    });
-
-    const { teachers } = useSelector(state => state?.teacher);
-    const { students } = useSelector(state => state?.student);
+    const { teachers } = useSelector(state => state?.user);
+    const { students } = useSelector(state => state?.user);
     const { subjects } = useSelector(state => state?.subject);
 
     // Options for teachers, students, and subjects
@@ -96,6 +86,16 @@ const ClassForm = ({ type, data, setOpen }) => {
     const selectedSubjects = getValues("subjects")?.map((id) =>
         subjectOptions.find((option) => option.id === id)
     );
+
+    // Handle form submission
+    const onSubmit = handleSubmit((formData) => {
+        if (type === 'create') {
+            dispatch(createClass(formData, token));
+        } else {
+            console.log("Form Data: ", formData);
+        }
+        // setOpen(false);
+    });
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>

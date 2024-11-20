@@ -19,12 +19,12 @@ const eventSchema = new Schema(
                 ref: 'Class'
             }
         ],
-        startTime: {
+        startDate: {
             type: Date,
             required: true,
             index: true
         },
-        endTime: {
+        endDate: {
             type: Date,
             required: true,
             index: true

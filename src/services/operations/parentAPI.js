@@ -1,24 +1,24 @@
 import toast from "react-hot-toast";
 import { setLoading, setStudents } from "../../slices/userSlice";
-import { studentEndPoints } from "../apis";
+import { parentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
 const {
-    ALL_STUDENTS_API
-} = studentEndPoints;
+    ALL_PARENTS_API
+} = parentEndPoints;
 
-export const getAllStudents = (token) => {
+export const getAllParents = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const response = await apiConnector("GET", ALL_STUDENTS_API, null,
+            const response = await apiConnector("GET", ALL_PARENTS_API, null,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("ALL STUDENTS API RESPONSE............", response);
+            console.log("ALL PARENTS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -26,7 +26,7 @@ export const getAllStudents = (token) => {
 
             dispatch(setStudents(response?.data?.data));
         } catch (error) {
-            // console.log("ALL STUDENTS API ERROR............", error.message);
+            console.log("ALL PARENTS API ERROR............", error.message);
             toast.error(error?.message);
         } finally {
             dispatch(setLoading(true));

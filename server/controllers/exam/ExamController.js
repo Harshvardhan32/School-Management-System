@@ -27,7 +27,7 @@ exports.createExam = async (req, res) => {
         });
 
         const examResponse = await Exam.findById(examRecord?._id)
-            // .populate('subjects');
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -126,7 +126,7 @@ exports.getAllExam = async (req, res) => {
     try {
 
         const allExams = await Exam.find()
-        // .populate('subjects');
+            .populate('subjects');
 
         return res.status(200).json({
             success: true,
