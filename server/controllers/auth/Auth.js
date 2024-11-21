@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mailSender = require('../../utils/mailSender');
+const Class = require('../../models/Class');
 require('dotenv').config();
 
 exports.signUp = async (req, res) => {
@@ -213,19 +214,19 @@ exports.login = async (req, res) => {
             .populate('userId')
             || await Teacher.findOne({ teacherId: userId })
                 .populate('userId')
-            // .populate('classes')
-            // .populate('subjects')
+                .populate('classes')
+                .populate('subjects')
             || await Student.findOne({ studentId: userId })
                 .populate('userId')
-            // .populate('classId')
-            // .populate('parent')
-            // .populate('attendance')
-            // .populate('subjects')
-            // .populate('exams')
-            // .populate('assignments')
+                .populate('classId')
+                .populate('parent')
+                .populate('attendance')
+                .populate('subjects')
+                .populate('exams')
+                .populate('assignments')
             || await Parent.findOne({ parentId: userId })
                 .populate('userId')
-        // .populate('students');
+                .populate('students');
 
         // If user not found with provided userId
         if (user === null) {
@@ -456,19 +457,38 @@ exports.deleteAccount = async (req, res) => {
             });
         }
 
-        console.log("User: ", user);
-        const deleteUser = await User.findByIdAndDelete(user?.userId?._id);
-        console.log("Delete User: ", deleteUser);
+        console.log("User: ", user?.userId?.role);
 
+        const role = user?.userId?.role;
         let deletedResponse;
-        if (user?.userId?.role === 'Admin') {
-            deletedResponse = await Admin.findByIdAndDelete(user?._id);
-        } else if (user?.userId?.role === 'Teacher') {
+        if (role === 'Teacher') {
+            await User.findByIdAndDelete(user?.userId?._id);
             deletedResponse = await Teacher.findByIdAndDelete(user?._id);
-        } else if (user?.userId?.role === 'Student') {
+
+            // TODO:
+            // 1. Delete Assignment Created by the teacher
+            // 2. Delete supervisor in the class Schema
+            // 3. Delete teachers in the class Schema
+            // 4. Delete teachers in the student Schema
+        } else if (role === 'Student') {
+            await User.findByIdAndDelete(user?.userId?._id);
             deletedResponse = await Student.findByIdAndDelete(user?._id);
-        } else {
-            deletedResponse = await Parent.findByIdAndDelete(user?._id);
+
+            // TODO:
+            // 1. Delete student from Attendance Schema
+            // 2. Delete students from the Class Schema
+            // 3. Delete students from Parent Schema
+            // 4. Delete student from Result Schema
+
+        } else if (role === 'Parent') {
+            await User.findByIdAndDelete(user?.userId?._id);
+            deletedResponse = await Teacher.findByIdAndDelete(user?._id);
+            
+            // TODO:
+            // 1. Delete Parent from the Parent Schema
+            // 2. Delete parent from the Student Schema
+            // 1. Delete Parent from the Parent Schema
+            // 1. Delete Parent from the Parent Schema
         }
 
         return res.status(200).json({

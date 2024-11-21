@@ -7,11 +7,10 @@ import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { useEffect, useMemo } from "react";
-import { createAssignment } from "../../services/operations/assignmentAPI";
 import * as z from 'zod';
 
 const AssignmentForm = ({ type, data, setOpen }) => {
-
+    // Define schema with Zod
     const schema = z.object({
         subject: z.string().min(1, { message: 'Subject is required!' }),
         classId: z.string().min(1, { message: 'Class is required!' }),
@@ -26,45 +25,48 @@ const AssignmentForm = ({ type, data, setOpen }) => {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema)
+        resolver: zodResolver(schema),
     });
 
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
 
+    // Fetch data only once
     useEffect(() => {
-        dispatch(getAllSubjects(token));
-        dispatch(getAllClasses(token));
-        dispatch(getAllTeachers(token));
-    }, []);
+        dispatch(getAllSubjects(token, undefined, undefined, true));
+        dispatch(getAllClasses(token, undefined, undefined, true)); // Fetch all classes
+        dispatch(getAllTeachers(token, undefined, undefined, true));
+    }, [dispatch, token]);
 
-    const { teachers } = useSelector(state => state?.user);
-    const { classes } = useSelector(state => state?.class);
-    const { subjects } = useSelector(state => state?.subject);
+    // Access Redux states
+    const { allTeachers } = useSelector((state) => state?.teacher);
+    const { allClasses } = useSelector((state) => state?.class); // Fetch all classes for forms
+    const { allSubjects } = useSelector((state) => state?.subject);
 
-    // Options for Subjects, Classs, and Teachers
+    // Options for dropdowns
     const subjectOptions = useMemo(() => {
-        return subjects?.map((item) => ({
+        return allSubjects?.map((item) => ({
             id: item?._id,
             name: item?.subjectName,
         })) || [];
-    }, [subjects]);
+    }, [allSubjects]);
 
     const classOptions = useMemo(() => {
-        return classes?.map((item) => ({
+        return allClasses?.map((item) => ({
             id: item?._id,
             name: item?.className,
         })) || [];
-    }, [classes]);
+    }, [allClasses]);
 
     const teacherOptions = useMemo(() => {
-        return teachers?.map((item) => ({
+        return allTeachers?.map((item) => ({
             id: item?._id,
-            name: item?.userId.firstName + " " + item?.userId.lastName,
+            name: `${item?.userId?.firstName} ${item?.userId?.lastName}`,
         })) || [];
-    }, [teachers]);
+    }, [allTeachers]);
 
-    const onSubmit = handleSubmit(formData => {
+    // Form submission handler
+    const onSubmit = handleSubmit((formData) => {
         const start = new Date(formData?.assignedDate);
         const end = new Date(formData?.dueDate);
         if (end < start) {
@@ -72,43 +74,47 @@ const AssignmentForm = ({ type, data, setOpen }) => {
             return;
         }
 
+        // Log or dispatch data based on the form type
         if (type === 'create') {
-            dispatch(createAssignment(formData, token, setOpen));
+            console.log("Creating assignment:", formData);
+            // dispatch(createAssignment(formData, token, setOpen));
         } else {
-            // console.log("Form Data: ", formData);
+            console.log("Updating assignment:", formData);
+            // Update logic here
         }
-        console.log(formData);
-    })
+    });
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Assignment</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">
+                {type === 'create' ? 'Create a new' : 'Update the'} Assignment
+            </h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <SelectOption
-                        name='subject'
+                        name="subject"
                         control={control}
                         options={subjectOptions}
-                        placeholder='Please Select'
-                        label='Subject'
+                        placeholder="Please Select"
+                        label="Subject"
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <SelectOption
-                        name='classId'
+                        name="classId"
                         control={control}
                         options={classOptions}
-                        placeholder='Please Select'
-                        label='Class'
+                        placeholder="Please Select"
+                        label="Class"
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <SelectOption
-                        name='teacher'
+                        name="teacher"
                         control={control}
                         options={teacherOptions}
-                        placeholder='Please Select'
-                        label='Teacher'
+                        placeholder="Please Select"
+                        label="Teacher"
                     />
                 </div>
             </div>
@@ -121,7 +127,9 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("assignedDate")}
                     />
-                    {errors?.assignedDate && <p className="text-xs text-red-700 py-2">{errors?.assignedDate.message}</p>}
+                    {errors?.assignedDate && (
+                        <p className="text-xs text-red-700 py-2">{errors?.assignedDate.message}</p>
+                    )}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Due Date</label>
@@ -131,12 +139,16 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dueDate")}
                     />
-                    {errors?.dueDate && <p className="text-xs text-red-700 py-2">{errors?.dueDate.message}</p>}
+                    {errors?.dueDate && (
+                        <p className="text-xs text-red-700 py-2">{errors?.dueDate.message}</p>
+                    )}
                 </div>
             </div>
-            <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
-        </form >
+            <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">
+                {type === 'create' ? 'Create' : 'Update'}
+            </button>
+        </form>
     );
-}
+};
 
 export default AssignmentForm;

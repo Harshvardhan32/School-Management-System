@@ -37,20 +37,19 @@ const EventForm = ({ type, data, setOpen }) => {
 
     useEffect(() => {
         if (type === 'update') {
-            dispatch(getAllClasses(token));
-            // dispatch(getAllTeachers(token));
+            dispatch(getAllClasses(token, undefined, undefined, true));
         }
     }, []);
 
-    const { classes } = useSelector(state => state?.class);
+    const { allClasses } = useSelector(state => state?.class);
 
     // Options for teachers, students, and subjects
     const classOptions = useMemo(() => {
-        return (classes?.map((item) => ({
+        return (allClasses?.map((item) => ({
             id: item?._id,
             name: item?.className,
         })) || []);
-    }, [classes]);
+    }, [allClasses]);
 
     // Retrieve selected values from the form state
     const selectedClasses = getValues("classId")?.map((id) =>
@@ -66,9 +65,9 @@ const EventForm = ({ type, data, setOpen }) => {
         }
         console.log(formData);
         if (type === 'create') {
-            dispatch(createEvent(formData, token, setOpen));
+            // dispatch(createEvent(formData, token, setOpen));
         } else {
-            dispatch(updateEvent(formData, token, setOpen));
+            // dispatch(updateEvent(formData, token, setOpen));
         }
     });
 

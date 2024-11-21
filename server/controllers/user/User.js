@@ -97,12 +97,12 @@ exports.getUserDetails = async (req, res) => {
 
             userResponse = await Student.findById(id)
                 .populate('userId')
-            // .populate('classId')
-            // .populate('parent')
-            // .populate('attendance')
-            // .populate('subjects')
-            // .populate('exams')
-            // .populate('assignments');
+                .populate('classId')
+                .populate('parent')
+                .populate('attendance')
+                .populate('subjects')
+                .populate('exams')
+                .populate('assignments');
 
         } else if (role === 'Parent') {
 
@@ -136,21 +136,36 @@ exports.getUserDetails = async (req, res) => {
 
 exports.getAllParents = async (req, res) => {
     try {
-        const allParents = await Parent.find()
+        const allData = req.query.allData === 'true'; // Check if allData is requested
+        const page = parseInt(req.query.page) || 1;  // Default to page 1
+        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+        const skip = (page - 1) * limit;
+
+        let query = Parent.find()
             .populate('userId')
             .populate('students');
 
+        if (!allData) {
+            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
+        }
+
+        const data = await query;
+        const total = allData ? data.length : await Parent.countDocuments();
+
         return res.status(200).json({
             success: true,
-            data: allParents,
-            message: 'All parent fetched successfully!'
-        })
+            data,
+            total,
+            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
+            currentPage: allData ? 1 : page,
+            message: 'Parents fetched successfully!',
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
-            message: 'Internal Server Error!'
-        })
+            message: 'Internal Server Error!',
+        });
     }
-}
+};

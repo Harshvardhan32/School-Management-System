@@ -86,16 +86,16 @@ const ResultForm = ({ type, data, setOpen }) => {
 
     // Fetch data on mount
     useEffect(() => {
-        dispatch(getAllStudents(token));
-        dispatch(getAllClasses(token));
-        dispatch(getAllSubjects(token));
-        dispatch(getAllExams(token));
+        dispatch(getAllStudents(token, undefined, undefined, true));
+        dispatch(getAllClasses(token, undefined, undefined, true));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
+        dispatch(getAllExams(token, undefined, undefined, true));
     }, [dispatch, token]);
 
-    const { students } = useSelector((state) => state?.user) || {};
-    const { classes } = useSelector((state) => state?.class) || {};
-    const { subjects } = useSelector((state) => state?.subject) || {};
-    const { exams } = useSelector((state) => state?.exam) || {};
+    const { allStudents } = useSelector((state) => state?.student);
+    const { allClasses } = useSelector((state) => state?.class);
+    const { allSubjects } = useSelector((state) => state?.subject);
+    const { allExams } = useSelector((state) => state?.exam);
 
     const { fields: subjectFields, append: appendSubject, remove: removeSubject } = useFieldArray({
         control,
@@ -103,28 +103,36 @@ const ResultForm = ({ type, data, setOpen }) => {
     });
 
     // Memoized options
-    const studentOptions = useMemo(
-        () =>
-            students?.map((item) => ({
-                value: item?._id,
-                label: `${item?.userId?.firstName || ''} ${item?.userId?.lastName || ''}`,
-            })),
-        [students]
+    const studentOptions = useMemo(() =>
+        allStudents?.map((item) => ({
+            value: item?._id,
+            label: `${item?.userId?.firstName || ''} ${item?.userId?.lastName || ''}`,
+        })),
+        [allStudents]
     );
 
-    const classOptions = useMemo(
-        () => classes?.map((item) => ({ value: item?._id, label: item?.className })),
-        [classes]
+    const classOptions = useMemo(() =>
+        allClasses?.map((item) => ({
+            value: item?._id,
+            label: item?.className
+        })),
+        [allClasses]
     );
 
-    const subjectOptions = useMemo(
-        () => subjects?.map((item) => ({ value: item?._id, label: item?.subjectName })),
-        [subjects]
+    const subjectOptions = useMemo(() =>
+        allSubjects?.map((item) => ({
+            value: item?._id,
+            label: item?.subjectName
+        })),
+        [allSubjects]
     );
 
-    const examOptions = useMemo(
-        () => exams?.map((item) => ({ value: item?._id, label: item?.examName })),
-        [exams]
+    const examOptions = useMemo(() =>
+        allExams?.map((item) => ({
+            value: item?._id,
+            label: item?.examName
+        })),
+        [allExams]
     );
 
     const onSubmit = (formData) => {
@@ -164,70 +172,11 @@ const ResultForm = ({ type, data, setOpen }) => {
         // Prevent submission if any validation failed
         if (!valid) return;
 
-        // Proceed with form submission
         console.log('Result Submitted:', formData);
         toast.success(`Result ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
 
-        // Close form if `setOpen` is provided
         if (setOpen) setOpen(false);
     };
-
-    // // Define light and dark mode styles
-    // const customStyles = (isDarkMode) => ({
-    //     control: (provided) => ({
-    //         ...provided,
-    //         backgroundColor: isDarkMode ? '#1E293B' : 'white',
-    //         borderColor: isDarkMode ? '#6b7280' : '#d1d5db',
-    //         borderWidth: '1.5px',
-    //         boxShadow: 'none',
-    //         color: isDarkMode ? '#E5E7EB' : '#1f2937',
-    //         ':hover': {
-    //             borderColor: isDarkMode ? '#6b7280' : '#d1d5db'
-    //         },
-    //     }),
-    //     menu: (provided) => ({
-    //         ...provided,
-    //         backgroundColor: isDarkMode ? '#2d3748' : 'white',
-    //         color: isDarkMode ? '#E5E7EB' : '#1f2937',
-    //     }),
-    //     option: (provided, state) => ({
-    //         ...provided,
-    //         backgroundColor: state.isSelected
-    //             ? 'rgba(81, 223, 195, 1)'
-    //             : 'transparent',
-    //         color: state.isSelected
-    //             ? 'white'
-    //             : isDarkMode
-    //                 ? '#e2e8f0'
-    //                 : '#1f2937',
-    //         ':hover': {
-    //             backgroundColor: 'rgba(81, 223, 195, 0.5)',
-    //         },
-    //     }),
-    //     dropdownIndicator: (provided) => ({
-    //         ...provided,
-    //         color: isDarkMode ? '#E5E7EB' : '#1f2937',
-    //         ':hover': {
-    //             color: isDarkMode ? '#E5E7EB' : '#1f2937',
-    //         },
-    //     }),
-    //     indicatorSeparator: (provided) => ({
-    //         ...provided,
-    //         backgroundColor: '#E5E7EB',
-    //     }),
-    //     input: (provided) => ({
-    //         ...provided,
-    //         color: isDarkMode ? '#E5E7EB' : '#1f2937',
-    //     }),
-    //     placeholder: (provided) => ({
-    //         ...provided,
-    //         color: isDarkMode ? '#A0AEC0' : '#6B7280',
-    //     }),
-    //     singleValue: (provided) => ({
-    //         ...provided,
-    //         color: isDarkMode ? '#E5E7EB' : 'black',
-    //     }),
-    // });
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">

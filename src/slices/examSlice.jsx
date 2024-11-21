@@ -1,24 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Initial state
 const initialState = {
     loading: false,
-    exams: []
-}
+    paginatedExams: [],
+    allExams: [],
+    totalPages: 0,
+    currentPage: 1,
+};
 
-// Slice definition
 const examSlice = createSlice({
     name: 'exam',
-    initialState: initialState,
+    initialState,
     reducers: {
         setLoading(state, action) {
             state.loading = action.payload;
         },
         setExams(state, action) {
-            state.exams = action.payload;
+            state.allExams = action.payload; // Non-paginated exams
         },
-    }
+        setPaginatedExams(state, action) {
+            state.paginatedExams = action.payload.data; // Paginated exams
+            state.totalPages = action.payload.totalPages;
+            state.currentPage = action.payload.currentPage;
+        },
+    },
 });
 
-export const { setLoading, setExams } = examSlice.actions;
+export const { setLoading, setExams, setPaginatedExams } = examSlice.actions;
 export default examSlice.reducer;

@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setExams } from "../../slices/examSlice";
+import { setLoading, setExams, setPaginatedExams } from "../../slices/examSlice";
 import { examEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -42,29 +42,45 @@ export const createExam = (data, token, setOpen) => {
     }
 }
 
-export const getAllExams = (token) => {
+export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true));
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading exams...');
         try {
-            const response = await apiConnector("GET", ALL_EXAMS_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct query parameters for either all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_EXAMS_API}${queryParams}`;
 
-            // console.log("ALL EXAM API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
-                throw new Error(response?.data?.message || "Something went wrong!");
+                throw new Error(response?.data?.message || "Failed to fetch exams.");
             }
 
-            dispatch(setExams(response?.data?.data));
+            if (allData) {
+                // Dispatch non-paginated data to the store
+                dispatch(setExams(response.data.data));
+            } else {
+                // Dispatch paginated data to the store
+                dispatch(setPaginatedExams({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Exams loaded successfully!');
         } catch (error) {
-            // console.log("ALL EXAM API ERROR............", error.message);
-            toast.error(error?.message);
+            console.log("ALL EXAMS API ERROR............", error.message);
+            toast.error(error.message || 'Failed to load exams.');
         } finally {
-            dispatch(setLoading(true));
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
         }
-    }
-}
+    };
+};

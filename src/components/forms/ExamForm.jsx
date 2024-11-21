@@ -31,7 +31,7 @@ const ExamForm = ({ type, data, setOpen }) => {
     const { token } = useSelector((state) => state?.auth);
 
     useEffect(() => {
-        dispatch(getAllSubjects(token));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
     }, []);
 
     const onSubmit = handleSubmit(formData => {
@@ -43,20 +43,20 @@ const ExamForm = ({ type, data, setOpen }) => {
         }
         console.log(formData);
         if (type === 'create') {
-            dispatch(createExam(formData, token, setOpen))
+            // dispatch(createExam(formData, token, setOpen))
         } else {
             // console.log(formData);
         }
     });
 
-    const { subjects } = useSelector(state => state?.subject);
+    const { allSubjects } = useSelector(state => state?.subject);
 
     const subjectOptions = useMemo(() => {
-        return subjects?.map((item) => ({
+        return allSubjects?.map((item) => ({
             id: item?._id,
             name: item?.subjectName,
         })) || [];
-    }, [subjects]);
+    }, [allSubjects]);
 
     const selectedSubjects = getValues("subjects")?.map((id) =>
         subjectOptions.find((option) => option.id === id)

@@ -73,28 +73,43 @@ export const updateClass = (data, token) => {
     }
 }
 
-export const getAllResults = (token) => {
+export const getAllResults = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading...');
+        const toastId = toast.loading('Loading results...');
         try {
-            const response = await apiConnector("GET", ALL_RESULTS_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct query parameters based on whether we need all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_RESULTS_API}${queryParams}`;
 
-            // console.log("ALL CLASSES API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            dispatch(setLessons(response?.data?.data));
+            if (allData) {
+                // Dispatch all results to the store (non-paginated data)
+                dispatch(setResults(response.data.data));
+            } else {
+                // Dispatch paginated results to the store
+                dispatch(setPaginatedResults({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Results loaded successfully!');
         } catch (error) {
-            console.log("ALL CLASSES API ERROR............", error.message);
+            console.log("ALL RESULTS API ERROR............", error.message);
+            toast.error(error.message || 'Failed to load results.');
         } finally {
             toast.dismiss(toastId);
         }
-    }
-}
+    };
+};

@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setStudents } from "../../slices/userSlice";
+import { setLoading, setPaginatedParents, setParents } from "../../slices/parentSlice";
 import { parentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -7,29 +7,45 @@ const {
     ALL_PARENTS_API
 } = parentEndPoints;
 
-export const getAllParents = (token) => {
+export const getAllParents = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true));
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading parents...');
         try {
-            const response = await apiConnector("GET", ALL_PARENTS_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct the query parameters for either all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_PARENTS_API}${queryParams}`;
 
-            console.log("ALL PARENTS API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
-                throw new Error(response?.data?.message || "Something went wrong!");
+                throw new Error(response?.data?.message || "Failed to fetch parents.");
             }
 
-            dispatch(setStudents(response?.data?.data));
+            if (allData) {
+                // Dispatch non-paginated data to the store
+                dispatch(setParents(response.data.data));
+            } else {
+                // Dispatch paginated data to the store
+                dispatch(setPaginatedParents({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Parents loaded successfully!');
         } catch (error) {
             console.log("ALL PARENTS API ERROR............", error.message);
-            toast.error(error?.message);
+            toast.error(error.message || 'Failed to load parents.');
         } finally {
-            dispatch(setLoading(true));
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
         }
-    }
-}
+    };
+};

@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setStudents } from "../../slices/userSlice";
+import { setLoading, setPaginatedStudents, setStudents } from "../../slices/studentSlice";
 import { studentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -7,29 +7,45 @@ const {
     ALL_STUDENTS_API
 } = studentEndPoints;
 
-export const getAllStudents = (token) => {
+export const getAllStudents = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true));
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading students...');
         try {
-            const response = await apiConnector("GET", ALL_STUDENTS_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct the query parameters for either all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_STUDENTS_API}${queryParams}`;
 
-            // console.log("ALL STUDENTS API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
-                throw new Error(response?.data?.message || "Something went wrong!");
+                throw new Error(response?.data?.message || "Failed to fetch students.");
             }
 
-            dispatch(setStudents(response?.data?.data));
+            if (allData) {
+                // Dispatch non-paginated data to the store
+                dispatch(setStudents(response.data.data));
+            } else {
+                // Dispatch paginated data to the store
+                dispatch(setPaginatedStudents({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Students loaded successfully!');
         } catch (error) {
-            // console.log("ALL STUDENTS API ERROR............", error.message);
-            toast.error(error?.message);
+            console.log("ALL STUDENTS API ERROR............", error.message);
+            toast.error(error.message || 'Failed to load students.');
         } finally {
-            dispatch(setLoading(true));
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
         }
-    }
-}
+    };
+};

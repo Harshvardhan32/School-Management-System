@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setSubjects } from "../../slices/subjectSlice";
+import { setAllSubjects, setLoading, setPaginatedSubjects } from "../../slices/subjectSlice";
 import { subjectEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -72,29 +72,72 @@ export const createSubject = (data, token, setOpen) => {
 //     }
 // }
 
-export const getAllSubjects = (token) => {
+// export const getAllSubjects = (token) => {
+//     return async (dispatch) => {
+//         dispatch(setLoading(true));
+//         try {
+//             const response = await apiConnector("GET", ALL_SUBJECTS_API, null,
+//                 {
+//                     "Content-Type": "application/json",
+//                     "Authorization": `Bearer ${token}`
+//                 }
+//             );
+
+//             // console.log("ALL SUBJECTS API RESPONSE............", response);
+
+//             if (!response?.data?.success) {
+//                 throw new Error(response?.data?.message || "Something went wrong!");
+//             }
+
+//             dispatch(setSubjects(response?.data?.data));
+//         } catch (error) {
+//             // console.log("ALL SUBJECTS API ERROR............", error.message);
+//             toast.error(error?.message);
+//         } finally {
+//             dispatch(setLoading(true));
+//         }
+//     }
+// }
+
+export const getAllSubjects = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true));
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading subjects...');
         try {
-            const response = await apiConnector("GET", ALL_SUBJECTS_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct query parameters based on whether we need all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_SUBJECTS_API}${queryParams}`;
 
-            // console.log("ALL SUBJECTS API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
-                throw new Error(response?.data?.message || "Something went wrong!");
+                throw new Error(response?.data?.message || "Failed to fetch subjects.");
             }
 
-            dispatch(setSubjects(response?.data?.data));
+            if (allData) {
+                // Dispatch all subjects to the store
+                dispatch(setAllSubjects(response.data.data));
+            } else {
+                // Dispatch paginated subjects to the store
+                dispatch(setPaginatedSubjects({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Subjects loaded successfully!');
         } catch (error) {
-            // console.log("ALL SUBJECTS API ERROR............", error.message);
-            toast.error(error?.message);
+            console.error("Error fetching subjects:", error.message);
+            toast.error(error.message || 'Failed to load subjects.');
         } finally {
-            dispatch(setLoading(true));
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
         }
-    }
-}
+    };
+};

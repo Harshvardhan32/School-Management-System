@@ -52,7 +52,7 @@ const ParentForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(data => {
         console.log(data);
         if (type === 'create') {
-            dispatch(createUser(data));
+            // dispatch(createUser(data));
         } else {
             // dispatch(updateAnnouncement());
         }

@@ -1,24 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Initial state
 const initialState = {
     loading: false,
-    assignments: []
-}
+    paginatedAssignments: [], // For paginated data
+    allAssignments: [], // For non-paginated data
+    totalPages: 0,
+    currentPage: 1,
+};
 
-// Slice definition
 const assignmentSlice = createSlice({
-    name: 'assignment',
-    initialState: initialState,
+    name: 'assignments',
+    initialState,
     reducers: {
         setLoading(state, action) {
             state.loading = action.payload;
         },
         setAssignments(state, action) {
-            state.assignments = action.payload;
+            state.allAssignments = action.payload; // Non-paginated data
         },
-    }
+        setPaginatedAssignments(state, action) {
+            state.paginatedAssignments = action.payload.data; // Paginated data
+            state.totalPages = action.payload.totalPages;
+            state.currentPage = action.payload.currentPage;
+        },
+    },
 });
 
-export const { setLoading, setAssignments } = assignmentSlice.actions;
+export const { setLoading, setAssignments, setPaginatedAssignments } = assignmentSlice.actions;
 export default assignmentSlice.reducer;

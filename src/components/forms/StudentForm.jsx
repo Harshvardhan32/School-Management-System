@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
@@ -8,6 +8,7 @@ import { createUser } from "../../services/operations/userAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClasses } from "../../services/operations/classAPI";
 import * as z from 'zod';
+import { getAllSubjects } from "../../services/operations/subjectAPI";
 
 const StudentForm = ({ type, data, setOpen }) => {
 
@@ -20,8 +21,7 @@ const StudentForm = ({ type, data, setOpen }) => {
     // Subject zod schema for create and update 
     const subjectsSchema = (type) =>
         type === 'update'
-            ? z.array(
-                z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
+            ? z.array(z.string()).min(1, { message: 'At least one subject must be selected!' })
             : z.array().optional();
 
     const schema = z.object({
@@ -62,33 +62,39 @@ const StudentForm = ({ type, data, setOpen }) => {
     const { token } = useSelector(state => state?.auth);
 
     useEffect(() => {
-        dispatch(getAllClasses(token));
+        dispatch(getAllClasses(token, undefined, undefined, true));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
     }, [])
 
-    const { classes } = useSelector(state => state?.class);
+    const { allClasses } = useSelector(state => state?.class);
+    const { allSubjects } = useSelector(state => state?.subject);
 
-    const classOptions = classes?.map((item) => ({
-        id: item?._id,
-        name: item?.className
-    }));
+    const classOptions = useMemo(() => {
+        return (allClasses?.map((item) => ({
+            id: item?._id,
+            name: item?.className,
+        })) || []);
+    }, [allClasses]);
 
-    const [subjectOptions] = useState([
-        { name: 'English' },
-        { name: 'Mathematics' },
-        { name: 'Physics' },
-        { name: 'Chemistry' },
-        { name: 'History' },
-    ]);
+    const subjectOptions = useMemo(() => {
+        return allSubjects?.map((item) => ({
+            id: item?._id,
+            name: item?.subjectName,
+        })) || [];
+    }, [allSubjects]);
+
+    const selectedSubjects = getValues("subjects")?.map((id) =>
+        subjectOptions.find((option) => option.id === id)
+    );
 
     const [showPassword, setShowPassword] = useState(false);
-    const selectedSubject = getValues("subjects");
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
         if (type === 'create') {
-            // dispatch(createUser(data));
+            // dispatch(createUser(formData));
         } else {
-            // dispatch(updateAnnouncement());
+            // dispatch(updateAnnouncement(formData));
         }
         setOpen(false);
     });
@@ -277,8 +283,12 @@ const StudentForm = ({ type, data, setOpen }) => {
                         <label className="text-sm text-gray-500">Subjects</label>
                         <MultiSelectComponent
                             options={subjectOptions}
-                            selectedValue={selectedSubject}
-                            setSelectedValue={(value) => setValue("subjects", value)}
+                            selectedValue={selectedSubjects}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "subjects",
+                                    value.map((item) => item.id)
+                                )}
                         />
                         {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                     </div>

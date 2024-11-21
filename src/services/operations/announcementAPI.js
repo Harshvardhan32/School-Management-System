@@ -72,24 +72,28 @@ export const updateAnnouncement = (data, token) => {
     }
 }
 
-export const getAllAnnouncement = async (token, setAnnouncement) => {
+export const getAllAnnouncement = async (token, setAnnouncement, page = 1, limit = 10, allData = false) => {
     try {
-        const response = await apiConnector("GET", ALL_ANNOUNCEMENTS_API, null,
-            {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        );
+        // Construct the API query based on allData flag
+        const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+        const url = `${ALL_ANNOUNCEMENTS_API}${queryParams}`;
 
-        // console.log("ANNOUNCEMENTS API RESPONSE............", response);
+        // Make the API request
+        const response = await apiConnector("GET", url, null, {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        });
 
+        // Check for success in the response
         if (!response?.data?.success) {
             throw new Error(response?.data?.message || "Something went wrong!");
         }
 
-        setAnnouncement(response?.data?.data)
+        // Call the callback to set the announcements (paginated or all)
+        setAnnouncement(response?.data?.data);
+
     } catch (error) {
         console.log("ANNOUNCEMENTS API ERROR............", error.message);
-        toast.error(error?.message || "Announcement Fetched Failed!");
+        toast.error(error?.message || "Failed to fetch announcements.");
     }
-}
+};

@@ -79,7 +79,7 @@ exports.updateClass = async (req, res) => {
             .populate('supervisor')
             .populate('teachers')
             .populate('students')
-            // .populate('subjects');
+        // .populate('subjects');
 
         return res.status(200).json({
             success: true,
@@ -132,24 +132,38 @@ exports.deleteClass = async (req, res) => {
 // Function to get all class
 exports.getAllClasses = async (req, res) => {
     try {
+        const allData = req.query.allData === 'true'; // Check if allData is requested
+        const page = parseInt(req.query.page) || 1;  // Default to page 1
+        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+        const skip = (page - 1) * limit;
 
-        const allClasses = await Class.find()
+        let query = Class.find()
             .populate('supervisor')
-        // .populate('teachers')
-        // .populate('students')
-        // .populate('subjects');
+            .populate('teachers')
+            .populate('students')
+            .populate('subjects');
+
+        if (!allData) {
+            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
+        }
+
+        const data = await query;
+        const total = allData ? data.length : await Class.countDocuments();
 
         return res.status(200).json({
             success: true,
-            data: allClasses,
-            message: 'All classes fetched successfully!'
-        })
+            data,
+            total,
+            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
+            currentPage: allData ? 1 : page,
+            message: 'Classes fetched successfully!',
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
-            message: "Internal Server Error!"
-        })
+            message: "Internal Server Error!",
+        });
     }
-}
+};

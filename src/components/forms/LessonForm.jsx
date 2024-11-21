@@ -26,26 +26,27 @@ const LessonForm = ({ type, data, setOpen }) => {
     const { token } = useSelector(state => state?.auth);
 
     useEffect(() => {
-        dispatch(getAllSubjects(token));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
     }, []);
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            dispatch(createLesson(formData, token, setOpen));
+            // dispatch(createLesson(formData, token, setOpen));
         } else {
             // console.log("Form Data: ", formData);
         }
+        console.log(formData);
     })
 
-    const { subjects } = useSelector(state => state?.subject);
+    const { allSubjects } = useSelector(state => state?.subject);
 
     const subjectOptions = useMemo(() => {
-        return subjects?.map((item) => ({
+        return allSubjects?.map((item) => ({
             id: item?._id,
             name: item?.subjectName,
         })) || [];
-    }, [subjects]);
+    }, [allSubjects]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>

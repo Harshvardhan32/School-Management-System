@@ -7,6 +7,7 @@ import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { createSubject } from "../../services/operations/subjectAPI";
 import * as z from 'zod';
+import { getAllLessons } from "../../services/operations/lessonAPI";
 
 const SubjectForm = ({ type, data, setOpen }) => {
 
@@ -36,9 +37,10 @@ const SubjectForm = ({ type, data, setOpen }) => {
     const { token } = useSelector(state => state?.auth);
 
     useEffect(() => {
-        dispatch(getAllClasses(token));
+        dispatch(getAllClasses(token, undefined, undefined, true));
         if (type === 'update') {
-            dispatch(getAllTeachers(token));
+            dispatch(getAllTeachers(token, undefined, undefined, true));
+            dispatch(getAllLessons(token, undefined, undefined, true));
         }
     }, []);
 
@@ -51,31 +53,31 @@ const SubjectForm = ({ type, data, setOpen }) => {
         }
     });
 
-    const { lessons } = useSelector(state => state?.lesson);
-    const { classes } = useSelector(state => state?.class);
-    const { teachers } = useSelector(state => state?.user);
+    const { allLessons } = useSelector(state => state?.lesson);
+    const { allClasses } = useSelector(state => state?.class);
+    const { allTeachers } = useSelector(state => state?.teacher);
 
     // Options for teachers, students, and subjects
     const classOptions = useMemo(() => {
-        return (classes?.map((item) => ({
+        return (allClasses?.map((item) => ({
             id: item?._id,
             name: item?.className,
         })) || []);
-    }, [classes]);
+    }, [allClasses]);
 
     const teacherOptions = useMemo(() => {
-        return (teachers?.map((item) => ({
+        return (allTeachers?.map((item) => ({
             id: item?._id,
             name: item?.userId?.firstName + " " + item?.userId?.lastName,
         })) || []);
-    }, [teachers]);
+    }, [allTeachers]);
 
     const lessonOptions = useMemo(() => {
-        return (lessons?.map((item) => ({
+        return (allLessons?.map((item) => ({
             id: item?._id,
             name: item?.title,
         })) || []);
-    }, [lessons]);
+    }, [allLessons]);
 
     // Retrieve selected values from the form state
     const selectedClasses = getValues("classId")?.map((id) =>

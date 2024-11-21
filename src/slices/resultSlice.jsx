@@ -2,21 +2,29 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    results: []
-}
+    paginatedResults: [],
+    allResults: [],
+    totalPages: 0,
+    currentPage: 1,
+};
 
 const resultSlice = createSlice({
     name: 'result',
-    initialState: initialState,
+    initialState,
     reducers: {
         setLoading(state, action) {
             state.loading = action.payload;
         },
         setResults(state, action) {
-            state.results = action.payload;
+            state.allResults = action.payload; // Non-paginated results
         },
-    }
+        setPaginatedResults(state, action) {
+            state.paginatedResults = action.payload.data; // Paginated results
+            state.totalPages = action.payload.totalPages;
+            state.currentPage = action.payload.currentPage;
+        },
+    },
 });
 
-export const { setLoading, setResults } = resultSlice.actions;
+export const { setLoading, setResults, setPaginatedResults } = resultSlice.actions;
 export default resultSlice.reducer;

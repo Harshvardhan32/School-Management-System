@@ -2,12 +2,14 @@ import { IoEyeOutline } from "react-icons/io5";
 import Pagination from "../../components/common/Pagination";
 import Table from "../../components/common/Table";
 import TableSearch from "../../components/common/TableSearch";
-import { role, studentsData } from "../../data/data";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { BiSortDown } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { getAllStudents } from "../../services/operations/studentAPI";
 
 const StudentList = () => {
 
@@ -20,11 +22,6 @@ const StudentList = () => {
         {
             header: 'Student ID',
             accessor: 'studentId',
-            className: 'hidden md:table-cell p-4'
-        },
-        {
-            header: 'Grade',
-            accessor: 'grade',
             className: 'hidden md:table-cell p-4'
         },
         {
@@ -49,38 +46,51 @@ const StudentList = () => {
         },
     ]
 
-    const renderRow = (item) => {
+    const renderRow = (data) => {
         return (
-            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+            <tr key={data._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex items-center gap-4 p-4">
                     <div>
-                        <img src={item.photo} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
+                        <img src={data?.userId.photo} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
                     </div>
                     <div className="flex flex-col">
-                        <h3 className="font-semibold dark:text-gray-200">{item.name}</h3>
-                        <p className="text-xs text-gray-500">{item.email}</p>
+                        <h3 className="font-semibold dark:text-gray-200">{data?.userId.firstName} {data?.userId.lastName}</h3>
+                        <p className="text-xs text-gray-500">{data?.userId.email}</p>
                     </div>
                 </td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.studentId}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.grade}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.class}</td>
-                <td className="hidden lg:table-cell p-4 dark:text-gray-200">{item.phone}</td>
-                <td className="hidden lg:table-cell p-4 dark:text-gray-200">{item.address}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data.studentId}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classId.className}</td>
+                <td className="hidden lg:table-cell p-4 dark:text-gray-200">{data?.userId.phone}</td>
+                <td className="hidden lg:table-cell p-4 dark:text-gray-200">{data?.userId.address}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        <Link to={`/list/students/${item.id}`}>
+                        <Link to={`/list/students/${data._id}`}>
                             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-100">
                                 <IoEyeOutline fontSize={18} />
                             </button>
                         </Link>
-                        {role === 'admin' &&
-                            <FormModal table='student' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                        {role === 'Admin' &&
+                            <FormModal table='student' type='delete' Icon={RiDeleteBin6Line} data={data} />
                         }
                     </div>
                 </td>
             </tr>
         )
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { role } = useSelector(state => state?.profile?.user?.userId);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedStudents, totalPages } = useSelector(state => state?.student);
+
+    useEffect(() => {
+        dispatch(getAllStudents(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -98,7 +108,7 @@ const StudentList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
+                        {role === 'Admin' &&
                             <FormModal table='student' type='create' Icon={AiOutlinePlus} />
                         }
                     </div>
@@ -106,11 +116,15 @@ const StudentList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={studentsData} />
+                <Table column={column} renderRow={renderRow} data={paginatedStudents} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

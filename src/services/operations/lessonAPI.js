@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { lessonEndPoints } from "../apis";
-import { setLessons, setLoading } from "../../slices/lessonSlice";
+import { setLoading, setAllLessons, setPaginatedLessons } from "../../slices/lessonSlice";
 import apiConnector from "../apiConnect";
 
 const {
@@ -73,28 +73,43 @@ export const updateClass = (data, token) => {
     }
 }
 
-export const getAllClasses = (token) => {
+export const getAllLessons = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading...');
+        const toastId = toast.loading('Loading lessons...');
         try {
-            const response = await apiConnector("GET", ALL_CLASSES_API, null,
-                {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            );
+            // Construct query parameters based on whether we need all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_LESSONS_API}${queryParams}`;
 
-            // console.log("ALL CLASSES API RESPONSE............", response);
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
+            // Check for success in the response
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            dispatch(setLessons(response?.data?.data));
+            if (allData) {
+                // Dispatch all lessons to the store (non-paginated data)
+                dispatch(setAllLessons(response.data.data));
+            } else {
+                // Dispatch paginated lessons to the store
+                dispatch(setPaginatedLessons({
+                    data: response.data.data,
+                    totalPages: response.data.totalPages,
+                    currentPage: response.data.currentPage,
+                }));
+            }
+
+            toast.success('Lessons loaded successfully!');
         } catch (error) {
-            console.log("ALL CLASSES API ERROR............", error.message);
+            console.log("ALL LESSONS API ERROR............", error.message);
+            toast.error(error.message || 'Failed to load lessons.');
         } finally {
             toast.dismiss(toastId);
         }
-    }
-}
+    };
+};

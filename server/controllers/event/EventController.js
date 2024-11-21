@@ -98,20 +98,34 @@ exports.deleteEvent = async (req, res) => {
 
 exports.getAllEvent = async (req, res) => {
     try {
+        const allData = req.query.allData === 'true'; // Check if allData is requested
+        const page = parseInt(req.query.page) || 1;  // Default to page 1
+        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+        const skip = (page - 1) * limit;
 
-        const allEvents = await Event.find();
+        let query = Event.find();
+
+        if (!allData) {
+            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
+        }
+
+        const data = await query;
+        const total = allData ? data.length : await Event.countDocuments();
 
         return res.status(200).json({
-            success: false,
-            data: allEvents,
-            message: 'All events fetched successfully!'
-        })
-
+            success: true,
+            data,
+            total,
+            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
+            currentPage: allData ? 1 : page,
+            message: 'Events fetched successfully!',
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
-            message: 'Internal Server Error!'
-        })
+            errorMessage: error.message,
+            message: 'Internal Server Error!',
+        });
     }
-}
+};

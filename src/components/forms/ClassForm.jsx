@@ -44,37 +44,37 @@ const ClassForm = ({ type, data, setOpen }) => {
 
     useEffect(() => {
         if (type === 'update') {
-            dispatch(getAllTeachers(token));
-            dispatch(getAllStudents(token));
-            dispatch(getAllSubjects(token));
+            dispatch(getAllTeachers(token, undefined, undefined, true));
+            dispatch(getAllStudents(token, undefined, undefined, true));
+            dispatch(getAllSubjects(token, undefined, undefined, true));
         }
     }, []);
 
-    const { teachers } = useSelector(state => state?.user);
-    const { students } = useSelector(state => state?.user);
-    const { subjects } = useSelector(state => state?.subject);
+    const { allTeachers } = useSelector(state => state?.teacher);
+    const { allSubjects } = useSelector(state => state?.subject);
+    const { allStudents } = useSelector(state => state?.student);
 
     // Options for teachers, students, and subjects
     const teacherOptions = useMemo(() => {
-        return teachers?.map((item) => ({
+        return allTeachers?.map((item) => ({
             id: item?._id,
             name: item?.userId.firstName + " " + item?.userId.lastName,
         })) || [];
-    }, [teachers]);
+    }, [allTeachers]);
 
     const subjectOptions = useMemo(() => {
-        return subjects?.map((item) => ({
+        return allSubjects?.map((item) => ({
             id: item?._id,
             name: item?.subjectName,
         })) || [];
-    }, [subjects]);
+    }, [allSubjects]);
 
     const studentOptions = useMemo(() => {
-        return students?.map((item) => ({
+        return allStudents?.map((item) => ({
             id: item?._id,
             name: item?.userId.firstName + " " + item?.userId.lastName,
         })) || [];
-    }, [students]);
+    }, [allStudents]);
 
     // Retrieve selected values from the form state
     const selectedTeachers = getValues("teachers")?.map((id) =>
@@ -90,11 +90,10 @@ const ClassForm = ({ type, data, setOpen }) => {
     // Handle form submission
     const onSubmit = handleSubmit((formData) => {
         if (type === 'create') {
-            dispatch(createClass(formData, token));
+            dispatch(createClass(formData, token, setOpen));
         } else {
             console.log("Form Data: ", formData);
         }
-        // setOpen(false);
     });
 
     return (
@@ -110,6 +109,7 @@ const ClassForm = ({ type, data, setOpen }) => {
                         placeholder="Class Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("className")}
+                        defaultValue={type === 'update' ? data?.className : ''}
                     />
                     {errors?.className && <p className="text-xs text-red-700 py-2">{errors?.className.message}</p>}
                 </div>
@@ -120,6 +120,7 @@ const ClassForm = ({ type, data, setOpen }) => {
                         placeholder="Capacity"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("capacity")}
+                        defaultValue={type === 'update' ? data?.capacity : ''}
                     />
                     {errors?.capacity && <p className="text-xs text-red-700 py-2">{errors?.capacity.message}</p>}
                 </div>

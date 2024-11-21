@@ -1,11 +1,13 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import MultiSelectComponent from "../MultiSelectComponent";
 import { createUser } from "../../services/operations/userAPI";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as z from 'zod';
+import { getAllClasses } from "../../services/operations/classAPI";
+import { getAllSubjects } from "../../services/operations/subjectAPI";
 
 const TeacherForm = ({ type, data, setOpen }) => {
 
@@ -18,16 +20,14 @@ const TeacherForm = ({ type, data, setOpen }) => {
     // Classes zod schema for create and update 
     const classesSchema = (type) =>
         type === 'update'
-            ? z.array(
-                z.object({ name: z.string(), })).min(1, { message: 'At least one class must be selected!' })
-            : z.array().optional();
+            ? z.array(z.string()).min(1, { message: 'At least one class must be selected!' })
+            : z.array({ name: z.string(), }).optional();
 
     // Subject zod schema for create and update 
     const subjectsSchema = (type) =>
         type === 'update'
-            ? z.array(
-                z.object({ name: z.string(), })).min(1, { message: 'At least one subject must be selected!' })
-            : z.array().optional();
+            ? z.array(z.string()).min(1, { message: 'At least one subject must be selected!' })
+            : z.array({ name: z.string(), }).optional();
 
     const schema = z.object({
         teacherId: z.string()
@@ -44,7 +44,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Teacher'),
         subjects: subjectsSchema(type),
-        classes: classesSchema(type),
+        classId: classesSchema(type),
     });
 
     const {
@@ -56,57 +56,57 @@ const TeacherForm = ({ type, data, setOpen }) => {
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
             subjects: [],
-            classes: []
+            classId: []
         },
     });
 
     const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
 
-    const classes = [
-        { value: 'class-1', label: 'Class 1' },
-        { value: 'class-2', label: 'Class 2' },
-    ];
+    useEffect(() => {
+        if (type === 'update') {
+            dispatch(getAllClasses(token, undefined, undefined, true));
+            dispatch(getAllSubjects(token, undefined, undefined, true));
+        }
+    }, [type, token]);
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
+    const { allClasses } = useSelector(state => state?.class);
+    const { allSubjects } = useSelector(state => state?.subject);
+
+    // Options for teachers, students, and subjects
+    const classOptions = useMemo(() => {
+        return (allClasses?.map((item) => ({
+            id: item?._id,
+            name: item?.className,
+        })) || []);
+    }, [allClasses]);
+
+    const subjectOptions = useMemo(() => {
+        return allSubjects?.map((item) => ({
+            id: item?._id,
+            name: item?.subjectName,
+        })) || [];
+    }, [allSubjects]);
+
+    const selectedSubjects = getValues("subjects")?.map((id) =>
+        subjectOptions.find((option) => option.id === id)
+    );
+
+    const selectedClasses = getValues("classId")?.map((id) =>
+        classOptions.find((option) => option.id === id)
+    );
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
         if (type === 'create') {
-            dispatch(createUser(data));
+            // dispatch(createUser(formData));
         } else {
-            // dispatch(updateAnnouncement());
+            // dispatch(updateAnnouncement(formData));
         }
         setOpen(false);
     });
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0]; // Get the uploaded file
-        if (file) {
-            const reader = new FileReader(); // Create a new FileReader instance
-            reader.onloadend = () => {
-                setImagePreview(reader.result); // Set the preview image
-            };
-            reader.readAsDataURL(file); // Convert the image to a data URL
-        }
-    };
-
-    const [classOptions] = useState([
-        { name: '1A' },
-        { name: '1B' },
-        { name: '1C' },
-        { name: '2A' },
-        { name: '2B' },
-    ]);
-
-    const [subjectOptions] = useState([
-        { name: 'English' },
-        { name: 'Mathematics' },
-        { name: 'Physics' },
-        { name: 'Chemistry' },
-        { name: 'History' },
-    ]);
-
-    const selectedSubject = getValues("subjects");
-    const selectedClass = getValues("classes");
-    const [showPassword, setShowPassword] = useState(false);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -123,7 +123,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("teacherId")}
                     />
-                    {errors?.teacherId && <p className="text-xs text-red-700 py-2">{errors?.teacherId.message}</p>}
+                    {errors?.teacherId && <p className="text-xs text-red-700 py-2">{errors?.teacherId?.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Email</label>
@@ -133,7 +133,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
                     />
-                    {errors.email && <p className="text-xs text-red-700 py-2">{errors.email.message}</p>}
+                    {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email?.message}</p>}
                 </div>
                 {
                     type === 'create' &&
@@ -148,7 +148,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                             />
                             <span className="absolute text-2xl text-gray-400 top-[6px] right-2 cursor-pointer" onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
                         </div>
-                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password.message}</p>}
+                        {errors?.password && <p className="text-xs text-red-700 py-2">{errors?.password?.message}</p>}
                     </div>
                 }
             </div>
@@ -164,7 +164,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
                     />
-                    {errors.firstName && <p className="text-xs text-red-700 py-2">{errors.firstName.message}</p>}
+                    {errors?.firstName && <p className="text-xs text-red-700 py-2">{errors?.firstName?.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Last Name</label>
@@ -183,7 +183,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
                     />
-                    {errors.phone && <p className="text-xs text-red-700 py-2">{errors.phone.message}</p>}
+                    {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone?.message}</p>}
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -195,7 +195,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
                     />
-                    {errors.address && <p className="text-xs text-red-700 py-2">{errors.address.message}</p>}
+                    {errors?.address && <p className="text-xs text-red-700 py-2">{errors?.address?.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Blood Type</label>
@@ -214,7 +214,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         <option value="AB+">AB+</option>
                         <option value="AB-">AB-</option>
                     </select>
-                    {errors.bloodType && <p className="text-xs text-red-700 py-2">{errors.bloodType.message}</p>}
+                    {errors?.bloodType && <p className="text-xs text-red-700 py-2">{errors?.bloodType?.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Date of Birth</label>
@@ -223,7 +223,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dateOfBirth")}
                     />
-                    {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
+                    {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth?.message}</p>}
                 </div>
             </div>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
@@ -239,7 +239,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         <option value="female">Female</option>
                         <option value="others">Others</option>
                     </select>
-                    {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
+                    {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex?.message}</p>}
                 </div>
             </div>
             {
@@ -249,19 +249,27 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         <label className="text-sm text-gray-500">Classes</label>
                         <MultiSelectComponent
                             options={classOptions}
-                            selectedValue={selectedClass}
-                            setSelectedValue={(value) => setValue("classes", value)}
+                            selectedValue={selectedClasses}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "classId",
+                                    value.map((item) => item.id)
+                                )}
                         />
-                        {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
+                        {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId?.message}</p>}
                     </div>
                     <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Subjects</label>
                         <MultiSelectComponent
                             options={subjectOptions}
-                            selectedValue={selectedSubject}
-                            setSelectedValue={(value) => setValue("subjects", value)}
+                            selectedValue={selectedSubjects}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "subjects",
+                                    value.map((item) => item.id)
+                                )}
                         />
-                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
+                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects?.message}</p>}
                     </div>
                 </div>
             }

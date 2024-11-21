@@ -52,7 +52,7 @@ export const logout = (navigate) => {
         dispatch(setToken(null));
         dispatch(setUser(null));
         localStorage.removeItem('token');
-        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         toast.success("Logout Successfully!");
         navigate('/');
     }
