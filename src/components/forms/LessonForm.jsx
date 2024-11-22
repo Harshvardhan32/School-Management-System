@@ -59,6 +59,7 @@ const LessonForm = ({ type, data, setOpen }) => {
                         placeholder="Lesson Title"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("title")}
+                        defaultValue={type === 'update' ? data?.title : ''}
                     />
                     {errors?.title && <p className="text-xs text-red-700 py-2">{errors?.title.message}</p>}
                 </div>
@@ -80,6 +81,7 @@ const LessonForm = ({ type, data, setOpen }) => {
                     rows={4}
                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("description")}
+                    defaultValue={type === 'update' ? data?.description : ''}
                 ></textarea>
                 {errors?.description && <p className="text-xs text-red-700 py-2">{errors?.description.message}</p>}
             </div>

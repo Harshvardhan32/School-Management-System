@@ -1,25 +1,25 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit  } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
-import { announcementsData, role } from "../../data/data";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllAnnouncement } from "../../services/operations/announcementAPI";
+import extractDateTime from "../../utils/extractDateTime";
 
 const AnnouncementList = () => {
+
+    const { role } = useSelector(state => state?.profile?.user?.userId);
 
     const column = [
         {
             header: 'Title',
             accessor: 'title'
-        },
-        {
-            header: 'CLass',
-            accessor: 'class',
-            className: 'hidden sm:table-cell'
         },
         {
             header: 'Date',
@@ -29,31 +29,40 @@ const AnnouncementList = () => {
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
         },
     ]
 
-    const renderRow = (item) => {
+    const renderRow = (data) => {
+        // console.log("DATTT: ", data);
         return (
-            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="p-4 font-semibold dark:text-gray-200">{item.title}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.class}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.date}</td>
+            <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="p-4 font-semibold dark:text-gray-200">{data?.title}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.date)}</td>
                 <td className="p-4 flex items-center gap-2">
-                    {/* <Link to={`/list/teachers/${item.id}`}>
-                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
-                            <FaRegEdit  fontSize={18} />
-                        </button>
-                    </Link> */}
-                    {role === 'admin' && (
+                    {role === 'Admin' || role === 'Teacher' && (
                         <>
-                            <FormModal table='announcement' type='update' Icon={FaRegEdit } data={item} />
-                            <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                            <FormModal table='announcement' type='update' Icon={FaRegEdit} data={data} />
+                            <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={data} />
                         </>
                     )}
                 </td>
             </tr>
         );
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedAnnouncements, totalPages } = useSelector(state => state?.announcement);
+
+    useEffect(() => {
+        dispatch(getAllAnnouncement(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -71,7 +80,7 @@ const AnnouncementList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
+                        {role === 'Admin' &&
                             <FormModal table='announcement' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
                         }
                     </div>
@@ -79,11 +88,15 @@ const AnnouncementList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={announcementsData} />
+                <Table column={column} renderRow={renderRow} data={paginatedAnnouncements} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

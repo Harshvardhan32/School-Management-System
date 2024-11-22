@@ -39,4 +39,46 @@ exports.getAllStudents = async (req, res) => {
             message: 'Internal Server Error!',
         });
     }
-};
+}
+
+exports.getStudentsDetails = async (req, res) => {
+    try {
+        const studentId = req.query.studentId;
+
+        if (!studentId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Student ID is required'
+            })
+        }
+
+        const studentDetails = await Student.findById(studentId)
+            .populate('userId')
+            .populate('classId')
+            .populate('parent')
+            .populate('attendance')
+            .populate('subjects')
+            .populate('exams')
+            .populate('assignments');
+
+        if (!studentDetails) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student is not found with the given ID.'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: studentDetails,
+            message: 'Student details fetched successfully!'
+        });
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: 'Internal Server Error!'
+        })
+    }
+}

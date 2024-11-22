@@ -19,7 +19,7 @@ exports.createLesson = async (req, res) => {
         });
 
         const lessonResponse = await Lesson.findById(lessonRecord?._id)
-            // .populate('subject');
+        // .populate('subject');
 
         return res.status(200).json({
             success: true,
@@ -119,9 +119,8 @@ exports.getAllLesson = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
         const skip = (page - 1) * limit;
 
-        let query = Lesson.find();
-        // If needed, you can uncomment and use populate to fetch related data
-        // .populate('subject');
+        let query = Lesson.find()
+            .populate('subject');
 
         if (!allData) {
             query = query.skip(skip).limit(limit); // Apply pagination if allData is false

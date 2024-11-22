@@ -1,11 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Announcements from "../../components/Announcements";
 import BigCalendar from "../../components/BigCalender";
 import Performance from "../../components/Performance";
 import FormModal from "../../components/FormModal";
-import { FaRegEdit  } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getStudentDetails } from "../../services/operations/studentAPI";
 
 const StudentDetailsPage = () => {
+
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { studentDetails } = useSelector(state => state?.student);
+    const location = useLocation();
+    const studentId = location?.pathname.split('/').at(-1);
+
+    useEffect(() => {
+        dispatch(getStudentDetails(token, studentId));
+    }, [studentId, token, dispatch]);
 
     return (
         <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
@@ -25,7 +38,7 @@ const StudentDetailsPage = () => {
                         <div className="w-2/3 flex flex-col justify-between gap-4">
                             <div className="flex gap-2 items-center justify-between">
                                 <h1 className="text-xl font-semibold">Leonard Snyder</h1>
-                                <FormModal table='student' type='update' Icon={FaRegEdit } />
+                                <FormModal table='student' type='update' Icon={FaRegEdit} data={studentDetails} />
                             </div>
                             <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p>
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">

@@ -1,15 +1,19 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit  } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
-import { resultsData, role } from "../../data/data";
 import { BiSortDown } from "react-icons/bi";
 import FormModal from "../../components/FormModal";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllResults } from "../../services/operations/resultAPI";
 
 const ResultList = () => {
+
+    const { role } = useSelector(state => state?.profile?.user?.userId);
 
     const column = [
         {
@@ -49,6 +53,7 @@ const ResultList = () => {
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && 'hidden'}`
         },
     ]
 
@@ -64,14 +69,9 @@ const ResultList = () => {
                 <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.score}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {/* <Link to={`/list/teachers/${item.id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
-                                <FaRegEdit  fontSize={18} />
-                            </button>
-                        </Link> */}
-                        {role === 'admin' && (
+                        {role === 'Admin' && (
                             <>
-                                <FormModal table='result' type='update' Icon={FaRegEdit } data={item} />
+                                <FormModal table='result' type='update' Icon={FaRegEdit} data={item} />
                                 <FormModal table='result' type='delete' Icon={RiDeleteBin6Line} data={item} />
                             </>
                         )}
@@ -80,6 +80,19 @@ const ResultList = () => {
             </tr>
         );
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedResults, totalPages } = useSelector(state => state?.result);
+
+    useEffect(() => {
+        dispatch(getAllResults(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -97,7 +110,7 @@ const ResultList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
+                        {role === 'Admin' &&
                             <FormModal table='result' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
                         }
                     </div>
@@ -105,11 +118,15 @@ const ResultList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={resultsData} />
+                <Table column={column} renderRow={renderRow} data={paginatedResults} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

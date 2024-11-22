@@ -82,6 +82,7 @@ const EventForm = ({ type, data, setOpen }) => {
                         placeholder="Event Title"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("title")}
+                        defaultValue={type === 'update' ? data?.title : ''}
                     />
                     {errors?.title && <p className="text-xs text-red-700 py-2">{errors?.title.message}</p>}
                 </div>
@@ -91,6 +92,7 @@ const EventForm = ({ type, data, setOpen }) => {
                         type="datetime-local"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("startDate")}
+                        defaultValue={type === 'update' ? new Date(data?.startDate).toISOString().slice(0, 16) : ''}
                     />
                     {errors?.startDate && <p className="text-xs text-red-700 py-2">{errors?.startDate.message}</p>}
                 </div>
@@ -100,6 +102,7 @@ const EventForm = ({ type, data, setOpen }) => {
                         type="datetime-local"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("endDate")}
+                        defaultValue={type === 'update' ? new Date(data?.endDate).toISOString().slice(0, 16) : ''}
                     />
                     {errors?.endDate && <p className="text-xs text-red-700 py-2">{errors?.endDate.message}</p>}
                 </div>
@@ -127,6 +130,7 @@ const EventForm = ({ type, data, setOpen }) => {
                     placeholder="Content..."
                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("content")}
+                    defaultValue={type === 'update' ? data?.content : ''}
                 />
                 {errors?.content && <p className="text-xs text-red-700 py-2">{errors?.content.message}</p>}
             </div>

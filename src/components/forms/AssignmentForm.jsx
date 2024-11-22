@@ -126,6 +126,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         placeholder="Assigned Date"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("assignedDate")}
+                        defaultValue={type === 'update' ? new Date(data?.assignedDate).toISOString().slice(0, 10) : ''}
                     />
                     {errors?.assignedDate && (
                         <p className="text-xs text-red-700 py-2">{errors?.assignedDate.message}</p>
@@ -138,6 +139,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         placeholder="Due Date"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dueDate")}
+                        defaultValue={type === 'update' ? new Date(data?.dueDate).toISOString().slice(0, 10) : ''}
                     />
                     {errors?.dueDate && (
                         <p className="text-xs text-red-700 py-2">{errors?.dueDate.message}</p>

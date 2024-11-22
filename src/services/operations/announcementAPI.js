@@ -1,5 +1,5 @@
 import toast from "react-hot-toast"
-import { setLoading } from "../../slices/announcementSlice";
+import { setLoading, setAnnouncements, setPaginatedAnnouncements } from "../../slices/announcementSlice";
 import apiConnector from "../apiConnect";
 import { announcementEndPoints } from "../apis";
 
@@ -72,28 +72,46 @@ export const updateAnnouncement = (data, token) => {
     }
 }
 
-export const getAllAnnouncement = async (token, setAnnouncement, page = 1, limit = 10, allData = false) => {
-    try {
-        // Construct the API query based on allData flag
-        const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-        const url = `${ALL_ANNOUNCEMENTS_API}${queryParams}`;
+export const getAllAnnouncement = (token, page = 1, limit = 10, allData = false) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading announcements...');
 
-        // Make the API request
-        const response = await apiConnector("GET", url, null, {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        });
+        try {
+            // Construct the query parameters for either all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_ANNOUNCEMENTS_API}${queryParams}`;
 
-        // Check for success in the response
-        if (!response?.data?.success) {
-            throw new Error(response?.data?.message || "Something went wrong!");
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            // Check for success in the response
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Failed to fetch announcements.");
+            }
+
+            if (allData) {
+                // Dispatch non-paginated data to the store
+                dispatch(setAnnouncements(response?.data?.data));
+            } else {
+                // Dispatch paginated data to the store
+                dispatch(setPaginatedAnnouncements({
+                    data: response?.data?.data,
+                    totalPages: response?.data?.totalPages,
+                    currentPage: response?.data?.currentPage,
+                }));
+            }
+
+            toast.success('Announcements loaded successfully!');
+        } catch (error) {
+            console.log("ALL ANNOUNCEMENTS API ERROR............", error.message);
+            toast.error(error.message || 'Failed to load announcements.');
+        } finally {
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
         }
-
-        // Call the callback to set the announcements (paginated or all)
-        setAnnouncement(response?.data?.data);
-
-    } catch (error) {
-        console.log("ANNOUNCEMENTS API ERROR............", error.message);
-        toast.error(error?.message || "Failed to fetch announcements.");
-    }
+    };
 };

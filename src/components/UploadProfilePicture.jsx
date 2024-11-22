@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { TbUpload } from "react-icons/tb";
 
-const UploadProfilePicture = () => {
+const UploadProfilePicture = ({ data }) => {
 
     const {
         register,
@@ -22,12 +22,12 @@ const UploadProfilePicture = () => {
         }
     };
 
-    const onSubmit = handleSubmit((data) => {
-        if (data?.photo.length === 0) {
+    const onSubmit = handleSubmit((formData) => {
+        if (formData?.photo.length === 0) {
             toast.error('Profile Photo is required!');
             return;
         }
-        console.log(data);
+        console.log(formData);
     });
 
     const [imagePreview, setImagePreview] = useState(null);
@@ -38,7 +38,7 @@ const UploadProfilePicture = () => {
                 {
                     imagePreview ?
                         <img src={imagePreview} alt="Preview" className="w-[66px] h-[66px] rounded-full object-cover" />
-                        : <img src="/avatar.png" alt="" className="w-[66px] h-[66px] rounded-full object-cover" />
+                        : <img src={data?.userId.photo} alt="" className="w-[66px] h-[66px] rounded-full object-cover" />
                 }
             </div>
             <div className="flex flex-col gap-2">

@@ -7,11 +7,6 @@ const CountChart = () => {
     const { darkMode } = useContext(ThemeContext);
 
     const data = [
-        // {
-        //     name: 'Total',
-        //     count: 106,
-        //     fill: `${darkMode ? '#0F172A' : 'white'}`,
-        // },
         {
             name: 'Girls',
             count: 50,

@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { resultEndPoints } from "../apis";
-import { setLessons, setLoading } from "../../slices/lessonSlice";
+import { setLoading, setPaginatedResults, setResults } from "../../slices/resultSlice";
 import apiConnector from "../apiConnect";
 
 const {

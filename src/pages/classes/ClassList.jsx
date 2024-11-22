@@ -12,6 +12,8 @@ import { getAllClasses } from "../../services/operations/classAPI";
 
 const ClassList = () => {
 
+    const { role } = useSelector(state => state?.profile?.user?.userId);
+
     const column = [
         {
             header: 'Class Name',
@@ -30,6 +32,7 @@ const ClassList = () => {
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && 'hidden'}`
         },
     ]
 
@@ -55,7 +58,6 @@ const ClassList = () => {
     }
 
     const [currentPage, setCurrentPage] = useState(1);
-    const { role } = useSelector(state => state?.profile?.user?.userId);
     const { token } = useSelector(state => state?.auth);
     const dispatch = useDispatch();
     const { paginatedClasses, totalPages } = useSelector(state => state?.class);

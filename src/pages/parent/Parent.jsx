@@ -1,3 +1,4 @@
+import EventCalendar from "../../components/EventCalender";
 import Announcements from "../../components/Announcements";
 import BigCalender from "../../components/BigCalender";
 
@@ -14,6 +15,7 @@ const Parent = () => {
             </div>
             {/* RIGHT */}
             <div className="w-full xl:w-1/3 flex flex-col gap-8">
+                <EventCalendar />
                 <Announcements />
             </div>
         </div>

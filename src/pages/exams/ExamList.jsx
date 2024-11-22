@@ -3,18 +3,23 @@ import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
-import { examsData, role } from "../../data/data";
 import { FaRegEdit } from "react-icons/fa";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllExams } from "../../services/operations/examAPI";
+import extractDateTime from "../../utils/extractDateTime";
 
 const ExamList = () => {
 
+    const { role } = useSelector(state => state?.profile?.user?.userId);
+
     const column = [
         {
-            header: 'Subject',
-            accessor: 'subject'
+            header: 'Exam Name',
+            accessor: 'examName'
         },
         {
             header: 'Class',
@@ -22,34 +27,35 @@ const ExamList = () => {
             className: 'hidden sm:table-cell'
         },
         {
-            header: 'Teacher',
-            accessor: 'teacher',
+            header: 'Start Date',
+            accessor: 'startDate',
             className: 'hidden md:table-cell'
         },
         {
-            header: 'Date',
-            accessor: 'date',
+            header: 'End Date',
+            accessor: 'endDate',
             className: 'hidden md:table-cell'
         },
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
         },
     ]
 
-    const renderRow = (item) => {
+    const renderRow = (data) => {
         return (
-            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{item.subject}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.class}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.teacher}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.date}</td>
+            <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.examName}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data.class}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.startDate)}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {(role === 'admin' || role === 'teacher') && (
+                        {(role === 'Admin' || role === 'Teacher') && (
                             <>
-                                <FormModal table='exam' type='update' Icon={FaRegEdit} data={item} />
-                                <FormModal table='exam' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                                <FormModal table='exam' type='update' Icon={FaRegEdit} data={data} />
+                                <FormModal table='exam' type='delete' Icon={RiDeleteBin6Line} data={data} />
                             </>
                         )}
                     </div>
@@ -57,6 +63,19 @@ const ExamList = () => {
             </tr>
         );
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedExams, totalPages } = useSelector(state => state?.exam);
+
+    useEffect(() => {
+        dispatch(getAllExams(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -74,7 +93,7 @@ const ExamList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
+                        {role === 'Admin' &&
                             <FormModal table='exam' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
                         }
                     </div>
@@ -82,11 +101,15 @@ const ExamList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={examsData} />
+                <Table column={column} role={role} renderRow={renderRow} data={paginatedExams} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

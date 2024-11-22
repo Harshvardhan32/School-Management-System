@@ -39,7 +39,7 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getTeacherDetails = async (req, res) => {
     try {
-        const { teacherId } = req.body;
+        const teacherId = req.query.teacherId;
 
         if (!teacherId) {
             return res.status(400).json({
@@ -48,11 +48,10 @@ exports.getTeacherDetails = async (req, res) => {
             })
         }
 
-        const teacherDetails = await Teacher.findOne({ teacherId })
+        const teacherDetails = await Teacher.findById(teacherId)
             .populate('userId')
             .populate('classes')
-            .populate('subjects')
-            .exec();
+            .populate('subjects');
 
         if (!teacherDetails) {
             return res.status(404).json({
@@ -65,7 +64,7 @@ exports.getTeacherDetails = async (req, res) => {
             success: true,
             data: teacherDetails,
             message: 'Teacher details fetched successfully!'
-        })
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({

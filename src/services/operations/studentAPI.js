@@ -1,10 +1,11 @@
 import toast from "react-hot-toast";
-import { setLoading, setPaginatedStudents, setStudents } from "../../slices/studentSlice";
+import { setLoading, setPaginatedStudents, setStudentDetails, setStudents } from "../../slices/studentSlice";
 import { studentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
 const {
-    ALL_STUDENTS_API
+    ALL_STUDENTS_API,
+    GET_STUDENT_DETAILS
 } = studentEndPoints;
 
 export const getAllStudents = (token, page = 1, limit = 10, allData = false) => {
@@ -46,6 +47,36 @@ export const getAllStudents = (token, page = 1, limit = 10, allData = false) => 
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false)); // Set loading to false
+        }
+    };
+};
+
+export const getStudentDetails = (token, studentId) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const url = `${GET_STUDENT_DETAILS}?studentId=${studentId}`;
+            const response = await apiConnector("GET", url, null,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                });
+
+            // Check for success in the response
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Failed to fetch teachers.");
+            }
+
+            dispatch(setStudentDetails(response?.data?.data));
+            toast.success('Student details fetched successfully!');
+        } catch (error) {
+            console.log("STUDENT DETAILS API ERROR............", error?.message);
+            toast.error(error?.message || 'Failed to load teacher details.');
+        } finally {
+            toast.dismiss(toastId);
+            dispatch(setLoading(false));
         }
     };
 };

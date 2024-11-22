@@ -14,6 +14,8 @@ import { getAllParents } from "../../services/operations/parentAPI";
 
 const ParentList = () => {
 
+    const { role } = useSelector(state => state?.profile?.user?.userId);
+
     const column = [
         {
             header: 'Info',
@@ -37,11 +39,11 @@ const ParentList = () => {
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && 'hidden'}`
         },
     ]
 
     const renderRow = (data) => {
-        console.log("DATTT: ", data);
         return (
             <tr key={data._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex items-center gap-4 p-4">
@@ -71,7 +73,6 @@ const ParentList = () => {
     }
 
     const [currentPage, setCurrentPage] = useState(1);
-    const { role } = useSelector(state => state?.profile?.user?.userId);
     const { token } = useSelector(state => state?.auth);
     const dispatch = useDispatch();
     const { paginatedParents, totalPages } = useSelector(state => state?.parent);

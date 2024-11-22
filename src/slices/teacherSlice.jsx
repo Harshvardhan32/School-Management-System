@@ -4,6 +4,7 @@ const initialState = {
     loading: false,
     paginatedTeachers: [],
     allTeachers: [],
+    teacherDetails: null,
     totalPages: 0,
     currentPage: 1,
 };
@@ -23,8 +24,11 @@ const teacherSlice = createSlice({
             state.totalPages = action.payload.totalPages;
             state.currentPage = action.payload.currentPage;
         },
+        setTeacherDetails(state, action) {
+            state.teacherDetails = action.payload;
+        }
     },
 });
 
-export const { setLoading, setTeachers, setPaginatedTeachers } = teacherSlice.actions;
+export const { setLoading, setTeachers, setPaginatedTeachers, setTeacherDetails } = teacherSlice.actions;
 export default teacherSlice.reducer;

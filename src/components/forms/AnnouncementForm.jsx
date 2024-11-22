@@ -26,12 +26,12 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
         if (type === 'create') {
-            dispatch(createAnnouncement(data, token));
+            // dispatch(createAnnouncement(formData, token));
         } else {
-            dispatch(updateAnnouncement());
+            // dispatch(updateAnnouncement(formData));
         }
         setOpen(false);
     })
@@ -48,6 +48,7 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
                         placeholder="Title"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("title")}
+                        defaultValue={type === 'update' ? data?.title : ''}
                     />
                     {errors?.title && <p className="text-xs text-red-700 py-2">{errors?.title.message}</p>}
                 </div>
@@ -59,6 +60,7 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
                         id="date"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("date")}
+                        defaultValue={type === 'update' ? new Date(data?.date).toISOString().slice(0, 16) : ''}
                     />
                     {errors?.date && <p className="text-xs text-red-700 py-2">{errors?.date.message}</p>}
                 </div>
@@ -70,6 +72,7 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
                     id="description"
                     className="mmin-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("description")}
+                    defaultValue={type === 'update' ? data?.description : ''}
                 > </textarea>
                 {errors?.description && <p className="text-xs text-red-700 py-2">{errors?.description.message}</p>}
             </div>

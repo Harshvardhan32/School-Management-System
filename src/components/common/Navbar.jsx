@@ -1,16 +1,22 @@
 import { CiDark, CiLight } from "react-icons/ci";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../utils/ThemeContext";
 import ProfilePopup from "./ProfilePopup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllAnnouncement } from "../../services/operations/announcementAPI";
 
 const Navbar = () => {
 
+    const dispatch = useDispatch();
     const { darkMode, toggleDarkMode } = useContext(ThemeContext);
     const [openProfile, setOpenProfile] = useState(false);
-
+    const { token } = useSelector((state) => state?.auth);
     const { user } = useSelector((state) => state?.profile);
     const { announcements } = useSelector(state => state?.announcement);
+
+    useEffect(() => {
+        dispatch(getAllAnnouncement(token, undefined, undefined, true));
+    }, [])
 
     return (
         <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4">
@@ -52,12 +58,12 @@ const Navbar = () => {
                     <span className="text-[10px] text-gray-500 text-right">{user?.userId.role}</span>
                 </div>
                 <img
-                    src="/avatar.png"
+                    src={user?.userId.photo}
                     alt=""
                     onClick={() => setOpenProfile((prev) => !prev)}
                     className="w-[36px] h-[36px] rounded-full cursor-pointer"
                 />
-                {openProfile && <ProfilePopup setOpenProfile={setOpenProfile} role={user?.userId.role} />}
+                {openProfile && <ProfilePopup setOpenProfile={setOpenProfile} photo={user?.userId.photo} role={user?.userId.role} />}
             </div>
         </div>
     );

@@ -33,7 +33,7 @@ const BigCalendar = () => {
             events={calendarEvents}
             startAccessor="start"
             endAccessor="end"
-            views={[Views.WORK_WEEK, Views.DAY]}  // Use Views constants here
+            views={[Views.WORK_WEEK, Views.DAY]}
             view={view}
             style={{ height: "98%" }}
             onView={handleOnChangeView}

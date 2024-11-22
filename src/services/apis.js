@@ -16,6 +16,7 @@ export const userEndPoints = {
 // STUDENT ENDPOINTS
 export const studentEndPoints = {
     ALL_STUDENTS_API: BASE_URL + '/api/v1/user/students',
+    GET_STUDENT_DETAILS: BASE_URL + '/api/v1/user/student-details',
 }
 
 // TEACHER ENDPOINTS
@@ -24,7 +25,7 @@ export const teacherEndPoints = {
     // UPDATE_TEACHER_API: BASE_URL + '/api/v1/class/update',
     // DELETE_TEACHER_API: BASE_URL + '/api/v1/class/delete',
     ALL_TEACHERS_API: BASE_URL + '/api/v1/user/teachers',
-    // GET_TEACHER_DETAILS: BASE_URL + '/api/v1/class/classes',
+    GET_TEACHER_DETAILS: BASE_URL + '/api/v1/user/teacher-details',
 }
 
 // PARENT ENDPOINTS

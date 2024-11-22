@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
 import { eventEndPoints } from '../apis';
 import apiConnector from '../apiConnect';
-import { setLoading } from '../../slices/eventSlice';
+import { setLoading, setPaginatedEvents, setAllEvents } from '../../slices/eventSlice';
 
 const {
     CREATE_EVENT_API,
@@ -73,3 +73,46 @@ export const updateEvent = (data, token, setOpen) => {
         }
     }
 }
+
+export const getAllEvents = (token, page = 1, limit = 10, allData = false) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true)); // Set loading to true
+        const toastId = toast.loading('Loading...');
+        try {
+            // Construct query parameters based on whether we need all data or paginated data
+            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
+            const url = `${ALL_EVENTS_API}${queryParams}`;
+
+            // Make the API request
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            // Check for success in the response
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Failed to fetch subjects.");
+            }
+
+            if (allData) {
+                // Dispatch all events to the store
+                dispatch(setAllSubjects(response?.data?.data));
+            } else {
+                // Dispatch paginated events to the store
+                dispatch(setPaginatedEvents({
+                    data: response?.data.data,
+                    totalPages: response?.data.totalPages,
+                    currentPage: response?.data.currentPage,
+                }));
+            }
+
+            toast.success('Events loaded successfully!');
+        } catch (error) {
+            console.error("Error fetching subjects:", error.message);
+            toast.error(error.message || 'Failed to load subjects.');
+        } finally {
+            toast.dismiss(toastId);
+            dispatch(setLoading(false)); // Set loading to false
+        }
+    };
+};

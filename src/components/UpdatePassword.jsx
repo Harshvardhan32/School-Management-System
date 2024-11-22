@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as z from 'zod';
 
 const UpdatePassword = () => {
@@ -23,6 +23,7 @@ const UpdatePassword = () => {
         console.log(data);
     })
 
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -76,8 +77,8 @@ const UpdatePassword = () => {
                 </div>
             </div>
             <div className="flex gap-4 items-center justify-end">
-                <Link to='/profile' className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px]">Cancel</Link>
-                <button className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>
+                <div onClick={() => navigate(-1)} className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px] cursor-pointer">Cancel</div>
+                <button type="submit" className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>
             </div>
         </form>
     );

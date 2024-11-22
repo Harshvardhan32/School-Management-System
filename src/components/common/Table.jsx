@@ -1,6 +1,6 @@
 
 
-const Table = ({ column, renderRow, data }) => {
+const Table = ({ column, role, renderRow, data }) => {
 
     return (
         <table className="w-full mt-4">

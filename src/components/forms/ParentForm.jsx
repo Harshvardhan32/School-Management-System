@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MultiSelectComponent from "../MultiSelectComponent";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../../services/operations/userAPI";
+import { getAllStudents } from "../../services/operations/studentAPI";
 import * as z from 'zod';
 
 const ParentForm = ({ type, data, setOpen }) => {
@@ -16,8 +17,7 @@ const ParentForm = ({ type, data, setOpen }) => {
 
     const studentsSchema = (type) =>
         type === 'update'
-            ? z.array(
-                z.object({ name: z.string(), })).min(1, { message: 'At least one student must be selected!' })
+            ? z.array(z.string()).min(1, { message: 'At least one student must be selected!' })
             : z.array().optional();
 
     const schema = z.object({
@@ -48,25 +48,41 @@ const ParentForm = ({ type, data, setOpen }) => {
     });
 
     const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
 
-    const onSubmit = handleSubmit(data => {
-        console.log(data);
+    useEffect(() => {
+        dispatch(getAllStudents(token, undefined, undefined, true));
+    }, []);
+
+    const { allStudents } = useSelector(state => state?.student);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const studentOptions = useMemo(() => {
+        return allStudents?.map((item) => ({
+            id: item?._id,
+            name: item?.userId.firstName + " " + item?.userId.lastName,
+        })) || [];
+    }, [allStudents]);
+
+    const selectedStudents = type === 'update' && data?.students.length > 0
+        ? data?.students?.map((id) => {
+            return studentOptions.find((option) => option.id === id);
+        })
+        : getValues("students")?.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        );
+
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
+        console.log("allStudents: ", allStudents);
+        console.log("selectedStudents: ", selectedStudents);
         if (type === 'create') {
-            // dispatch(createUser(data));
+            // dispatch(createUser(formData));
         } else {
-            // dispatch(updateAnnouncement());
+            // dispatch(updateAnnouncement(formData));
         }
         setOpen(false);
     });
-
-    const [studentOptions] = useState([
-        { name: 'Rahul Kumar' },
-        { name: 'Rohit Singh' },
-        { name: 'Aman Kumar' },
-    ]);
-
-    const selectedStudent = getValues("students");
-    const [showPassword, setShowPassword] = useState(false);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -80,6 +96,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="Parent ID"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("parentId")}
+                        defaultValue={type === 'update' ? data?.parentId : ''}
                     />
                     {errors?.parentId && <p className="text-xs text-red-700 py-2">{errors?.parentId.message}</p>}
                 </div>
@@ -90,6 +107,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="Email"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
+                        defaultValue={type === 'update' ? data?.userId.email : ''}
                     />
                     {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email.message}</p>}
                 </div>
@@ -119,6 +137,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="First Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
+                        defaultValue={type === 'update' ? data?.userId.firstName : ''}
                     />
                     {errors?.firstName && <p className="text-xs text-red-700 py-2">{errors?.firstName.message}</p>}
                 </div>
@@ -129,6 +148,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="Last Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
+                        defaultValue={type === 'update' ? data?.userId.lastName : ''}
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
@@ -138,6 +158,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="Phone"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
+                        defaultValue={type === 'update' ? data?.userId.phone : ''}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
                 </div>
@@ -150,6 +171,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         placeholder="Address"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
+                        defaultValue={type === 'update' ? data?.userId.address : ''}
                     />
                     {errors?.address && <p className="text-xs text-red-700 py-2">{errors?.address.message}</p>}
                 </div>
@@ -159,6 +181,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         name=""
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
+                        defaultValue={type === 'update' ? data?.userId.sex : ''}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -176,8 +199,12 @@ const ParentForm = ({ type, data, setOpen }) => {
                         <label className="text-sm text-gray-500">Students</label>
                         <MultiSelectComponent
                             options={studentOptions}
-                            selectedValue={selectedStudent}
-                            setSelectedValue={(value) => setValue("students", value)}
+                            selectedValue={selectedStudents}
+                            setSelectedValue={(value) =>
+                                setValue(
+                                    "students",
+                                    value.map((item) => item.id)
+                                )}
                         />
                         {errors?.students && <p className="text-xs text-red-700 py-2">{errors?.students.message}</p>}
                     </div>

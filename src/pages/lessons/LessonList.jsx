@@ -3,47 +3,46 @@ import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
-import { lessonsData, role } from "../../data/data";
 import { FaRegEdit } from "react-icons/fa";
 import FormModal from "../../components/FormModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { BiSortDown } from "react-icons/bi";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllLessons } from "../../services/operations/lessonAPI";
 
 const LessonList = () => {
 
+    const { role } = useSelector(state => state?.profile?.user?.userId);
+
     const column = [
         {
+            header: 'Lesson Name',
+            accessor: 'title'
+        },
+        {
             header: 'Subject Name',
-            accessor: 'subjectName'
-        },
-        {
-            header: 'Class',
-            accessor: 'class',
+            accessor: 'subjectName',
             className: 'hidden sm:table-cell'
-        },
-        {
-            header: 'Teacher',
-            accessor: 'teacher',
-            className: 'hidden md:table-cell'
         },
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' || role !== 'Teacher' && 'hidden'}`
         },
     ]
 
-    const renderRow = (item) => {
+    const renderRow = (data) => {
         return (
-            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{item.subject}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{item.class}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.teacher}</td>
+            <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.title}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.subject?.subjectName}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {role === 'admin' && (
+                        {role === 'Admin' || role === 'Teacher' && (
                             <>
-                                <FormModal table='lesson' type='update' Icon={FaRegEdit} data={item} />
-                                <FormModal table='lesson' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                                <FormModal table='lesson' type='update' Icon={FaRegEdit} data={data} />
+                                <FormModal table='lesson' type='delete' Icon={RiDeleteBin6Line} data={data} />
                             </>
                         )}
                     </div>
@@ -51,6 +50,19 @@ const LessonList = () => {
             </tr>
         );
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedLessons, totalPages } = useSelector(state => state?.lesson);
+
+    useEffect(() => {
+        dispatch(getAllLessons(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -76,11 +88,15 @@ const LessonList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={lessonsData} />
+                <Table column={column} renderRow={renderRow} data={paginatedLessons} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

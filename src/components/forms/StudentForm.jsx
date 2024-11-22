@@ -113,6 +113,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Student ID"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("studentId")}
+                        defaultValue={type === 'update' ? data?.studentId : ''}
                     />
                     {errors?.studentId && <p className="text-xs text-red-700 py-2">{errors?.studentId.message}</p>}
                 </div>
@@ -123,6 +124,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Email"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
+                        defaultValue={type === 'update' ? data?.userId.email : ''}
                     />
                     {errors?.email && <p className="text-xs text-red-700 py-2">{errors?.email.message}</p>}
                 </div>
@@ -154,6 +156,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="First Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
+                        defaultValue={type === 'update' ? data?.userId.firstName : ''}
                     />
                     {errors?.firstName && <p className="text-xs text-red-700 py-2">{errors?.firstName.message}</p>}
                 </div>
@@ -164,6 +167,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Last Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
+                        defaultValue={type === 'update' ? data?.userId.lastName : ''}
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">
@@ -173,6 +177,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Phone"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
+                        defaultValue={type === 'update' ? data?.userId.phone : ''}
                     />
                     {errors?.phone && <p className="text-xs text-red-700 py-2">{errors?.phone.message}</p>}
                 </div>
@@ -186,6 +191,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Father's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("fatherName")}
+                        defaultValue={type === 'update' ? data?.fatherName : ''}
                     />
                     {errors?.fatherName && <p className="text-xs text-red-700 py-2">{errors?.fatherName.message}</p>}
                 </div>
@@ -196,6 +202,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Mother's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("motherName")}
+                        defaultValue={type === 'update' ? data?.motherName : ''}
                     />
                     {errors?.motherName && <p className="text-xs text-red-700 py-2">{errors?.motherName.message}</p>}
                 </div>
@@ -206,6 +213,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Address"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
+                        defaultValue={type === 'update' ? data?.userId.address : ''}
                     />
                     {errors?.address && <p className="text-xs text-red-700 py-2">{errors?.address.message}</p>}
                 </div>
@@ -217,6 +225,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                     <select
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
+                        defaultValue={type === 'update' ? data?.userId.sex : ''}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -230,6 +239,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                     <select
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("bloodType")}
+                        defaultValue={type === 'update' ? data?.userId.bloodType : ''}
                     >
                         <option value="">Please Select</option>
                         <option value="A+">A+</option>
@@ -250,6 +260,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Date of Birth"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dateOfBirth")}
+                        defaultValue={type === 'update' ? new Date(data?.userId.dateOfBirth).toISOString().slice(0, 10) : ''}
                     />
                     {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
                 </div>
@@ -272,6 +283,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         placeholder="Roll Number"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("rollNumber")}
+                        defaultValue={type === 'update' ? data?.rollNumber : ''}
                     />
                     {errors?.rollNumber && <p className="text-xs text-red-700 py-2">{errors?.rollNumber.message}</p>}
                 </div>

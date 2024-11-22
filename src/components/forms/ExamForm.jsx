@@ -73,6 +73,7 @@ const ExamForm = ({ type, data, setOpen }) => {
                         placeholder="Exam Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("examName")}
+                        defaultValue={type === 'update' ? data?.examName : ''}
                     />
                     {errors?.examName && <p className="text-xs text-red-700 py-2">{errors?.examName.message}</p>}
                 </div>
@@ -82,6 +83,7 @@ const ExamForm = ({ type, data, setOpen }) => {
                         type="datetime-local"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("startDate")}
+                        defaultValue={type === 'update' ? new Date(data?.startDate).toISOString().slice(0, 16) : ''}
                     />
                     {errors?.startDate && <p className="text-xs text-red-700 py-2">{errors?.startDate.message}</p>}
                 </div>
@@ -91,6 +93,7 @@ const ExamForm = ({ type, data, setOpen }) => {
                         type="datetime-local"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("endDate")}
+                        defaultValue={type === 'update' ? new Date(data?.endDate).toISOString().slice(0, 16) : ''}
                     />
                     {errors?.endDate && <p className="text-xs text-red-700 py-2">{errors?.endDate.message}</p>}
                 </div>
@@ -119,6 +122,7 @@ const ExamForm = ({ type, data, setOpen }) => {
                     rows={3}
                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                     {...register("description")}
+                    defaultValue={type === 'update' ? data?.description : ''}
                 ></textarea>
                 {errors?.description && <p className="text-xs text-red-700 py-2">{errors?.description.message}</p>}
             </div>

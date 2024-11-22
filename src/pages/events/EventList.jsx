@@ -3,12 +3,17 @@ import { FaRegEdit } from "react-icons/fa";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
-import { eventsData, role } from "../../data/data";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllEvents } from "../../services/operations/eventAPI";
+import extractDateTime from '../../utils/extractDateTime';
 
 const EventList = () => {
+
+    const { role } = useSelector(state => state?.profile?.user?.userId);
 
     const column = [
         {
@@ -16,44 +21,41 @@ const EventList = () => {
             accessor: 'title'
         },
         {
-            header: 'Date',
-            accessor: 'date',
+            header: 'Classes',
+            accessor: 'classId',
             className: 'hidden md:table-cell'
         },
         {
-            header: 'Start Time',
-            accessor: 'startTime',
+            header: 'Start Date',
+            accessor: 'startDate',
             className: 'hidden md:table-cell'
         },
         {
-            header: 'End Time',
-            accessor: 'endTime',
+            header: 'End End',
+            accessor: 'endDate',
             className: 'hidden md:table-cell'
         },
         {
             header: 'Actions',
             accessor: 'action',
+            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
         },
     ]
 
-    const renderRow = (item) => {
+    const renderRow = (data) => {
+        // console.log("DAAAAA: ", data);
         return (
-            <tr key={item.id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{item.title}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.date}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.startTime}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{item.endTime}</td>
+            <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
+                <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.title}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classId.length > 0 ? 'Class' : '_'}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.startDate)}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {/* <Link to={`/list/teachers/${item.id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-200">
-                                <FaRegEdit  fontSize={18} />
-                            </button>
-                        </Link> */}
-                        {role === 'admin' && (
+                        {role === 'Admin' || role === 'Teacher' && (
                             <>
-                                <FormModal table='event' type='update' Icon={FaRegEdit} data={item} />
-                                <FormModal table='event' type='delete' Icon={RiDeleteBin6Line} data={item} />
+                                <FormModal table='event' type='update' Icon={FaRegEdit} data={data} />
+                                <FormModal table='event' type='delete' Icon={RiDeleteBin6Line} data={data} />
                             </>
                         )}
                     </div>
@@ -61,6 +63,19 @@ const EventList = () => {
             </tr>
         );
     }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const { token } = useSelector(state => state?.auth);
+    const dispatch = useDispatch();
+    const { paginatedEvents, totalPages } = useSelector(state => state?.event);
+
+    useEffect(() => {
+        dispatch(getAllEvents(token, currentPage, 10, false));
+    }, [currentPage, token, dispatch]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -78,7 +93,7 @@ const EventList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
+                        {role === 'Admin' &&
                             <FormModal table='event' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
                         }
                     </div>
@@ -86,11 +101,15 @@ const EventList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={eventsData} />
+                <Table column={column} renderRow={renderRow} data={paginatedEvents} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

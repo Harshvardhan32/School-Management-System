@@ -42,7 +42,7 @@ export const createAssignment = (data, token, setOpen) => {
     }
 }
 
-export const getAllAssignment = (token, page = 1, limit = 10, allData = false) => {
+export const getAllAssignments = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
         dispatch(setLoading(true)); // Set loading to true
         const toastId = toast.loading('Loading assignments...');
