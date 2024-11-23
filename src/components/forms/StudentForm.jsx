@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import MultiSelectComponent from "../MultiSelectComponent";
-import SelectOption from "../common/SelectOption";
-import { createUser } from "../../services/operations/userAPI";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllClasses } from "../../services/operations/classAPI";
 import * as z from 'zod';
+import { useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { zodResolver } from '@hookform/resolvers/zod';
+import SelectOption from "../common/SelectOption";
+import MultiSelectComponent from "../MultiSelectComponent";
+import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { createUser } from "../../services/operations/userAPI";
+import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
 
 const StudentForm = ({ type, data, setOpen }) => {
@@ -60,10 +60,12 @@ const StudentForm = ({ type, data, setOpen }) => {
 
     const dispatch = useDispatch();
     const { token } = useSelector(state => state?.auth);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         dispatch(getAllClasses(token, undefined, undefined, true));
         dispatch(getAllSubjects(token, undefined, undefined, true));
+        console.log("DATAAAA: ", data);
     }, [])
 
     const { allClasses } = useSelector(state => state?.class);
@@ -83,11 +85,13 @@ const StudentForm = ({ type, data, setOpen }) => {
         })) || [];
     }, [allSubjects]);
 
-    const selectedSubjects = getValues("subjects")?.map((id) =>
-        subjectOptions.find((option) => option.id === id)
-    );
-
-    const [showPassword, setShowPassword] = useState(false);
+    const selectedSubjects = type === 'update' && data?.subjects.length > 0
+        ? data?.subjects?.map((id) => {
+            subjectOptions.find((option) => option.id === id);
+        })
+        : getValues("subjects")?.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        );
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
@@ -101,7 +105,7 @@ const StudentForm = ({ type, data, setOpen }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Student</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Student</h1>
 
             {/* Authentication Information */}
             <span className="text-xs font-medium text-gray-700">Authentication Information</span>
@@ -225,7 +229,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                     <select
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
-                        defaultValue={type === 'update' ? data?.userId.sex : ''}
+                        value={type === 'update' && data?.userId?.sex?.toLowerCase()}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -272,6 +276,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         name='classId'
                         control={control}
                         options={classOptions}
+                        defaultValue={type === 'update' && data?.classId._id}
                         placeholder='Please Select'
                         label='Class'
                     />

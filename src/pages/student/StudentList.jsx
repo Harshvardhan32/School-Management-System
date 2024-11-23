@@ -5,11 +5,11 @@ import TableSearch from "../../components/common/TableSearch";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { BiSortDown } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import FormModal from "../../components/FormModal";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllStudents } from "../../services/operations/studentAPI";
+import { GrAdd } from "react-icons/gr";
 
 const StudentList = () => {
 
@@ -109,7 +109,7 @@ const StudentList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='student' type='create' Icon={AiOutlinePlus} />
+                            <FormModal table='student' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>

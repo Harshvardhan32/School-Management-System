@@ -5,12 +5,12 @@ import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import FormModal from "../../components/FormModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllAssignments } from "../../services/operations/assignmentAPI";
 import extractDate from '../../utils/extractDate';
+import { GrAdd } from "react-icons/gr";
 
 const AssignmentList = () => {
 
@@ -59,7 +59,7 @@ const AssignmentList = () => {
                 <td className="hidden sm:table-cell p-4 dark:text-gray-200">{extractDate(data?.dueDate)}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {role === 'Admin' || role === 'Teacher' && (
+                        {(role === 'Admin' || role === 'Teacher') && (
                             <>
                                 <FormModal table='assignment' type='update' Icon={FaRegEdit} data={data} />
                                 <FormModal table='assignment' type='delete' Icon={RiDeleteBin6Line} data={data} />
@@ -101,7 +101,7 @@ const AssignmentList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='assignment' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='assignment' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

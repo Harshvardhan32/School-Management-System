@@ -6,7 +6,7 @@ import Pagination from "../../components/common/Pagination";
 import { FaRegEdit } from "react-icons/fa";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
+import { GrAdd } from "react-icons/gr";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllExams } from "../../services/operations/examAPI";
@@ -39,7 +39,7 @@ const ExamList = () => {
         {
             header: 'Actions',
             accessor: 'action',
-            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
+            className: `${role !== 'Admin' && 'hidden'}`
         },
     ]
 
@@ -52,7 +52,7 @@ const ExamList = () => {
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {(role === 'Admin' || role === 'Teacher') && (
+                        {role === 'Admin' && (
                             <>
                                 <FormModal table='exam' type='update' Icon={FaRegEdit} data={data} />
                                 <FormModal table='exam' type='delete' Icon={RiDeleteBin6Line} data={data} />
@@ -94,7 +94,7 @@ const ExamList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='exam' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='exam' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

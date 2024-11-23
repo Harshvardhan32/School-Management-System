@@ -32,6 +32,7 @@ const ExamForm = ({ type, data, setOpen }) => {
 
     useEffect(() => {
         dispatch(getAllSubjects(token, undefined, undefined, true));
+        console.log("DATAAA: ", data);
     }, []);
 
     const onSubmit = handleSubmit(formData => {
@@ -58,9 +59,15 @@ const ExamForm = ({ type, data, setOpen }) => {
         })) || [];
     }, [allSubjects]);
 
-    const selectedSubjects = getValues("subjects")?.map((id) =>
-        subjectOptions.find((option) => option.id === id)
-    );
+    const selectedSubjects =
+        // type === 'update' && data?.subjects.length > 0
+        //     ? data?.subjects.map((subject) =>
+        //         subjectOptions.find((option) => option.id === subject._id)
+        //     )
+        //     :
+        getValues("subjects")?.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        );
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>

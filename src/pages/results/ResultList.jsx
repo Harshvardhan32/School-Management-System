@@ -6,10 +6,10 @@ import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import { BiSortDown } from "react-icons/bi";
 import FormModal from "../../components/FormModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllResults } from "../../services/operations/resultAPI";
+import { GrAdd } from "react-icons/gr";
 
 const ResultList = () => {
 
@@ -111,7 +111,7 @@ const ResultList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='result' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='result' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

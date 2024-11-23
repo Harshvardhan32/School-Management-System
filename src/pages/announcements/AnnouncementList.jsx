@@ -6,11 +6,11 @@ import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllAnnouncement } from "../../services/operations/announcementAPI";
 import extractDateTime from "../../utils/extractDateTime";
+import { GrAdd } from "react-icons/gr";
 
 const AnnouncementList = () => {
 
@@ -40,7 +40,7 @@ const AnnouncementList = () => {
                 <td className="p-4 font-semibold dark:text-gray-200">{data?.title}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.date)}</td>
                 <td className="p-4 flex items-center gap-2">
-                    {role === 'Admin' || role === 'Teacher' && (
+                    {(role === 'Admin' || role === 'Teacher') && (
                         <>
                             <FormModal table='announcement' type='update' Icon={FaRegEdit} data={data} />
                             <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={data} />
@@ -81,7 +81,7 @@ const AnnouncementList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='announcement' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='announcement' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

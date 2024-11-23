@@ -39,6 +39,7 @@ const EventForm = ({ type, data, setOpen }) => {
         if (type === 'update') {
             dispatch(getAllClasses(token, undefined, undefined, true));
         }
+        console.log("DAAAAA: ", data);
     }, []);
 
     const { allClasses } = useSelector(state => state?.class);
@@ -52,9 +53,13 @@ const EventForm = ({ type, data, setOpen }) => {
     }, [allClasses]);
 
     // Retrieve selected values from the form state
-    const selectedClasses = getValues("classId")?.map((id) =>
-        classOptions.find((option) => option.id === id)
-    );
+    const selectedClasses = type === 'update' && data?.classes.length > 0
+        ? data?.classes.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        )
+        : getValues("classId")?.map((id) =>
+            classOptions.find((option) => option.id === id)
+        );
 
     const onSubmit = handleSubmit(formData => {
         const start = new Date(formData?.startDate);

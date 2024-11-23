@@ -7,6 +7,7 @@ import FormModal from "../../components/FormModal";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getTeacherDetails } from "../../services/operations/teacherAPI";
+import { formatDate } from "../../services/formatDate";
 
 const TeacherDetailsPage = () => {
 
@@ -29,7 +30,7 @@ const TeacherDetailsPage = () => {
                     {/* USER INFO CARD */}
                     <div className="bg-lamaGreen py-6 px-4 rounded-[6px] flex-1 flex gap-4">
                         <div className="w-1/3">
-                            <img src="https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                            <img src={teacherDetails?.userId.photo}
                                 alt=""
                                 width={144}
                                 height={144}
@@ -37,29 +38,28 @@ const TeacherDetailsPage = () => {
                         </div>
                         <div className="w-2/3 flex flex-col justify-between gap-4">
                             <div className="flex gap-2 items-center justify-between">
-                                <h1 className="text-xl font-semibold">Leonard Snyder</h1>
+                                <h1 className="text-xl font-semibold">{teacherDetails?.userId.firstName} {teacherDetails?.userId.lastName}</h1>
                                 <FormModal table='teacher' type='update' Icon={FaRegEdit} data={teacherDetails} />
                             </div>
-                            <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p>
+                            {/* <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p> */}
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/blood.png" alt="" width={14} height={14} />
-                                    <span>A+</span>
+                                    <span>{teacherDetails?.userId.bloodType}</span>
                                 </div>
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/date.png" alt="" width={14} height={14} />
-                                    <span>January 2025</span>
+                                    <span>{formatDate(teacherDetails?.userId.dateOfBirth)}</span>
                                 </div>
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/mail.png" alt="" width={14} height={14} />
-                                    <span>user@gmail.com</span>
+                                    <span>{teacherDetails?.userId.email}</span>
                                 </div>
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/phone.png" alt="" width={14} height={14} />
-                                    <span>1 234 567</span>
+                                    <span>{teacherDetails?.userId.phone}</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     {/* SMALL CARDS */}
@@ -106,11 +106,11 @@ const TeacherDetailsPage = () => {
                 <div className="bg-white p-4 rounded-[6px]">
                     <h1 className="text-xl font-semibold">Shortcuts</h1>
                     <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-700">
-                        <Link className="p-3 rounded-[6px] bg-pink-200" to={'/'}>Teacher&apos; Classes</Link>
-                        <Link className="p-3 rounded-[6px] bg-emerald-200" to={'/'}>Teacher&apos; Students</Link>
-                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/'}>Teacher&apos; Lessons</Link>
-                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/'}>Teacher&apos; Exams</Link>
-                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Teacher&apos; Assignments</Link>
+                        <Link className="p-3 rounded-[6px] bg-pink-200" to={'/'}>Teacher's Classes</Link>
+                        <Link className="p-3 rounded-[6px] bg-emerald-200" to={'/'}>Teacher's Students</Link>
+                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/'}>Teacher's Lessons</Link>
+                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/'}>Teacher's Exams</Link>
+                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Teacher's Assignments</Link>
                     </div>
                 </div>
                 <Performance />

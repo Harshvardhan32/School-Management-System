@@ -11,7 +11,7 @@ exports.getAdminDetails = async (req, res) => {
             })
         }
 
-        const teacherDetails = await Teacher.findOne({ teacherId })
+        const teacherDetails = await Teacher.findOne({ adminId })
             .populate('userId')
             .populate('classes')
             .populate('subjects')

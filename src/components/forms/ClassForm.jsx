@@ -48,6 +48,7 @@ const ClassForm = ({ type, data, setOpen }) => {
             dispatch(getAllStudents(token, undefined, undefined, true));
             dispatch(getAllSubjects(token, undefined, undefined, true));
         }
+        console.log("DATASS: ", data);
     }, []);
 
     const { allTeachers } = useSelector(state => state?.teacher);
@@ -77,15 +78,29 @@ const ClassForm = ({ type, data, setOpen }) => {
     }, [allStudents]);
 
     // Retrieve selected values from the form state
-    const selectedTeachers = getValues("teachers")?.map((id) =>
-        teacherOptions.find((option) => option.id === id)
-    );
-    const selectedStudents = getValues("students")?.map((id) =>
-        studentOptions.find((option) => option.id === id)
-    );
-    const selectedSubjects = getValues("subjects")?.map((id) =>
-        subjectOptions.find((option) => option.id === id)
-    );
+    const selectedTeachers = type === 'update' && data?.teachers.length > 0
+        ? data?.teachers.map((id) =>
+            teacherOptions.find((option) => option.id === id)
+        )
+        : getValues("teachers")?.map((id) =>
+            teacherOptions.find((option) => option.id === id)
+        );
+
+    const selectedStudents = type === 'update' && data?.students.length > 0
+        ? data?.students.map((id) =>
+            studentOptions.find((option) => option.id === id)
+        )
+        : getValues("students")?.map((id) =>
+            studentOptions.find((option) => option.id === id)
+        );
+
+    const selectedSubjects = type === 'update' && data?.students.length > 0
+        ? data?.students.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        )
+        : getValues("subjects")?.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        );
 
     // Handle form submission
     const onSubmit = handleSubmit((formData) => {
@@ -130,6 +145,7 @@ const ClassForm = ({ type, data, setOpen }) => {
                             name='supervisor'
                             control={control}
                             options={teacherOptions}
+                            defaultValue={(type === 'update' && data?.supervisor) && data?.supervisor}
                             placeholder='Please Select'
                             label='Supervisor'
                         />

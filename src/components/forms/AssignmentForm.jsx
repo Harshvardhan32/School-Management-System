@@ -36,6 +36,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
         dispatch(getAllSubjects(token, undefined, undefined, true));
         dispatch(getAllClasses(token, undefined, undefined, true)); // Fetch all classes
         dispatch(getAllTeachers(token, undefined, undefined, true));
+        console.log("DDDDDDDDd: ", data);
     }, [dispatch, token]);
 
     // Access Redux states
@@ -95,6 +96,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="subject"
                         control={control}
                         options={subjectOptions}
+                        defaultValue={type === 'update' && data?.subject?._id}
                         placeholder="Please Select"
                         label="Subject"
                     />
@@ -104,6 +106,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="classId"
                         control={control}
                         options={classOptions}
+                        defaultValue={type === 'update' && data?.classId?._id}
                         placeholder="Please Select"
                         label="Class"
                     />
@@ -113,6 +116,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="teacher"
                         control={control}
                         options={teacherOptions}
+                        defaultValue={type === 'update' && data?.teacher?._id}
                         placeholder="Please Select"
                         label="Teacher"
                     />

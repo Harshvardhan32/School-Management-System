@@ -70,6 +70,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
         }
     }, [type, token]);
 
+    const [showPassword, setShowPassword] = useState(false);
     const { allClasses } = useSelector(state => state?.class);
     const { allSubjects } = useSelector(state => state?.subject);
 
@@ -88,15 +89,21 @@ const TeacherForm = ({ type, data, setOpen }) => {
         })) || [];
     }, [allSubjects]);
 
-    const selectedSubjects = getValues("subjects")?.map((id) =>
-        subjectOptions.find((option) => option.id === id)
-    );
+    const selectedClasses = type === 'update' && data?.classes.length > 0
+        ? data?.classes?.map((id) => {
+            classOptions.find((option) => option.id === id);
+        })
+        : getValues("classId")?.map((id) =>
+            classOptions.find((option) => option.id === id)
+        );
 
-    const selectedClasses = getValues("classId")?.map((id) =>
-        classOptions.find((option) => option.id === id)
-    );
-
-    const [showPassword, setShowPassword] = useState(false);
+    const selectedSubjects = type === 'update' && data?.subjects.length > 0
+        ? data?.subjects?.map((id) => {
+            subjectOptions.find((option) => option.id === id);
+        })
+        : getValues("subjects")?.map((id) =>
+            subjectOptions.find((option) => option.id === id)
+        );
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
@@ -241,7 +248,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         name=""
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
-                        defaultValue={type === 'update' ? data?.userId.sex : ''}
+                        value={type === 'update' && data?.userId?.sex?.toLowerCase()}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>

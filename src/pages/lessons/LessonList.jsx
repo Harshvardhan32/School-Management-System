@@ -5,11 +5,11 @@ import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import { FaRegEdit } from "react-icons/fa";
 import FormModal from "../../components/FormModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLessons } from "../../services/operations/lessonAPI";
+import { GrAdd } from "react-icons/gr";
 
 const LessonList = () => {
 
@@ -28,7 +28,7 @@ const LessonList = () => {
         {
             header: 'Actions',
             accessor: 'action',
-            className: `${role !== 'Admin' || role !== 'Teacher' && 'hidden'}`
+            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
         },
     ]
 
@@ -39,7 +39,7 @@ const LessonList = () => {
                 <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.subject?.subjectName}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {role === 'Admin' || role === 'Teacher' && (
+                        {(role === 'Admin' || role === 'Teacher') && (
                             <>
                                 <FormModal table='lesson' type='update' Icon={FaRegEdit} data={data} />
                                 <FormModal table='lesson' type='delete' Icon={RiDeleteBin6Line} data={data} />
@@ -80,8 +80,8 @@ const LessonList = () => {
                         <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
                             <BiSortDown fontSize={18} />
                         </button>
-                        {role === 'admin' &&
-                            <FormModal table='lesson' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                        {(role === 'Admin' || role === 'Teacher') &&
+                            <FormModal table='lesson' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

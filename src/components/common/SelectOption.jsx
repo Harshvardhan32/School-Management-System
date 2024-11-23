@@ -4,9 +4,9 @@ import { Controller } from 'react-hook-form';
 import { ThemeContext } from '../../utils/ThemeContext';
 import customStyles from '../../utils/CustomStyles';
 
-const SelectOption = ({ name, control, options, placeholder, label }) => {
-    const { darkMode } = useContext(ThemeContext);
+const SelectOption = ({ name, control, options, placeholder, label, defaultValue }) => {
 
+    const { darkMode } = useContext(ThemeContext);
     const styles = customStyles(darkMode);
 
     // Map options to match React-Select's expected format
@@ -15,12 +15,14 @@ const SelectOption = ({ name, control, options, placeholder, label }) => {
         label: option.name,
     }));
 
+
     return (
         <div className="flex flex-col gap-2">
             {label && <label className="text-sm text-gray-500">{label}</label>}
             <Controller
                 name={name}
                 control={control}
+                defaultValue={defaultValue}
                 render={({ field, fieldState }) => (
                     <>
                         <Select

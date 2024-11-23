@@ -13,7 +13,7 @@ const SubjectForm = ({ type, data, setOpen }) => {
 
     const schema = z.object({
         subjectName: z.string().min(1, { message: 'Subject name is required!' }),
-        classId: z.array(z.string()).min(1, { message: 'Class is required!' }),
+        classes: z.array(z.string()).min(1, { message: 'Class is required!' }),
         teachers: z.array(z.string()).optional(),
         lessons: z.array(z.string()).optional(),
     });
@@ -27,7 +27,7 @@ const SubjectForm = ({ type, data, setOpen }) => {
     } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
-            classId: [],
+            classes: [],
             teachers: [],
             lessons: [],
         },
@@ -42,16 +42,8 @@ const SubjectForm = ({ type, data, setOpen }) => {
             dispatch(getAllTeachers(token, undefined, undefined, true));
             dispatch(getAllLessons(token, undefined, undefined, true));
         }
+        console.log("DATAAAA: ", data);
     }, []);
-
-    const onSubmit = handleSubmit(formData => {
-        console.log(formData);
-        if (type === 'create') {
-            dispatch(createSubject(formData, token, setOpen));
-        } else {
-            // console.log("Form Data: ", formData);
-        }
-    });
 
     const { allLessons } = useSelector(state => state?.lesson);
     const { allClasses } = useSelector(state => state?.class);
@@ -80,15 +72,39 @@ const SubjectForm = ({ type, data, setOpen }) => {
     }, [allLessons]);
 
     // Retrieve selected values from the form state
-    const selectedClasses = getValues("classId")?.map((id) =>
-        classOptions.find((option) => option.id === id)
-    );
-    const selectedTeachers = getValues("teachers")?.map((id) =>
-        teacherOptions.find((option) => option.id === id)
-    );
-    const selectedLessons = getValues("lessons")?.map((id) =>
-        lessonOptions.find((option) => option.id === id)
-    );
+    const selectedClasses =
+        // type === 'update' && data?.classes.length > 0
+        //     ? data?.classes.map((item) =>
+        //         classOptions.find((option) => option.id === item._id)
+        //     )
+        //     :
+        getValues("classes")?.map((id) =>
+            classOptions.find((option) => option.id === id)
+        );
+
+    const selectedTeachers = type === 'update' && data?.teachers.length > 0
+        ? data?.teachers.map((id) =>
+            teacherOptions.find((option) => option.id === id)
+        )
+        : getValues("teachers")?.map((id) =>
+            teacherOptions.find((option) => option.id === id)
+        );
+    const selectedLessons = type === 'update' && data?.lessons.length > 0
+        ? data?.lessons.map((id) =>
+            lessonOptions.find((option) => option.id === id)
+        )
+        : getValues("lessons")?.map((id) =>
+            lessonOptions.find((option) => option.id === id)
+        );
+
+    const onSubmit = handleSubmit(formData => {
+        console.log(formData);
+        if (type === 'create') {
+            dispatch(createSubject(formData, token, setOpen));
+        } else {
+            // console.log("Form Data: ", formData);
+        }
+    });
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -112,11 +128,11 @@ const SubjectForm = ({ type, data, setOpen }) => {
                         selectedValue={selectedClasses}
                         setSelectedValue={(value) =>
                             setValue(
-                                "classId",
+                                "classes",
                                 value.map((item) => item.id)
                             )}
                     />
-                    {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId.message}</p>}
+                    {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes.message}</p>}
                 </div>
             </div>
             {

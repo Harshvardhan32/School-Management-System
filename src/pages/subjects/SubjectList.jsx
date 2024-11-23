@@ -3,12 +3,12 @@ import Table from "../../components/common/Table";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import TableSearch from "../../components/common/TableSearch";
 import { BiSortDown } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import FormModal from "../../components/FormModal";
 import { FaRegEdit } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
+import { GrAdd } from "react-icons/gr";
 
 const SubjectList = () => {
 
@@ -37,7 +37,7 @@ const SubjectList = () => {
         return (
             <tr key={data._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.subjectName}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.classId.length > 0 ? 'ClassID' : '_'}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.classes.length > 0 ? 'ClassID' : '_'}</td>
                 <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.teachers.length > 0 ? data?.teachers.join(', ') : '_'}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
@@ -84,7 +84,7 @@ const SubjectList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='subject' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='subject' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

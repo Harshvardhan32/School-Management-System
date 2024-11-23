@@ -122,7 +122,7 @@ const Settings = () => {
                             id="sex"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("sex")}
-                            defaultValue={user?.userId.sex}
+                            value={user?.userId?.sex?.toLowerCase()}
                         >
                             <option value="">Please Select</option>
                             <option value="male">Male</option>

@@ -74,7 +74,6 @@ export const getTeacherDetails = (token, teacherId) => {
                 throw new Error(response?.data?.message || "Failed to fetch teachers.");
             }
 
-            console.log('Response: ', response?.data);
             dispatch(setTeacherDetails(response?.data?.data));
             toast.success('Teachers details fetched successfully!');
         } catch (error) {

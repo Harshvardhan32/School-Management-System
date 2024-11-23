@@ -4,11 +4,11 @@ import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import FormModal from "../../components/FormModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import { BiSortDown } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllClasses } from "../../services/operations/classAPI";
+import { GrAdd } from "react-icons/gr";
 
 const ClassList = () => {
 
@@ -88,7 +88,7 @@ const ClassList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='class' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='class' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

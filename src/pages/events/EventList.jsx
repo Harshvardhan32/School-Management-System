@@ -5,11 +5,11 @@ import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllEvents } from "../../services/operations/eventAPI";
 import extractDateTime from '../../utils/extractDateTime';
+import { GrAdd } from "react-icons/gr";
 
 const EventList = () => {
 
@@ -47,12 +47,12 @@ const EventList = () => {
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.title}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classId.length > 0 ? 'Class' : '_'}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classes.length > 0 ? 'Class' : '_'}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.startDate)}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
-                        {role === 'Admin' || role === 'Teacher' && (
+                        {(role === 'Admin' || role === 'Teacher') && (
                             <>
                                 <FormModal table='event' type='update' Icon={FaRegEdit} data={data} />
                                 <FormModal table='event' type='delete' Icon={RiDeleteBin6Line} data={data} />
@@ -94,7 +94,7 @@ const EventList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='event' type='create' Icon={AiOutlinePlus} data={{ id: 1 }} />
+                            <FormModal table='event' type='create' Icon={GrAdd} data={{ id: 1 }} />
                         }
                     </div>
                 </div>

@@ -68,6 +68,7 @@ const LessonForm = ({ type, data, setOpen }) => {
                         name='subject'
                         control={control}
                         options={subjectOptions}
+                        defaultValue={type === 'update' && data?.subject}
                         placeholder='Please Select'
                         label='Subject'
                     />

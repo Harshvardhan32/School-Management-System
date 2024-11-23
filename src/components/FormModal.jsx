@@ -18,9 +18,14 @@ const FormModal = ({ table, type, Icon, data }) => {
     const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
     const [open, setOpen] = useState(false);
 
+    const onSubmit = (e) => {
+        e.preventDefault();
+        console.log(`${data} deleted successfully!`);
+    }
+
     const Form = () => {
-        return type === 'delete' && data?.id ? (
-            <form action="" className="p-4 flex flex-col gap-4">
+        return type === 'delete' ? (
+            <form onSubmit={onSubmit} className="p-4 flex flex-col gap-4">
                 <span className="text-center font-medium dark:text-gray-200">All data will be lost. Are you sure you want to delete this {table}?</span>
                 <button className="bg-red-700 text-white py-2 px-4 rounded-[6px] border-none w-max self-center">Delete</button>
             </form>

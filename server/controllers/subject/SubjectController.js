@@ -3,9 +3,9 @@ const Subject = require('../../models/Subject');
 exports.createSubject = async (req, res) => {
     try {
 
-        const { subjectName, classId } = req.body;
+        const { subjectName, classes } = req.body;
 
-        if (!subjectName || !classId) {
+        if (!subjectName || !classes) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all required details!"
@@ -14,7 +14,7 @@ exports.createSubject = async (req, res) => {
 
         const subjectRecord = await Subject.create({
             subjectName,
-            classId,
+            classes,
         });
 
         const subjectResponse = await Subject.findById(subjectRecord?._id)
@@ -42,11 +42,11 @@ exports.updateSubject = async (req, res) => {
         const {
             subjectId,
             subjectName,
-            classId,
+            classes,
             teachers,
             lessons } = req.body;
 
-        if (!subjectId || !subjectName || !classId) {
+        if (!subjectId || !subjectName || !classes) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all required details!"
@@ -65,14 +65,14 @@ exports.updateSubject = async (req, res) => {
         const updatedResponse = await Subject.findByIdAndUpdate(subjectId,
             {
                 subjectName,
-                classId,
+                classes,
                 teachers,
                 lessons
             },
             { new: true })
-        // .populate('classId')
-        // .populate('teachers')
-        // .populate('lessons');
+            .populate('classes')
+            .populate('teachers')
+            .populate('lessons');
 
         return res.status(200).json({
             success: true,
@@ -128,7 +128,7 @@ exports.getAllSubject = async (req, res) => {
         const skip = (page - 1) * limit;
 
         let query = Subject.find()
-            .populate('classId')
+            .populate('classes')
             .populate('teachers')
             .populate('lessons');
 

@@ -8,7 +8,7 @@ const subjectSchema = new Schema(
             required: true,
             index: true
         },
-        classId: [
+        classes: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Class',

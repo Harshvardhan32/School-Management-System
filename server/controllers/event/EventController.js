@@ -12,7 +12,7 @@ exports.createEvent = async (req, res) => {
             })
         }
 
-        const eventResponse = await Event.create({ title, content, startDate, endDate });
+        const eventResponse = await Event.create({ title, content, startDate, endDate, classes });
 
         return res.status(200).json({
             success: true,
@@ -31,7 +31,7 @@ exports.createEvent = async (req, res) => {
 
 exports.updateEvent = async (req, res) => {
     try {
-        const { eventId, title, content, classId, startDate, endDate } = req.body;
+        const { eventId, title, content, classes, startDate, endDate } = req.body;
 
         if (!eventId || !title || !content || !startDate || !endDate) {
             return res.status(400).json({
@@ -40,7 +40,7 @@ exports.updateEvent = async (req, res) => {
             })
         }
 
-        const updatedResponse = await Event.findByIdAndUpdate(eventId, { title, content, classId, startDate, endDate }, { new: true });
+        const updatedResponse = await Event.findByIdAndUpdate(eventId, { title, content, classes, startDate, endDate }, { new: true });
 
         return res.status(200).json({
             success: true,

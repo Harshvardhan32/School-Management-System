@@ -4,7 +4,7 @@ import Table from "../../components/common/Table";
 import TableSearch from "../../components/common/TableSearch";
 import { IoEyeOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { AiOutlinePlus } from "react-icons/ai";
+import { GrAdd } from "react-icons/gr";
 import { BiSortDown } from "react-icons/bi";
 import FormModal from "../../components/FormModal";
 import { useEffect, useMemo, useState } from "react";
@@ -115,7 +115,7 @@ const TeacherList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='teacher' type={'create'} Icon={AiOutlinePlus} />
+                            <FormModal table='teacher' type={'create'} Icon={GrAdd} />
                         }
                     </div>
                 </div>
