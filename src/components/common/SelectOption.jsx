@@ -22,7 +22,7 @@ const SelectOption = ({ name, control, options, placeholder, label, defaultValue
             <Controller
                 name={name}
                 control={control}
-                defaultValue={defaultValue}
+                defaultValue={defaultValue || ''}
                 render={({ field, fieldState }) => (
                     <>
                         <Select

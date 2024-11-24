@@ -3,7 +3,7 @@ const Subject = require('../../models/Subject');
 exports.createSubject = async (req, res) => {
     try {
 
-        const { subjectName, classes } = req.body;
+        const { subjectName, classes, teachers, lessons } = req.body;
 
         if (!subjectName || !classes) {
             return res.status(400).json({
@@ -12,13 +12,12 @@ exports.createSubject = async (req, res) => {
             })
         }
 
-        const subjectRecord = await Subject.create({
+        const subjectResponse = await Subject.create({
             subjectName,
             classes,
+            teachers,
+            lessons
         });
-
-        const subjectResponse = await Subject.findById(subjectRecord?._id)
-            .populate('classId');
 
         return res.status(200).json({
             success: true,

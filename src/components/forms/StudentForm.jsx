@@ -9,6 +9,7 @@ import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { createUser } from "../../services/operations/userAPI";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
+import { getAllStudents } from '../../services/operations/studentAPI';
 
 const StudentForm = ({ type, data, setOpen }) => {
 
@@ -18,16 +19,11 @@ const StudentForm = ({ type, data, setOpen }) => {
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
 
-    // Subject zod schema for create and update 
-    const subjectsSchema = (type) =>
-        type === 'update'
-            ? z.array(z.string()).min(1, { message: 'At least one subject must be selected!' })
-            : z.array().optional();
-
     const schema = z.object({
         studentId: z.string()
-            .min(3, { message: 'Student Id must be at least 3 character long!' })
-            .max(20, { message: "Student Id must be at most 20 characters long!" }),
+            .min(3, { message: 'Student ID must be at least 3 character long!' })
+            .max(20, { message: "Student ID must be at most 20 characters long!" })
+            .regex(/^\S+$/, { message: "Student ID must not contain spaces!" }),
         email: z.string().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
@@ -42,7 +38,7 @@ const StudentForm = ({ type, data, setOpen }) => {
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Student'),
-        subjects: subjectsSchema(type),
+        subjects: z.array(z.string()).optional(),
     });
 
     const {
@@ -65,8 +61,23 @@ const StudentForm = ({ type, data, setOpen }) => {
     useEffect(() => {
         dispatch(getAllClasses(token, undefined, undefined, true));
         dispatch(getAllSubjects(token, undefined, undefined, true));
-        console.log("DATAAAA: ", data);
-    }, [])
+        // dispatch(getAllStudents(token, undefined, undefined, true));
+    }, [dispatch]);
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             await Promise.all([
+    //                 dispatch(getAllStudents(token, undefined, undefined, true)),
+    //                 dispatch(getAllClasses(token, undefined, undefined, true)),
+    //                 dispatch(getAllSubjects(token, undefined, undefined, true)),
+    //             ]);
+    //         } catch (error) {
+    //             console.error("Failed to fetch data:", error);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [token, dispatch]);
 
     const { allClasses } = useSelector(state => state?.class);
     const { allSubjects } = useSelector(state => state?.subject);
@@ -96,11 +107,11 @@ const StudentForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createUser(formData));
+            // dispatch(createUser(formData, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData));
+            // dispatch(updateAnnouncement(formData, setOpen));
         }
-        setOpen(false);
+        // setOpen(false);
     });
 
     return (
@@ -229,7 +240,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                     <select
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
-                        value={type === 'update' && data?.userId?.sex?.toLowerCase()}
+                        defaultValue={type === 'update' && data?.userId?.sex?.toLowerCase()}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -276,7 +287,7 @@ const StudentForm = ({ type, data, setOpen }) => {
                         name='classId'
                         control={control}
                         options={classOptions}
-                        defaultValue={type === 'update' && data?.classId._id}
+                        defaultValue={type === 'update' && data?.classId ? data.classId._id : undefined}
                         placeholder='Please Select'
                         label='Class'
                     />
@@ -293,24 +304,21 @@ const StudentForm = ({ type, data, setOpen }) => {
                     {errors?.rollNumber && <p className="text-xs text-red-700 py-2">{errors?.rollNumber.message}</p>}
                 </div>
             </div>
-            {
-                type === 'update' &&
-                <div className="flex flex-wrap flex-1 justify-between gap-4">
-                    <div className="min-w-[150px] w-full outline-none flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Subjects</label>
-                        <MultiSelectComponent
-                            options={subjectOptions}
-                            selectedValue={selectedSubjects}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "subjects",
-                                    value.map((item) => item.id)
-                                )}
-                        />
-                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
-                    </div>
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
+                <div className="min-w-[150px] w-full outline-none flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Subjects</label>
+                    <MultiSelectComponent
+                        options={subjectOptions}
+                        selectedValue={selectedSubjects}
+                        setSelectedValue={(value) =>
+                            setValue(
+                                "subjects",
+                                value.map((item) => item.id)
+                            )}
+                    />
+                    {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                 </div>
-            }
+            </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">
                 {type === 'create' ? 'Create' : 'Update'}
             </button>

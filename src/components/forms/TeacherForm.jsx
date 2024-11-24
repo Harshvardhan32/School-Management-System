@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as z from 'zod';
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
+import { getAllTeachers } from "../../services/operations/teacherAPI";
 
 const TeacherForm = ({ type, data, setOpen }) => {
 
@@ -17,22 +18,11 @@ const TeacherForm = ({ type, data, setOpen }) => {
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
 
-    // Classes zod schema for create and update 
-    const classesSchema = (type) =>
-        type === 'update'
-            ? z.array(z.string()).min(1, { message: 'At least one class must be selected!' })
-            : z.array({ name: z.string(), }).optional();
-
-    // Subject zod schema for create and update 
-    const subjectsSchema = (type) =>
-        type === 'update'
-            ? z.array(z.string()).min(1, { message: 'At least one subject must be selected!' })
-            : z.array({ name: z.string(), }).optional();
-
     const schema = z.object({
         teacherId: z.string()
-            .min(3, { message: 'Teacher ID must be at least 3 character long!' })
-            .max(20, { message: "Teacher ID must be at most 20 characters long!" }),
+            .min(3, { message: "Teacher ID must be at least 3 characters long!" })
+            .max(20, { message: "Teacher ID must be at most 20 characters long!" })
+            .regex(/^\S+$/, { message: "Teacher ID must not contain spaces!" }),
         email: z.string().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
@@ -43,8 +33,8 @@ const TeacherForm = ({ type, data, setOpen }) => {
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Teacher'),
-        subjects: subjectsSchema(type),
-        classId: classesSchema(type),
+        subjects: z.array(z.string()).optional(),
+        classes: z.array(z.string()).optional(),
     });
 
     const {
@@ -56,23 +46,23 @@ const TeacherForm = ({ type, data, setOpen }) => {
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
             subjects: [],
-            classId: []
+            classes: []
         },
     });
 
     const dispatch = useDispatch();
-    const { token } = useSelector(state => state?.auth);
+    const { token } = useSelector((state) => state?.auth);
 
     useEffect(() => {
-        if (type === 'update') {
-            dispatch(getAllClasses(token, undefined, undefined, true));
-            dispatch(getAllSubjects(token, undefined, undefined, true));
-        }
-    }, [type, token]);
+        dispatch(getAllClasses(token, undefined, undefined, true));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
+        // dispatch(getAllTeachers(token, undefined, undefined, true));
+    }, []);
 
     const [showPassword, setShowPassword] = useState(false);
     const { allClasses } = useSelector(state => state?.class);
     const { allSubjects } = useSelector(state => state?.subject);
+    // const { allTeachers } = useSelector(state => state?.teacher);
 
     // Options for teachers, students, and subjects
     const classOptions = useMemo(() => {
@@ -93,7 +83,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
         ? data?.classes?.map((id) => {
             classOptions.find((option) => option.id === id);
         })
-        : getValues("classId")?.map((id) =>
+        : getValues("classes")?.map((id) =>
             classOptions.find((option) => option.id === id)
         );
 
@@ -108,11 +98,11 @@ const TeacherForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createUser(formData));
+            // dispatch(createUser(formData, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData));
+            // dispatch(updateAnnouncement(formData, setOpen));
         }
-        setOpen(false);
+        // setOpen(false);
     });
 
     return (
@@ -248,7 +238,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
                         name=""
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
-                        value={type === 'update' && data?.userId?.sex?.toLowerCase()}
+                        defaultValue={type === 'update' && data?.userId?.sex?.toLowerCase()}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -258,37 +248,34 @@ const TeacherForm = ({ type, data, setOpen }) => {
                     {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex?.message}</p>}
                 </div>
             </div>
-            {
-                type === 'update' &&
-                <div className="flex flex-wrap flex-1 justify-between gap-4">
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Classes</label>
-                        <MultiSelectComponent
-                            options={classOptions}
-                            selectedValue={selectedClasses}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "classId",
-                                    value.map((item) => item.id)
-                                )}
-                        />
-                        {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId?.message}</p>}
-                    </div>
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Subjects</label>
-                        <MultiSelectComponent
-                            options={subjectOptions}
-                            selectedValue={selectedSubjects}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "subjects",
-                                    value.map((item) => item.id)
-                                )}
-                        />
-                        {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects?.message}</p>}
-                    </div>
+            <div className="flex flex-wrap flex-1 justify-between gap-4">
+                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Classes</label>
+                    <MultiSelectComponent
+                        options={classOptions}
+                        selectedValue={selectedClasses}
+                        setSelectedValue={(value) =>
+                            setValue(
+                                "classes",
+                                value.map((item) => item.id)
+                            )}
+                    />
+                    {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes?.message}</p>}
                 </div>
-            }
+                <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">Subjects</label>
+                    <MultiSelectComponent
+                        options={subjectOptions}
+                        selectedValue={selectedSubjects}
+                        setSelectedValue={(value) =>
+                            setValue(
+                                "subjects",
+                                value.map((item) => item.id)
+                            )}
+                    />
+                    {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects?.message}</p>}
+                </div>
+            </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

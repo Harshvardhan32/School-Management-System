@@ -18,16 +18,13 @@ exports.createExam = async (req, res) => {
             })
         }
 
-        const examRecord = await Exam.create({
+        const examResponse = await Exam.create({
             examName,
             description,
             startDate,
             endDate,
             subjects
         });
-
-        const examResponse = await Exam.findById(examRecord?._id)
-        // .populate('subjects');
 
         return res.status(200).json({
             success: true,

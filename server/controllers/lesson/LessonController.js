@@ -12,14 +12,11 @@ exports.createLesson = async (req, res) => {
             })
         }
 
-        const lessonRecord = await Lesson.create({
+        const lessonResponse = await Lesson.create({
             title,
             description,
             subject
         });
-
-        const lessonResponse = await Lesson.findById(lessonRecord?._id)
-        // .populate('subject');
 
         return res.status(200).json({
             success: true,

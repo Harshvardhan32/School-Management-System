@@ -15,11 +15,6 @@ const ParentForm = ({ type, data, setOpen }) => {
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
 
-    const studentsSchema = (type) =>
-        type === 'update'
-            ? z.array(z.string()).min(1, { message: 'At least one student must be selected!' })
-            : z.array().optional();
-
     const schema = z.object({
         parentId: z.string()
             .min(3, { message: 'Parent ID must be at least 3 character long!' })
@@ -32,7 +27,7 @@ const ParentForm = ({ type, data, setOpen }) => {
         address: z.string().min(1, { message: 'Address is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Parent'),
-        students: studentsSchema(type),
+        students: z.array(z.string()).optional(),
     });
 
     const {
@@ -69,19 +64,19 @@ const ParentForm = ({ type, data, setOpen }) => {
             studentOptions.find((option) => option.id === id);
         })
         : getValues("students")?.map((id) =>
-            subjectOptions.find((option) => option.id === id)
+            studentOptions.find((option) => option.id === id)
         );
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
-        console.log("allStudents: ", allStudents);
-        console.log("selectedStudents: ", selectedStudents);
+        // console.log("allStudents: ", allStudents);
+        // console.log("selectedStudents: ", selectedStudents);
         if (type === 'create') {
             // dispatch(createUser(formData));
         } else {
             // dispatch(updateAnnouncement(formData));
         }
-        setOpen(false);
+        // setOpen(false);
     });
 
     return (
@@ -181,7 +176,7 @@ const ParentForm = ({ type, data, setOpen }) => {
                         name=""
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
-                        value={type === 'update' && data?.userId?.sex?.toLowerCase()}
+                        defaultValue={type === 'update' && data?.userId?.sex?.toLowerCase()}
                     >
                         <option value="">Please Select</option>
                         <option value="male">Male</option>
@@ -191,25 +186,20 @@ const ParentForm = ({ type, data, setOpen }) => {
                     {errors?.sex && <p className="text-xs text-red-700 py-2">{errors?.sex.message}</p>}
                 </div>
             </div>
-            {
-                type === 'update' &&
-                <>
-                    <span className="text-xs font-medium text-gray-700">Student Information</span>
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Students</label>
-                        <MultiSelectComponent
-                            options={studentOptions}
-                            selectedValue={selectedStudents}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "students",
-                                    value.map((item) => item.id)
-                                )}
-                        />
-                        {errors?.students && <p className="text-xs text-red-700 py-2">{errors?.students.message}</p>}
-                    </div>
-                </>
-            }
+            <span className="text-xs font-medium text-gray-700">Student Information</span>
+            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Students</label>
+                <MultiSelectComponent
+                    options={studentOptions}
+                    selectedValue={selectedStudents}
+                    setSelectedValue={(value) =>
+                        setValue(
+                            "students",
+                            value.map((item) => item.id)
+                        )}
+                />
+                {errors?.students && <p className="text-xs text-red-700 py-2">{errors?.students.message}</p>}
+            </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>
     );

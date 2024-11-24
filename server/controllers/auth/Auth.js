@@ -1,4 +1,5 @@
-const cloudinary = require('cloudinary').v2;
+const mongoose = require('mongoose');
+const crypto = require('crypto');
 const Teacher = require('../../models/Teacher');
 const Student = require('../../models/Student');
 const Admin = require('../../models/Admin');
@@ -6,14 +7,18 @@ const Parent = require('../../models/Parent');
 const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const mailSender = require('../../utils/mailSender');
 const Class = require('../../models/Class');
+const Subject = require('../../models/Subject');
 require('dotenv').config();
 
 exports.signUp = async (req, res) => {
 
+    const session = await mongoose.startSession(); // Start a session for transactions
+
     try {
+        session.startTransaction(); // Start the transaction
+
         const {
             firstName,
             lastName,
@@ -24,9 +29,10 @@ exports.signUp = async (req, res) => {
             role,
             bloodType,
             dateOfBirth,
-            sex,
+            sex
         } = req.body;
 
+        // Validate required fields for a user
         if (!firstName || !email || !password || !phone || !address || !role || !sex) {
             return res.status(400).json({
                 success: false,
@@ -34,14 +40,16 @@ exports.signUp = async (req, res) => {
             })
         }
 
-        if (role !== 'Admin' && role !== 'Teacher' && role !== 'Student' && role !== 'Parent') {
+        // Validate role
+        if (!['Admin', 'Teacher', 'Student', 'Parent'].includes(role)) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid role specified!"
+                message: 'Invalid role specified!',
             });
         }
 
-        const existingUser = await User.findOne({ email });
+        // Check for existing user by email
+        const existingUser = await User.findOne({ email }).session(session);
 
         if (existingUser) {
             return res.status(400).json({
@@ -50,130 +58,183 @@ exports.signUp = async (req, res) => {
             })
         }
 
+        // Hash password and generate profile image
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate image with the firstName and lastName
         const image = `https://api.dicebear.com/8.x/initials/svg?seed=${firstName} ${lastName}`
 
-        const user = await User.create({
-            firstName,
-            lastName,
-            email,
-            password: hashedPassword,
-            phone,
-            address,
-            role,
-            bloodType,
-            dateOfBirth,
-            sex,
-            photo: image
-        });
+        // Create the user
+        const user = await User.create(
+            [{
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword,
+                phone,
+                address,
+                role,
+                bloodType,
+                dateOfBirth,
+                sex,
+                photo: image
+            }], { session }
+        );
 
-        let userResponse = {};
+        let userResponse;
+
+        // Handle role-specific logic
         if (role === 'Admin') {
             const { adminId } = req.body;
 
+            // Validate adminId
             if (!adminId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Admin ID is required!'
-                })
+                throw new Error('Admin ID is required!');
             }
 
-            const existingAdminId = await Parent.findOne({ adminId });
+            // Check for existing admin by adminId
+            const existingAdminId = await Admin.findOne({ adminId }).session(session);
+
             if (existingAdminId) {
-                await User.findByIdAndDelete(user?._id);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Admin ID should be unique!'
-                })
+                throw new Error('Admin ID should be unique!');
             }
 
-            const adminRecord = await Admin.create({
-                userId: user?._id,
-                adminId
-            });
+            // Create Admin
+            userResponse = await Admin.create(
+                [{
+                    userId: user?._id,
+                    adminId
+                }], { session }
+            );
 
-            userResponse = await Admin.findById(adminRecord?._id).populate('userId');
         } else if (role === 'Teacher') {
-            const { teacherId } = req.body;
+            const { teacherId, classes, subjects } = req.body;
 
+            //  Validate teacherId
             if (!teacherId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Teacher ID is required!'
-                })
+                throw new Error('Teacher ID is required!');
             }
 
-            const existingTeacherId = await Teacher.findOne({ teacherId });
+            // Check for existing teacher by teacherId
+            const existingTeacherId = await Teacher.findOne({ teacherId }).session(session);
+
             if (existingTeacherId) {
-                await User.findByIdAndDelete(user?._id);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Teacher ID should be unique!'
-                })
+                throw new Error('Teacher ID should be unique!');
             }
 
-            const teacherRecord = await Teacher.create({
-                userId: user?._id,
-                teacherId
-            });
+            // Create Teacher
+            userResponse = await Teacher.create(
+                [{
+                    userId: user?._id,
+                    teacherId,
+                    classes,
+                    subjects
+                }], { session }
+            );
 
-            userResponse = await Teacher.findById(teacherRecord?._id).populate('userId');
+            // Update teachers in Class Schema
+            if (classes?.length > 0) {
+                await Promise.all(
+                    classes.map((classId) =>
+                        Class.findByIdAndUpdate(
+                            classId,
+                            { $push: { teachers: userResponse?._id } },
+                            { session }
+                        )
+                    )
+                );
+            }
+
+            // Update teachers in Subject Schema
+            if (subjects?.length > 0) {
+                await Promise.all(
+                    subjects.map((subjectId) =>
+                        Subject.findByIdAndUpdate(
+                            subjectId,
+                            { $push: { teachers: userResponse?._id } },
+                            { session }
+                        )
+                    )
+                );
+            }
+
         } else if (role === 'Student') {
-            const { studentId, classId, fatherName, motherName, rollNumber } = req.body;
+            const { studentId, classId, fatherName, motherName, subjects, rollNumber } = req.body;
 
+            // Validate required fields for Student
             if (!studentId || !fatherName || !motherName || !rollNumber) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Please fill all required details!'
-                })
+                throw new Error('Please fill all required student details!');
             }
 
-            const existingStudentId = await Student.findOne({ studentId });
+            // Check for existing student by studentId
+            const existingStudentId = await Student.findOne({ studentId }).session(session);
+
             if (existingStudentId) {
-                await User.findByIdAndDelete(user?._id);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Student ID should be unique!'
-                })
+                throw new Error('Student ID should be unique!');
             }
 
-            const studentRecord = await Student.create({
-                userId: user?._id,
-                studentId,
-                classId,
-                fatherName,
-                motherName,
-                rollNumber,
-            });
+            // Create Student
+            userResponse = await Student.create(
+                [{
+                    userId: user?._id,
+                    studentId,
+                    classId,
+                    fatherName,
+                    motherName,
+                    subjects,
+                    rollNumber,
+                }],
+                { session }
+            );
 
-            userResponse = await Student.findById(studentRecord?._id).populate('userId');
+            // Update the students in Class Schema
+            await Class.findByIdAndUpdate(classId,
+                { $push: { students: userResponse?._id } },
+                { session }
+            );
+
         } else {
-            const { parentId } = req.body;
+            const { parentId, students } = req.body;
 
+            // Validate parentId
             if (!parentId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Parent ID is required!'
-                })
+                throw new Error('Parent ID is required!');
             }
 
-            const existingParentId = await Parent.findOne({ parentId });
+            // Check for existing parent by parentId
+            const existingParentId = await Parent.findOne({ parentId }).session(session);
+
             if (existingParentId) {
-                await User.findByIdAndDelete(user?._id);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Parent ID should be unique!'
-                })
+                throw new Error('Parent ID should be unique!');
             }
 
-            const parentRecord = await Parent.create({
-                userId: user?._id,
-                parentId,
-            });
+            // Create Parent
+            userResponse = await Parent.create(
+                [{
+                    userId: user?._id,
+                    parentId,
+                    students
+                }],
+                { session }
+            );
 
-            userResponse = await Parent.findById(parentRecord?._id).populate('userId');
+            // Update parent in Student Schema
+            if (students?.length > 0) {
+                await Promise.all(
+                    students.map((studentId) =>
+                        Student.findByIdAndUpdate(
+                            studentId,
+                            { parent: userResponse?._id },
+                            { session }
+                        )
+                    )
+                );
+            }
         }
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
 
         // await mailSender(
         //     email,
@@ -181,6 +242,7 @@ exports.signUp = async (req, res) => {
         //     `Your account created successfully on ABCD School Online Portal with email: ${email}`
         // )
 
+        // Send the successfull response
         return res.status(200).json({
             success: true,
             data: userResponse,
@@ -188,6 +250,10 @@ exports.signUp = async (req, res) => {
         })
 
     } catch (error) {
+        // Rollback the transaction in case of error
+        await session.abortTransaction();
+        session.endSession();
+
         console.log(error.message);
         return res.status(500).json({
             success: false,
@@ -483,7 +549,7 @@ exports.deleteAccount = async (req, res) => {
         } else if (role === 'Parent') {
             await User.findByIdAndDelete(user?.userId?._id);
             deletedResponse = await Teacher.findByIdAndDelete(user?._id);
-            
+
             // TODO:
             // 1. Delete Parent from the Parent Schema
             // 2. Delete parent from the Student Schema

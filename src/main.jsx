@@ -9,14 +9,14 @@ import rootStore from './reducer/index.jsx';
 import { Provider } from 'react-redux';
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
-        <Provider store={rootStore}>
-            <BrowserRouter>
-                <ThemeProvider>
-                    <Toaster />
-                    <App />
-                </ThemeProvider>
-            </BrowserRouter>
-        </Provider>
-    </StrictMode>
+    // <StrictMode>
+    <Provider store={rootStore}>
+        <BrowserRouter>
+            <ThemeProvider>
+                <Toaster />
+                <App />
+            </ThemeProvider>
+        </BrowserRouter>
+    </Provider>
+    // </StrictMode>
 );

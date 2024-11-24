@@ -15,8 +15,9 @@ const {
 
 export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Start loading
-        const toastId = toast.loading('Loading teachers...');
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+
         try {
             // Construct the query parameters for either all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
@@ -35,13 +36,13 @@ export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => 
 
             if (allData) {
                 // Dispatch non-paginated data to the store
-                dispatch(setTeachers(response.data.data));
+                dispatch(setTeachers(response?.data?.data));
             } else {
                 // Dispatch paginated data to the store
                 dispatch(setPaginatedTeachers({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
+                    data: response?.data?.data,
+                    totalPages: response?.data?.totalPages,
+                    currentPage: response?.data?.currentPage,
                 }));
             }
 
@@ -51,7 +52,7 @@ export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => 
             toast.error(error.message || 'Failed to load teachers.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // End loading
+            dispatch(setLoading(false));
         }
     };
 };

@@ -10,8 +10,9 @@ const {
 
 export const getAllStudents = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading students...');
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+        
         try {
             // Construct the query parameters for either all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;

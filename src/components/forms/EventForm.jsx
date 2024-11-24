@@ -17,7 +17,7 @@ const EventForm = ({ type, data, setOpen }) => {
         content: z.string().min(20, { message: 'Content must be at least 20 characters long!' }),
         startDate: z.string().min(1, { message: 'Start date is required!' }),
         endDate: z.string().min(1, { message: 'End date is required!' }),
-        classId: z.array(z.string()).optional(),
+        classes: z.array(z.string()).optional(),
     });
 
     const {
@@ -28,7 +28,7 @@ const EventForm = ({ type, data, setOpen }) => {
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
-            classId: []
+            classes: []
         }
     });
 
@@ -36,9 +36,7 @@ const EventForm = ({ type, data, setOpen }) => {
     const { token } = useSelector(state => state?.auth);
 
     useEffect(() => {
-        if (type === 'update') {
-            dispatch(getAllClasses(token, undefined, undefined, true));
-        }
+        dispatch(getAllClasses(token, undefined, undefined, true));
         console.log("DAAAAA: ", data);
     }, []);
 
@@ -55,9 +53,9 @@ const EventForm = ({ type, data, setOpen }) => {
     // Retrieve selected values from the form state
     const selectedClasses = type === 'update' && data?.classes.length > 0
         ? data?.classes.map((id) =>
-            subjectOptions.find((option) => option.id === id)
+            classOptions.find((option) => option.id === id)
         )
-        : getValues("classId")?.map((id) =>
+        : getValues("classes")?.map((id) =>
             classOptions.find((option) => option.id === id)
         );
 
@@ -68,6 +66,7 @@ const EventForm = ({ type, data, setOpen }) => {
             toast.error('End date must be later than start date!');
             return;
         }
+
         console.log(formData);
         if (type === 'create') {
             // dispatch(createEvent(formData, token, setOpen));
@@ -78,7 +77,7 @@ const EventForm = ({ type, data, setOpen }) => {
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update'} Event</h1>
+            <h1 className="text-xl font-semibold dark:text-gray-200">{type === 'create' ? 'Create a new' : 'Update the'} Event</h1>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Event Title</label>
@@ -112,21 +111,18 @@ const EventForm = ({ type, data, setOpen }) => {
                     {errors?.endDate && <p className="text-xs text-red-700 py-2">{errors?.endDate.message}</p>}
                 </div>
             </div>
-            {
-                type === 'update' &&
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Classes</label>
-                    <MultiSelectComponent
-                        options={classOptions}
-                        selectedValue={selectedClasses}
-                        setSelectedValue={(value) =>
-                            setValue(
-                                "classId",
-                                value.map((item) => item.id)
-                            )}
-                    />
-                </div>
-            }
+            <div className="flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Classes</label>
+                <MultiSelectComponent
+                    options={classOptions}
+                    selectedValue={selectedClasses}
+                    setSelectedValue={(value) =>
+                        setValue(
+                            "classes",
+                            value.map((item) => item.id)
+                        )}
+                />
+            </div>
             <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm text-gray-500">Content</label>
                 <textarea

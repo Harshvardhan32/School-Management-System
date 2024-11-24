@@ -16,7 +16,7 @@ const ClassForm = ({ type, data, setOpen }) => {
     // Zod schema for form validation
     const schema = z.object({
         className: z.string().min(1, { message: 'Class name is required!' }),
-        capacity: z.string().min(1, { message: 'Class capacity is required!' }),
+        capacity: z.string().min(1, { message: 'Class capacity is required!' }).transform((val) => parseInt(val)),
         supervisor: z.string().optional(),
         teachers: z.array(z.string()).optional(),
         students: z.array(z.string()).optional(),
@@ -43,11 +43,9 @@ const ClassForm = ({ type, data, setOpen }) => {
     const { token } = useSelector((state) => state?.auth);
 
     useEffect(() => {
-        if (type === 'update') {
-            dispatch(getAllTeachers(token, undefined, undefined, true));
-            dispatch(getAllStudents(token, undefined, undefined, true));
-            dispatch(getAllSubjects(token, undefined, undefined, true));
-        }
+        dispatch(getAllTeachers(token, undefined, undefined, true));
+        dispatch(getAllStudents(token, undefined, undefined, true));
+        dispatch(getAllSubjects(token, undefined, undefined, true));
         console.log("DATASS: ", data);
     }, []);
 
@@ -104,10 +102,11 @@ const ClassForm = ({ type, data, setOpen }) => {
 
     // Handle form submission
     const onSubmit = handleSubmit((formData) => {
+        console.log("Form Data: ", formData);
         if (type === 'create') {
-            dispatch(createClass(formData, token, setOpen));
+            // dispatch(createClass(formData, token, setOpen));
         } else {
-            console.log("Form Data: ", formData);
+            // console.log("Form Data: ", formData);
         }
     });
 
@@ -131,75 +130,69 @@ const ClassForm = ({ type, data, setOpen }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Capacity</label>
                     <input
-                        type="text"
+                        type="number"
                         placeholder="Capacity"
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("capacity")}
                         defaultValue={type === 'update' ? data?.capacity : ''}
                     />
                     {errors?.capacity && <p className="text-xs text-red-700 py-2">{errors?.capacity.message}</p>}
                 </div>
-                {type === 'update' && (
-                    <div className="flex flex-col gap-2 flex-1">
-                        <SelectOption
-                            name='supervisor'
-                            control={control}
-                            options={teacherOptions}
-                            defaultValue={(type === 'update' && data?.supervisor) && data?.supervisor}
-                            placeholder='Please Select'
-                            label='Supervisor'
-                        />
-                        {errors?.supervisor && <p className="text-xs text-red-700 py-2">{errors?.supervisor.message}</p>}
-                    </div>
-                )}
+                <div className="flex flex-col gap-2 flex-1">
+                    <SelectOption
+                        name='supervisor'
+                        control={control}
+                        options={teacherOptions}
+                        defaultValue={(type === 'update' && data?.supervisor) && data?.supervisor}
+                        placeholder='Please Select'
+                        label='Supervisor'
+                    />
+                    {errors?.supervisor && <p className="text-xs text-red-700 py-2">{errors?.supervisor.message}</p>}
+                </div>
             </div>
-            {type === 'update' && (
-                <>
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Teachers</label>
-                        <MultiSelectComponent
-                            options={teacherOptions}
-                            selectedValue={selectedTeachers}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "teachers",
-                                    value.map((item) => item.id)
-                                )
-                            }
-                        />
-                    </div>
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Students</label>
-                        <MultiSelectComponent
-                            options={studentOptions}
-                            selectedValue={selectedStudents}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "students",
-                                    value.map((item) => item.id)
-                                )
-                            }
-                        />
-                    </div>
-                    <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Subjects</label>
-                        <MultiSelectComponent
-                            options={subjectOptions}
-                            selectedValue={selectedSubjects}
-                            setSelectedValue={(value) =>
-                                setValue(
-                                    "subjects",
-                                    value.map((item) => item.id)
-                                )
-                            }
-                        />
-                    </div>
-                </>
-            )}
+            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Teachers</label>
+                <MultiSelectComponent
+                    options={teacherOptions}
+                    selectedValue={selectedTeachers}
+                    setSelectedValue={(value) =>
+                        setValue(
+                            "teachers",
+                            value.map((item) => item.id)
+                        )
+                    }
+                />
+            </div>
+            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Students</label>
+                <MultiSelectComponent
+                    options={studentOptions}
+                    selectedValue={selectedStudents}
+                    setSelectedValue={(value) =>
+                        setValue(
+                            "students",
+                            value.map((item) => item.id)
+                        )
+                    }
+                />
+            </div>
+            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Subjects</label>
+                <MultiSelectComponent
+                    options={subjectOptions}
+                    selectedValue={selectedSubjects}
+                    setSelectedValue={(value) =>
+                        setValue(
+                            "subjects",
+                            value.map((item) => item.id)
+                        )
+                    }
+                />
+            </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">
                 {type === 'create' ? 'Create' : 'Update'}
             </button>
-        </form>
+        </form >
     );
 };
 

@@ -7,6 +7,10 @@ exports.createClass = async (req, res) => {
         const {
             className,
             capacity,
+            supervisor,
+            teachers,
+            students,
+            subjects
         } = req.body;
 
         if (!className || !capacity) {
@@ -19,6 +23,10 @@ exports.createClass = async (req, res) => {
         const classResponse = await Class.create({
             className,
             capacity,
+            supervisor,
+            teachers,
+            students,
+            subjects
         });
 
         return res.status(200).json({

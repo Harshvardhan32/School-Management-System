@@ -33,7 +33,7 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
         } else {
             // dispatch(updateAnnouncement(formData));
         }
-        setOpen(false);
+        // setOpen(false);
     })
 
     return (

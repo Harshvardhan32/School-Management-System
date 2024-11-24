@@ -10,6 +10,7 @@ import { useEffect, useMemo } from "react";
 import * as z from 'zod';
 
 const AssignmentForm = ({ type, data, setOpen }) => {
+
     // Define schema with Zod
     const schema = z.object({
         subject: z.string().min(1, { message: 'Subject is required!' }),
@@ -96,7 +97,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="subject"
                         control={control}
                         options={subjectOptions}
-                        defaultValue={type === 'update' && data?.subject?._id}
+                        defaultValue={(type === 'update' && data?.subject) ? data?.subject._id : ''}
                         placeholder="Please Select"
                         label="Subject"
                     />
@@ -106,7 +107,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="classId"
                         control={control}
                         options={classOptions}
-                        defaultValue={type === 'update' && data?.classId?._id}
+                        defaultValue={(type === 'update' && data?.classId) ? data?.classId?._id : ''}
                         placeholder="Please Select"
                         label="Class"
                     />
@@ -116,7 +117,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="teacher"
                         control={control}
                         options={teacherOptions}
-                        defaultValue={type === 'update' && data?.teacher?._id}
+                        defaultValue={(type === 'update' && data?.teacher) ? data?.teacher?._id : ''}
                         placeholder="Please Select"
                         label="Teacher"
                     />

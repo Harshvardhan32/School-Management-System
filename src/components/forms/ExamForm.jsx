@@ -13,12 +13,9 @@ const ExamForm = ({ type, data, setOpen }) => {
     const schema = z.object({
         examName: z.string().min(1, { message: 'Exam title is required!' }),
         description: z.string().min(10, { message: 'Exam description must be atleast 10 character!' }),
-        startDate: z.string()
-            .min(1, { message: 'Start date is required!' }),
-        endDate: z.string()
-            .min(1, { message: 'End date is required!' }),
-        subjects: z.array(
-            z.string()).min(1, { message: 'At least one subject must be selected!' }),
+        startDate: z.string().min(1, { message: 'Start date is required!' }),
+        endDate: z.string().min(1, { message: 'End date is required!' }),
+        subjects: z.array(z.string()).min(1, { message: 'At least one subject must be selected!' }),
     });
 
     const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({
@@ -34,21 +31,6 @@ const ExamForm = ({ type, data, setOpen }) => {
         dispatch(getAllSubjects(token, undefined, undefined, true));
         console.log("DATAAA: ", data);
     }, []);
-
-    const onSubmit = handleSubmit(formData => {
-        const start = new Date(formData?.startDate);
-        const end = new Date(formData?.endDate);
-        if (end <= start) {
-            toast.error('End date must be later than start date!');
-            return;
-        }
-        console.log(formData);
-        if (type === 'create') {
-            // dispatch(createExam(formData, token, setOpen))
-        } else {
-            // console.log(formData);
-        }
-    });
 
     const { allSubjects } = useSelector(state => state?.subject);
 
@@ -68,6 +50,21 @@ const ExamForm = ({ type, data, setOpen }) => {
         getValues("subjects")?.map((id) =>
             subjectOptions.find((option) => option.id === id)
         );
+
+    const onSubmit = handleSubmit(formData => {
+        const start = new Date(formData?.startDate);
+        const end = new Date(formData?.endDate);
+        if (end <= start) {
+            toast.error('End date must be later than start date!');
+            return;
+        }
+        console.log(formData);
+        if (type === 'create') {
+            // dispatch(createExam(formData, token, setOpen))
+        } else {
+            // console.log(formData);
+        }
+    });
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
