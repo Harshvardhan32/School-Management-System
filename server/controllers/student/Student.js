@@ -1,4 +1,126 @@
+const Class = require("../../models/Class");
 const Student = require("../../models/Student");
+const User = require("../../models/User");
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+exports.createStudent = async (req, res) => {
+    try {
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            phone,
+            address,
+            role,
+            bloodType,
+            dateOfBirth,
+            sex,
+            studentId,
+            classId,
+            fatherName,
+            motherName,
+            parent,
+            subjects,
+            rollNumber
+        } = req.body;
+
+        // Validate required fields for a user
+        if (!firstName || !email || !password || !phone || !address || !role || !sex || !studentId || !fatherName || !motherName || !rollNumber) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please fill all required details!'
+            });
+        }
+
+        // Validate role
+        if (role !== 'Student') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid role!',
+            });
+        }
+
+        // Check for existing user by email
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User already registered. Please login to continue.'
+            });
+        }
+
+        // Check for existing student by studentId
+        const existingStudentId = await Student.findOne({ studentId });
+
+        if (existingStudentId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Student ID should be unique!'
+            });
+        }
+
+        // Hash password and generate profile image
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Generate image with the firstName and lastName
+        const image = `https://api.dicebear.com/8.x/initials/svg?seed=${firstName} ${lastName}`;
+
+        // Create the user
+        const user = await User.create({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            phone,
+            address,
+            role,
+            bloodType,
+            dateOfBirth,
+            sex,
+            photo: image
+        });
+
+        // Create Student
+        const userResponse = await Student.create({
+            userId: user?._id,
+            studentId,
+            classId,
+            fatherName,
+            motherName,
+            parent,
+            subjects,
+            rollNumber,
+        });
+
+        // Update the students in Class Schema
+        await Class.findByIdAndUpdate(classId, { $push: { students: userResponse?._id } });
+
+        // Send the successful response
+        return res.status(200).json({
+            success: true,
+            data: userResponse,
+            message: 'Student registered successfully!'
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
+    }
+}
+
+exports.updateStudent = async (req, res) => {
+
+}
+
+exports.deleteStudent = async (req, res) => {
+
+}
 
 exports.getAllStudents = async (req, res) => {
     try {
@@ -41,7 +163,7 @@ exports.getAllStudents = async (req, res) => {
     }
 }
 
-exports.getStudentsDetails = async (req, res) => {
+exports.getStudentDetails = async (req, res) => {
     try {
         const studentId = req.query.studentId;
 

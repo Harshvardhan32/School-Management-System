@@ -1,9 +1,9 @@
-const Admin = require('../../models/Admin');
-const Teacher = require('../../models/Teacher');
-const User = require('../../models/User');
+const Class = require("../../models/Class");
+const Parent = require("../../models/Parent");
+const Student = require("../../models/Student");
+const User = require("../../models/User");
 
-exports.createAdmin = async (req, res) => {
-
+exports.createParent = async (req, res) => {
     try {
         const {
             firstName,
@@ -16,11 +16,12 @@ exports.createAdmin = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
-            adminId
+            parentId,
+            students
         } = req.body;
 
         // Validate required fields for a user
-        if (!firstName || !email || !password || !phone || !address || !role || !sex || !adminId) {
+        if (!firstName || !email || !password || !phone || !address || !role || !sex || !parentId) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -28,7 +29,7 @@ exports.createAdmin = async (req, res) => {
         }
 
         // Validate role
-        if (role !== 'Admin') {
+        if (role !== 'Parent') {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid role!',
@@ -45,13 +46,13 @@ exports.createAdmin = async (req, res) => {
             });
         }
 
-        // Check for existing admin by adminId
-        const existingAdminId = await Admin.findOne({ adminId });
+        // Check for existing parent by parentId
+        const existingParentId = await Parent.findOne({ parentId });
 
-        if (existingAdminId) {
+        if (existingParentId) {
             return res.status(400).json({
                 success: false,
-                message: 'Admin ID should be unique!'
+                message: 'Parent ID should be unique!'
             });
         }
 
@@ -76,17 +77,27 @@ exports.createAdmin = async (req, res) => {
             photo: image
         });
 
-        // Create Admin
-        const userResponse = await Admin.create({
-            userId: user._id,
-            adminId
+        // Create Parent
+        const userResponse = await Parent.create({
+            userId: user?._id,
+            parentId,
+            students
         });
+
+        // Update parent in Student Schema
+        if (students?.length > 0) {
+            await Promise.all(
+                students.map((studentId) =>
+                    Student.findByIdAndUpdate(studentId, { parent: userResponse?._id })
+                )
+            );
+        }
 
         // Send the successful response
         return res.status(200).json({
             success: true,
             data: userResponse,
-            message: 'User registered successfully!'
+            message: 'Parent registered successfully!'
         });
     } catch (error) {
         console.error(error.message);
@@ -98,42 +109,51 @@ exports.createAdmin = async (req, res) => {
     }
 }
 
-exports.updateAdmin = async (req, res) => {
+exports.updateParent = async (req, res) => {
 
 }
 
-exports.getAdminDetails = async (req, res) => {
+exports.deleteParent = async (req, res) => {
+
+}
+
+exports.getAllParents = async (req, res) => {
     try {
-        const { adminId } = req.body;
+        const allData = req.query.allData === 'true';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-        if (!adminId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Admin ID is required'
-            })
+        let query = Parent.find()
+            .populate('userId')
+            .populate({
+                path: "students",
+                populate: {
+                    path: "userId",
+                }
+            });
+
+        if (!allData) {
+            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
         }
 
-        const teacherDetails = await Admin.findOne({ adminId })
-            .populate('userId');
-
-        if (!teacherDetails) {
-            return res.status(404).json({
-                success: false,
-                message: 'Teacher is not found with the given ID.'
-            })
-        }
+        const data = await query;
+        const total = allData ? data.length : await Parent.countDocuments();
 
         return res.status(200).json({
             success: true,
-            data: teacherDetails,
-            message: 'Teacher details fetched successfully!'
-        })
+            data,
+            total,
+            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
+            currentPage: allData ? 1 : page,
+            message: 'Parents fetched successfully!',
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
-            message: 'Internal Server Error!'
-        })
+            message: 'Internal Server Error!',
+        });
     }
 }

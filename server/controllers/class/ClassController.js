@@ -147,7 +147,12 @@ exports.getAllClasses = async (req, res) => {
 
         let query = Class.find()
             .populate('supervisor')
-            .populate('teachers')
+            .populate({
+                path: 'teachers',
+                populate: {
+                    path: 'userId'
+                }
+            })
             .populate('students')
             .populate('subjects');
 

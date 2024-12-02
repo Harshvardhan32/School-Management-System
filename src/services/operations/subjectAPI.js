@@ -29,6 +29,7 @@ export const createSubject = (data, token, setOpen) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Subject Created Successfully!');
             setOpen(false);
         } catch (error) {

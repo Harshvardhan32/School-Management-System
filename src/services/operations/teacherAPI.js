@@ -9,9 +9,93 @@ import { teacherEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
 const {
+    CREATE_TEACHER_API,
+    UPDATE_TEACHER_API,
+    DELETE_TEACHER_API,
     ALL_TEACHERS_API,
     GET_TEACHER_DETAILS
 } = teacherEndPoints;
+
+export const createTeacher = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", CREATE_TEACHER_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE TEACHER API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Teacher Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE TEACHER API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const updateTeacher = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", UPDATE_TEACHER_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE TEACHER API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Teacher Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE TEACHER API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteTeacher = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", DELETE_TEACHER_API, data);
+
+            console.log("CREATE TEACHER API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Teacher Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE TEACHER API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
 
 export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {

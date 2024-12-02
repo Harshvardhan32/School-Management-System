@@ -3,31 +3,42 @@ import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import MultiSelectComponent from "../MultiSelectComponent";
-import { createUser } from "../../services/operations/userAPI";
+import { createTeacher, updateTeacher } from "../../services/operations/teacherAPI";
 import { useDispatch, useSelector } from "react-redux";
-import * as z from 'zod';
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
-import { getAllTeachers } from "../../services/operations/teacherAPI";
+import * as z from 'zod';
 
-const TeacherForm = ({ type, data, setOpen }) => {
+const TeacherForm = ({ type, data, allData, setOpen }) => {
 
-    // Password zod schema for create and update 
+    // Memoized computation of allData based on the type
+    allData = useMemo(() => {
+        return type === 'update'
+            ? allData.filter((item) => item !== data?.teacherId) // Exclude current teacherId if updating
+            : allData;
+    }, [type]);
+
+    // Password Zod schema definition based on the operation type
     const passwordSchema = (type) =>
         type === 'create'
             ? z.string().min(8, { message: 'Password must be at least 8 characters long!' })
             : z.string().optional();
 
+    // Zod validation schema for form inputs
     const schema = z.object({
         teacherId: z.string()
             .min(3, { message: "Teacher ID must be at least 3 characters long!" })
             .max(20, { message: "Teacher ID must be at most 20 characters long!" })
-            .regex(/^\S+$/, { message: "Teacher ID must not contain spaces!" }),
+            .regex(/^\S+$/, { message: "Teacher ID must not contain spaces!" })
+            .refine(
+                (id) => !allData.includes(id), // Check for uniqueness in allData
+                { message: "Teacher ID already exists!" }
+            ),
         email: z.string().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
+        phone: z.string().min(10, { message: 'Phone number must be 10 characters!' }).max(10, { message: 'Phone number must be 10 characters!' }).transform((val) => parseInt(val)),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
@@ -37,6 +48,7 @@ const TeacherForm = ({ type, data, setOpen }) => {
         classes: z.array(z.string()).optional(),
     });
 
+    // Form initialization with React Hook Form and Zod resolver
     const {
         register,
         handleSubmit,
@@ -44,65 +56,76 @@ const TeacherForm = ({ type, data, setOpen }) => {
         getValues,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema), defaultValues: {
-            subjects: [],
-            classes: []
+        resolver: zodResolver(schema), // Zod schema integration
+        defaultValues: {
+            subjects: type === 'update'
+                ? data?.subjects?.map((subject) => subject?._id) : [],
+            classes: type === 'update'
+                ? data?.classes?.map((item) => item?._id) : []
         },
     });
 
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
 
+    // Fetch all classes and subjects on token change
     useEffect(() => {
         dispatch(getAllClasses(token, undefined, undefined, true));
         dispatch(getAllSubjects(token, undefined, undefined, true));
-        // dispatch(getAllTeachers(token, undefined, undefined, true));
-    }, []);
+    }, [token]);
 
     const [showPassword, setShowPassword] = useState(false);
     const { allClasses } = useSelector(state => state?.class);
     const { allSubjects } = useSelector(state => state?.subject);
-    // const { allTeachers } = useSelector(state => state?.teacher);
 
-    // Options for teachers, students, and subjects
+    // Memoized options for classes
     const classOptions = useMemo(() => {
         return (allClasses?.map((item) => ({
-            id: item?._id,
-            name: item?.className,
+            id: item?._id, // Class ID
+            name: item?.className, // Class name
         })) || []);
     }, [allClasses]);
 
+    // Memoized options for subjects
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
-            id: item?._id,
-            name: item?.subjectName,
+            id: item?._id, // Subject ID
+            name: item?.subjectName, // Subject name
         })) || [];
     }, [allSubjects]);
 
-    const selectedClasses = type === 'update' && data?.classes.length > 0
-        ? data?.classes?.map((id) => {
-            classOptions.find((option) => option.id === id);
+    // Get selected classes based on type
+    const selectedClasses = (type === 'update' && data?.classes.length > 0)
+        ? data?.classes?.map((item) => {
+            return {
+                id: item?._id,
+                name: item?.className,
+            }
         })
         : getValues("classes")?.map((id) =>
             classOptions.find((option) => option.id === id)
         );
 
+    // Get selected subjects based on type
     const selectedSubjects = type === 'update' && data?.subjects.length > 0
-        ? data?.subjects?.map((id) => {
-            subjectOptions.find((option) => option.id === id);
+        ? data?.subjects?.map((subject) => {
+            return {
+                id: subject?._id,
+                name: subject?.subjectName,
+            }
         })
         : getValues("subjects")?.map((id) =>
             subjectOptions.find((option) => option.id === id)
         );
 
+    // Submit handler for the form
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createUser(formData, setOpen));
+            dispatch(createTeacher(formData, token, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData, setOpen));
+            // dispatch(updateTeacher(formData, token, setOpen));
         }
-        // setOpen(false);
     });
 
     return (

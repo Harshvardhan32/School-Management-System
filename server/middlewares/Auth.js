@@ -155,3 +155,49 @@ exports.isAdminOrTeacher = (req, res, next) => {
         })
     }
 };
+
+exports.isAdminOrParent = (req, res, next) => {
+    try {
+
+        const { role } = req.user;
+
+        if (role !== 'Admin' && role !== 'Parent') {
+            return res.status(401).json({
+                success: false,
+                message: "This is a Protected Route for Admin and Parent.",
+            });
+        }
+
+        next();
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: 'Internal Server Error!'
+        })
+    }
+};
+
+exports.isAdminOrTeacherOrStudent = (req, res, next) => {
+    try {
+
+        const { role } = req.user;
+
+        if (role !== 'Admin' && role !== 'Parent' && role !== 'Student') {
+            return res.status(401).json({
+                success: false,
+                message: "This is a Protected Route for Admin and Parent.",
+            });
+        }
+
+        next();
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: 'Internal Server Error!'
+        })
+    }
+};

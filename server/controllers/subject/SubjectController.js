@@ -1,4 +1,6 @@
+const Class = require('../../models/Class');
 const Subject = require('../../models/Subject');
+const Teacher = require('../../models/Teacher');
 
 exports.createSubject = async (req, res) => {
     try {
@@ -18,6 +20,42 @@ exports.createSubject = async (req, res) => {
             teachers,
             lessons
         });
+
+        // Update subjects in Class Schema
+        if (classes?.length > 0) {
+            await Promise.all(
+                classes.map((classId) =>
+                    Class.findByIdAndUpdate(
+                        classId,
+                        { $push: { subjects: subjectResponse?._id } }
+                    )
+                )
+            );
+        }
+
+        // Update subjects in Teacher Schema
+        if (teachers?.length > 0) {
+            await Promise.all(
+                teachers.map((teacher) =>
+                    Teacher.findByIdAndUpdate(
+                        teacher,
+                        { $push: { subjects: subjectResponse?._id } }
+                    )
+                )
+            );
+        }
+
+        // Update subjects in Lesson Schema
+        if (teachers?.length > 0) {
+            await Promise.all(
+                teachers.map((teacher) =>
+                    Teacher.findByIdAndUpdate(
+                        teacher,
+                        { $push: { subjects: subjectResponse?._id } }
+                    )
+                )
+            );
+        }
 
         return res.status(200).json({
             success: true,
@@ -119,7 +157,7 @@ exports.deleteSubject = async (req, res) => {
     }
 }
 
-exports.getAllSubject = async (req, res) => {
+exports.getAllSubjects = async (req, res) => {
     try {
         const allData = req.query.allData === 'true'; // Check if allData is requested
         const page = parseInt(req.query.page) || 1;  // Default to page 1
@@ -128,7 +166,12 @@ exports.getAllSubject = async (req, res) => {
 
         let query = Subject.find()
             .populate('classes')
-            .populate('teachers')
+            .populate({
+                path: 'teachers',
+                populate: {
+                    path: 'userId'
+                }
+            })
             .populate('lessons');
 
         if (!allData) {

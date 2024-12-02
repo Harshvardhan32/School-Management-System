@@ -3,9 +3,9 @@ const Lesson = require('../../models/Lesson');
 exports.createLesson = async (req, res) => {
     try {
 
-        const { title, description, subject } = req.body;
+        const { title, description } = req.body;
 
-        if (!title || !description || !subject) {
+        if (!title || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -15,7 +15,6 @@ exports.createLesson = async (req, res) => {
         const lessonResponse = await Lesson.create({
             title,
             description,
-            subject
         });
 
         return res.status(200).json({
@@ -37,7 +36,7 @@ exports.createLesson = async (req, res) => {
 exports.updateLesson = async (req, res) => {
     try {
 
-        const { lessonId, title, description, subject } = req.body;
+        const { lessonId, title, description } = req.body;
 
         if (!lessonId) {
             return res.status(400).json({
@@ -59,10 +58,8 @@ exports.updateLesson = async (req, res) => {
             {
                 title,
                 description,
-                subject
             },
-            { new: true })
-        // .populate('subject');
+            { new: true });
 
         return res.status(200).json({
             success: true,
@@ -109,15 +106,14 @@ exports.deleteLesson = async (req, res) => {
     }
 }
 
-exports.getAllLesson = async (req, res) => {
+exports.getAllLessons = async (req, res) => {
     try {
         const allData = req.query.allData === 'true'; // Check if allData is requested
         const page = parseInt(req.query.page) || 1;  // Default to page 1
         const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
         const skip = (page - 1) * limit;
 
-        let query = Lesson.find()
-            .populate('subject');
+        let query = Lesson.find();
 
         if (!allData) {
             query = query.skip(skip).limit(limit); // Apply pagination if allData is false

@@ -6,7 +6,6 @@ const examSchema = new Schema(
         examName: {
             type: String,
             required: true,
-            unique: true,
             index: true
         },
         description: {
@@ -22,6 +21,13 @@ const examSchema = new Schema(
             type: Date,
             required: true,
         },
+        classes: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Class',
+                required: true
+            }
+        ],
         subjects: [
             {
                 type: Schema.Types.ObjectId,

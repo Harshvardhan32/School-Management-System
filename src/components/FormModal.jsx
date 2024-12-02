@@ -13,7 +13,7 @@ import AttendanceForm from "./forms/AttendanceForm";
 import EventForm from "./forms/EventForm";
 import AnnouncementForm from "./forms/AnnouncementForm";
 
-const FormModal = ({ table, type, Icon, data }) => {
+const FormModal = ({ table, type, Icon, allData, data }) => {
 
     const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
     const [open, setOpen] = useState(false);
@@ -30,9 +30,9 @@ const FormModal = ({ table, type, Icon, data }) => {
                 <button className="bg-red-700 text-white py-2 px-4 rounded-[6px] border-none w-max self-center">Delete</button>
             </form>
         ) : (type === 'create' || type === 'update') && (
-            table === 'student' ? <StudentForm type={type} data={data} setOpen={setOpen} /> :
-                table === 'teacher' ? <TeacherForm type={type} data={data} setOpen={setOpen} /> :
-                    table === 'parent' ? <ParentForm type={type} data={data} setOpen={setOpen} /> :
+            table === 'student' ? <StudentForm type={type} data={data} allData={allData} setOpen={setOpen} /> :
+                table === 'teacher' ? <TeacherForm type={type} data={data} allData={allData} setOpen={setOpen} /> :
+                    table === 'parent' ? <ParentForm type={type} data={data} allData={allData} setOpen={setOpen} /> :
                         table === 'subject' ? <SubjectForm type={type} data={data} setOpen={setOpen} /> :
                             table === 'class' ? <ClassForm type={type} data={data} setOpen={setOpen} /> :
                                 table === 'lesson' ? <LessonForm type={type} data={data} setOpen={setOpen} /> :

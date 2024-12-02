@@ -21,8 +21,8 @@ const LessonList = () => {
             accessor: 'title'
         },
         {
-            header: 'Subject Name',
-            accessor: 'subjectName',
+            header: 'Description',
+            accessor: 'description',
             className: 'hidden sm:table-cell'
         },
         {
@@ -36,7 +36,7 @@ const LessonList = () => {
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.title}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.subject?.subjectName}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.description.length > 20 ? `${data?.description.slice(0, 50)}...` : data?.description}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         {(role === 'Admin' || role === 'Teacher') && (

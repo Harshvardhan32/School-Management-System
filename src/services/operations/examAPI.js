@@ -30,6 +30,7 @@ export const createExam = (data, token, setOpen) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Exam Created Successfully!');
             setOpen(false);
         } catch (error) {
@@ -45,7 +46,7 @@ export const createExam = (data, token, setOpen) => {
 export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
         dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading exams...');
+        const toastId = toast.loading('Loading...');
         try {
             // Construct query parameters for either all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;

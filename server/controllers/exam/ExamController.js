@@ -8,10 +8,11 @@ exports.createExam = async (req, res) => {
             description,
             startDate,
             endDate,
+            classes,
             subjects
         } = req.body;
 
-        if (!examName || !description || !startDate || !endDate || !subjects) {
+        if (!examName || !description || !startDate || !endDate || !classes || !subjects) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -23,6 +24,7 @@ exports.createExam = async (req, res) => {
             description,
             startDate,
             endDate,
+            classes,
             subjects
         });
 
@@ -44,7 +46,7 @@ exports.createExam = async (req, res) => {
 exports.updateExam = async (req, res) => {
     try {
 
-        const { examId, examName, description, startDate, endDate, subjects } = req.body;
+        const { examId, examName, description, startDate, endDate, classes, subjects } = req.body;
 
         if (!examId) {
             return res.status(400).json({
@@ -119,14 +121,14 @@ exports.deleteExam = async (req, res) => {
     }
 }
 
-exports.getAllExam = async (req, res) => {
+exports.getAllExams = async (req, res) => {
     try {
         const allData = req.query.allData === 'true'; // Check if allData is requested
         const page = parseInt(req.query.page) || 1;  // Default to page 1
         const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
         const skip = (page - 1) * limit;
 
-        let query = Exam.find().populate('subjects');
+        let query = Exam.find().populate('subjects').populate('classes');
 
         if (!allData) {
             query = query.skip(skip).limit(limit); // Apply pagination if allData is false

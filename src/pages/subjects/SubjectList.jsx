@@ -38,7 +38,7 @@ const SubjectList = () => {
             <tr key={data._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.subjectName}</td>
                 <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.classes.length > 0 ? 'ClassID' : '_'}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.teachers.length > 0 ? data?.teachers.join(', ') : '_'}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data?.teachers.length > 0 ? data?.teachers.map((teacher) => teacher?.userId?.firstName + " " + teacher?.userId?.lastName).join(', ') : '_'}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         {role === 'Admin' && (

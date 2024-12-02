@@ -49,7 +49,6 @@ const AssignmentList = () => {
     ]
 
     const renderRow = (data) => {
-        // console.log("DATTT: ", data);
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.subject?.subjectName}</td>
@@ -106,18 +105,24 @@ const AssignmentList = () => {
                     </div>
                 </div>
             </div>
-            {/* LIST */}
-            <div>
-                <Table column={column} renderRow={renderRow} data={paginatedAssignments} />
-            </div>
-            {/* PAGINATION */}
-            <div>
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                />
-            </div>
+            {
+                paginatedAssignments?.length > 0
+                    ? <>
+                        {/* LIST */}
+                        <div>
+                            <Table column={column} renderRow={renderRow} data={paginatedAssignments} />
+                        </div>
+                        {/* PAGINATION */}
+                        <div>
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    </>
+                    : <p className="text-center dark:text-gray-200 text-2xl font-medium py-5">Assignments not found!</p>
+            }
         </div>
     );
 }

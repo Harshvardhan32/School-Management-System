@@ -1,18 +1,110 @@
 import toast from "react-hot-toast";
-import { setLoading, setPaginatedStudents, setStudentDetails, setStudents } from "../../slices/studentSlice";
+import {
+    setLoading,
+    setPaginatedStudents,
+    setStudentDetails,
+    setStudents
+} from "../../slices/studentSlice";
 import { studentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
 const {
+    CREATE_STUDENT_API,
+    UPDATE_STUDENT_API,
+    DELETE_STUDENT_API,
     ALL_STUDENTS_API,
-    GET_STUDENT_DETAILS
+    GET_STUDENT_DETAILS,
 } = studentEndPoints;
+
+export const createStudent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", CREATE_STUDENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE STUDENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Student Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const updateStudent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("PUT", UPDATE_STUDENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE STUDENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Student Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteStudent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", DELETE_STUDENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE STUDENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Student Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
 
 export const getAllStudents = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
-        
+
         try {
             // Construct the query parameters for either all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;

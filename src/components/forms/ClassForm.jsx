@@ -33,9 +33,12 @@ const ClassForm = ({ type, data, setOpen }) => {
     } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
-            teachers: [],
-            students: [],
-            subjects: [],
+            teachers: type === 'update'
+                ? data?.teachers?.map((teacher) => teacher?._id) : [],
+            students: type === 'update'
+                ? data?.students?.map((student) => student?._id) : [],
+            subjects: type === 'update'
+                ? data?.subjects?.map((subject) => subject?._id) : [],
         },
     });
 
@@ -77,25 +80,34 @@ const ClassForm = ({ type, data, setOpen }) => {
 
     // Retrieve selected values from the form state
     const selectedTeachers = type === 'update' && data?.teachers.length > 0
-        ? data?.teachers.map((id) =>
-            teacherOptions.find((option) => option.id === id)
-        )
+        ? data?.teachers.map((teacher) => {
+            return {
+                id: teacher._id,
+                name: teacher.userId.firstName + " " + teacher.userId.lastName,
+            }
+        })
         : getValues("teachers")?.map((id) =>
             teacherOptions.find((option) => option.id === id)
         );
 
     const selectedStudents = type === 'update' && data?.students.length > 0
-        ? data?.students.map((id) =>
-            studentOptions.find((option) => option.id === id)
-        )
+        ? data?.students?.map((student) => {
+            return {
+                id: student?._id,
+                name: student.userId.firstName + " " + student.userId.lastName,
+            }
+        })
         : getValues("students")?.map((id) =>
             studentOptions.find((option) => option.id === id)
         );
 
-    const selectedSubjects = type === 'update' && data?.students.length > 0
-        ? data?.students.map((id) =>
-            subjectOptions.find((option) => option.id === id)
-        )
+    const selectedSubjects = type === 'update' && data?.subjects.length > 0
+        ? data?.subjects?.map((subject) => {
+            return {
+                id: subject?._id,
+                name: subject?.subjectName,
+            }
+        })
         : getValues("subjects")?.map((id) =>
             subjectOptions.find((option) => option.id === id)
         );

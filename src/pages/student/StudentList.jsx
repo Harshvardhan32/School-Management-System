@@ -86,11 +86,15 @@ const StudentList = () => {
 
     useEffect(() => {
         dispatch(getAllStudents(token, currentPage, 10, false));
-    }, [currentPage, token, dispatch]);
+        dispatch(getAllStudents(token, undefined, undefined, true));
+    }, []);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    const { allStudents } = useSelector(state => state?.student);
+    const studentsId = allStudents?.map((student) => student?.studentId) || [];
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -109,7 +113,7 @@ const StudentList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='student' type='create' Icon={GrAdd} />
+                            <FormModal table='student' type='create' Icon={GrAdd} allData={studentsId} />
                         }
                     </div>
                 </div>

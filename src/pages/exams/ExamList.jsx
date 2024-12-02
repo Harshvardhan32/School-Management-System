@@ -47,7 +47,7 @@ const ExamList = () => {
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.examName}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data.class}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data.classes.map((item) => item.className).join(',')}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.startDate)}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
@@ -99,19 +99,25 @@ const ExamList = () => {
                     </div>
                 </div>
             </div>
-            {/* LIST */}
-            <div>
-                <Table column={column} role={role} renderRow={renderRow} data={paginatedExams} />
-            </div>
-            {/* PAGINATION */}
-            <div>
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                />
-            </div>
-        </div>
+            {
+                paginatedExams?.length > 0
+                    ? <>
+                        {/* LIST */}
+                        <div>
+                            <Table column={column} role={role} renderRow={renderRow} data={paginatedExams} />
+                        </div>
+                        {/* PAGINATION */}
+                        <div>
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    </>
+                    : <p className="text-center dark:text-gray-200 text-2xl font-medium py-5">Exams not found!</p>
+            }
+        </div >
     );
 }
 

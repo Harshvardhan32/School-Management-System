@@ -6,7 +6,7 @@ import { FaRegEdit } from "react-icons/fa";
 import FormModal from "../../components/FormModal";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { getTeacherDetails } from "../../services/operations/teacherAPI";
+import { getAllTeachers, getTeacherDetails } from "../../services/operations/teacherAPI";
 import { formatDate } from "../../services/formatDate";
 
 const TeacherDetailsPage = () => {
@@ -19,7 +19,11 @@ const TeacherDetailsPage = () => {
 
     useEffect(() => {
         dispatch(getTeacherDetails(token, teacherId));
+        dispatch(getAllTeachers(token, undefined, undefined, true));
     }, [teacherId, token, dispatch]);
+
+    const { allTeachers } = useSelector(state => state?.teacher);
+    const teachersId = allTeachers?.map((teacher) => teacher?.teacherId) || [];
 
     return (
         <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
@@ -39,7 +43,7 @@ const TeacherDetailsPage = () => {
                         <div className="w-2/3 flex flex-col justify-between gap-4">
                             <div className="flex gap-2 items-center justify-between">
                                 <h1 className="text-xl font-semibold">{teacherDetails?.userId.firstName} {teacherDetails?.userId.lastName}</h1>
-                                <FormModal table='teacher' type='update' Icon={FaRegEdit} data={teacherDetails} />
+                                <FormModal table='teacher' type='update' Icon={FaRegEdit} data={teacherDetails} allData={teachersId} />
                             </div>
                             {/* <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p> */}
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">

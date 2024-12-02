@@ -55,14 +55,14 @@ const ParentList = () => {
                         <p className="text-xs text-gray-500">{data?.parentId}</p>
                     </div>
                 </td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.students.length > 0 ? data?.students.join(', ') : '_'}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.students.length > 0 ? data?.students.map(student => { return student.userId.firstName + " " + student.userId.lastName }).join(', ') : '_'}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.userId?.phone}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.userId?.address}</td>
                 <td className="p-4">
                     <div className="flex items-center gap-2">
                         {role === 'Admin' && (
                             <>
-                                <FormModal table='parent' type='update' Icon={FaRegEdit} data={data} />
+                                <FormModal table='parent' type='update' Icon={FaRegEdit} data={data} allData={parentsId} />
                                 <FormModal table='parent' type='delete' Icon={RiDeleteBin6Line} data={data} />
                             </>
                         )}
@@ -79,11 +79,15 @@ const ParentList = () => {
 
     useEffect(() => {
         dispatch(getAllParents(token, currentPage, 10, false));
-    }, [currentPage, token, dispatch]);
+        dispatch(getAllParents(token, undefined, undefined, true));
+    }, [token]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    const { allParents } = useSelector(state => state?.parent);
+    const parentsId = allParents?.map((parent) => parent?.parentId) || [];
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -102,7 +106,7 @@ const ParentList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='parent' type='create' Icon={GrAdd} />
+                            <FormModal table='parent' type='create' Icon={GrAdd} allData={parentsId} />
                         }
                     </div>
                 </div>

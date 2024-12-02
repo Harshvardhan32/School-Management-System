@@ -1,14 +1,20 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { useEffect, useMemo, useState } from "react";
 import MultiSelectComponent from "../MultiSelectComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser } from "../../services/operations/userAPI";
 import { getAllStudents } from "../../services/operations/studentAPI";
-import * as z from 'zod';
+import { createParent, updateParent } from '../../services/operations/parentAPI';
 
-const ParentForm = ({ type, data, setOpen }) => {
+const ParentForm = ({ type, data, allData, setOpen }) => {
+
+    allData = useMemo(() => {
+        return type === 'update'
+            ? allData.filter((item) => item !== data?.parentId)
+            : allData;
+    }, [type]);
 
     const passwordSchema = (type) =>
         type === 'create'
@@ -18,7 +24,12 @@ const ParentForm = ({ type, data, setOpen }) => {
     const schema = z.object({
         parentId: z.string()
             .min(3, { message: 'Parent ID must be at least 3 character long!' })
-            .max(20, { message: "Parent ID must be at most 20 characters long!" }),
+            .max(20, { message: "Parent ID must be at most 20 characters long!" })
+            .regex(/^\S+$/, { message: "Parent ID must not contain spaces!" })
+            .refine(
+                (id) => !allData.includes(id),
+                { message: "Parent ID already exists!" }
+            ),
         email: z.string().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
@@ -38,7 +49,8 @@ const ParentForm = ({ type, data, setOpen }) => {
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
-            students: [],
+            students: type === 'update'
+                ? data?.students?.map((student) => student?._id) : [],
         },
     });
 
@@ -59,24 +71,22 @@ const ParentForm = ({ type, data, setOpen }) => {
         })) || [];
     }, [allStudents]);
 
-    const selectedStudents = type === 'update' && data?.students.length > 0
-        ? data?.students?.map((id) => {
-            studentOptions.find((option) => option.id === id);
+    let selectedStudents = (type === 'update' && data?.students?.length > 0)
+        ? data?.students?.map((student) => {
+            return {
+                id: student?._id,
+                name: student?.userId?.firstName + " " + student?.userId?.lastName
+            }
         })
-        : getValues("students")?.map((id) =>
-            studentOptions.find((option) => option.id === id)
-        );
+        : getValues("students")?.map((id) => studentOptions.find((option) => option.id === id));
 
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
-        // console.log("allStudents: ", allStudents);
-        // console.log("selectedStudents: ", selectedStudents);
         if (type === 'create') {
-            // dispatch(createUser(formData));
+            dispatch(createParent(formData, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData));
+            // dispatch(updateParent(formData, setOpen));
         }
-        // setOpen(false);
     });
 
     return (

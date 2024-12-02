@@ -4,8 +4,95 @@ import { parentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
 const {
-    ALL_PARENTS_API
+    CREATE_PARENT_API,
+    UPDATE_PARENT_API,
+    DELETE_PARENT_API,
+    ALL_PARENTS_API,
 } = parentEndPoints;
+
+export const createParent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("POST", CREATE_PARENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE PARENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Parent Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE PARENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const updateParent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("PUT", UPDATE_PARENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE PARENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Parent Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE PARENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteParent = (data, token, setOpen) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_PARENT_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            console.log("CREATE PARENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Parent Created Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("CREATE PARENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Creation Failed!`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
+}
 
 export const getAllParents = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {

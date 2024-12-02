@@ -10,6 +10,10 @@ const cloudinaryConnect = require('./config/cloudinary');
 require('dotenv').config();
 
 // Import All routers
+const AdminRoutes = require('./router/AdminRoutes');
+const TeacherRoutes = require('./router/TeacherRoutes');
+const StudentRoutes = require('./router/StudentRoutes');
+const ParentRoutes = require('./router/ParentRoutes');
 const AnnouncementRoutes = require('./router/AnnouncementRoutes');
 const AssignmentRoutes = require('./router/AssignmentRoutes');
 const AttendanceRoutes = require('./router/AttendanceRoutes');
@@ -42,6 +46,10 @@ const limiter = rateLimit({
 // app.use(limiter);
 
 // Mount all router with the API
+app.use('/api/v1/user/admin', AdminRoutes);
+app.use('/api/v1/user/teacher', TeacherRoutes);
+app.use('/api/v1/user/student', StudentRoutes);
+app.use('/api/v1/user/parent', ParentRoutes);
 app.use('/api/v1/announcement', AnnouncementRoutes);
 app.use('/api/v1/assignment', AssignmentRoutes);
 app.use('/api/v1/attendance', AttendanceRoutes);

@@ -6,12 +6,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import SelectOption from "../common/SelectOption";
 import MultiSelectComponent from "../MultiSelectComponent";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { createUser } from "../../services/operations/userAPI";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
-import { getAllStudents } from '../../services/operations/studentAPI';
+import { createStudent, updateStudent } from '../../services/operations/studentAPI';
+import { getAllParents } from '../../services/operations/parentAPI';
 
-const StudentForm = ({ type, data, setOpen }) => {
+const StudentForm = ({ type, data, allData, setOpen }) => {
+
+    allData = useMemo(() => {
+        return type === 'update'
+            ? allData.filter((item) => item !== data?.studentId)
+            : allData;
+    }, [type]);
+
+    console.log(allData);
 
     // Password zod schema for create and update 
     const passwordSchema = (type) =>
@@ -23,7 +31,11 @@ const StudentForm = ({ type, data, setOpen }) => {
         studentId: z.string()
             .min(3, { message: 'Student ID must be at least 3 character long!' })
             .max(20, { message: "Student ID must be at most 20 characters long!" })
-            .regex(/^\S+$/, { message: "Student ID must not contain spaces!" }),
+            .regex(/^\S+$/, { message: "Student ID must not contain spaces!" })
+            .refine(
+                (id) => !allData.includes(id),
+                { message: "Student ID already exists!" }
+            ),
         email: z.string().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
@@ -38,6 +50,7 @@ const StudentForm = ({ type, data, setOpen }) => {
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Student'),
+        parent: z.string().optional(),
         subjects: z.array(z.string()).optional(),
     });
 
@@ -50,7 +63,8 @@ const StudentForm = ({ type, data, setOpen }) => {
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
-            subjects: [],
+            subjects: type === 'update'
+                ? data?.subjects?.map((subject) => subject?._id) : [],
         },
     });
 
@@ -61,26 +75,12 @@ const StudentForm = ({ type, data, setOpen }) => {
     useEffect(() => {
         dispatch(getAllClasses(token, undefined, undefined, true));
         dispatch(getAllSubjects(token, undefined, undefined, true));
-        // dispatch(getAllStudents(token, undefined, undefined, true));
-    }, [dispatch]);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             await Promise.all([
-    //                 dispatch(getAllStudents(token, undefined, undefined, true)),
-    //                 dispatch(getAllClasses(token, undefined, undefined, true)),
-    //                 dispatch(getAllSubjects(token, undefined, undefined, true)),
-    //             ]);
-    //         } catch (error) {
-    //             console.error("Failed to fetch data:", error);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [token, dispatch]);
+        dispatch(getAllParents(token, undefined, undefined, true));
+    }, []);
 
     const { allClasses } = useSelector(state => state?.class);
     const { allSubjects } = useSelector(state => state?.subject);
+    const { allParents } = useSelector(state => state?.parent);
 
     const classOptions = useMemo(() => {
         return (allClasses?.map((item) => ({
@@ -88,6 +88,13 @@ const StudentForm = ({ type, data, setOpen }) => {
             name: item?.className,
         })) || []);
     }, [allClasses]);
+
+    const parentOptions = useMemo(() => {
+        return (allParents?.map((item) => ({
+            id: item?._id,
+            name: item?.userId.firstName + " " + item?.userId.firstName,
+        })) || []);
+    }, [allParents]);
 
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
@@ -97,8 +104,11 @@ const StudentForm = ({ type, data, setOpen }) => {
     }, [allSubjects]);
 
     const selectedSubjects = type === 'update' && data?.subjects.length > 0
-        ? data?.subjects?.map((id) => {
-            subjectOptions.find((option) => option.id === id);
+        ? data?.subjects?.map((subject) => {
+            return {
+                id: subject?._id,
+                name: subject?.subjectName,
+            }
         })
         : getValues("subjects")?.map((id) =>
             subjectOptions.find((option) => option.id === id)
@@ -107,9 +117,9 @@ const StudentForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createUser(formData, setOpen));
+            dispatch(createStudent(formData, token, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData, setOpen));
+            // dispatch(updateStudent(formData, token, setOpen));
         }
         // setOpen(false);
     });
@@ -290,6 +300,16 @@ const StudentForm = ({ type, data, setOpen }) => {
                         defaultValue={type === 'update' && data?.classId ? data.classId._id : undefined}
                         placeholder='Please Select'
                         label='Class'
+                    />
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <SelectOption
+                        name='parent'
+                        control={control}
+                        options={parentOptions}
+                        defaultValue={type === 'update' && data?.parent ? data.parent : undefined}
+                        placeholder='Please Select'
+                        label='Parent'
                     />
                 </div>
                 <div className="flex flex-col gap-2 flex-1">

@@ -15,23 +15,28 @@ export const userEndPoints = {
 
 // STUDENT ENDPOINTS
 export const studentEndPoints = {
-    ALL_STUDENTS_API: BASE_URL + '/api/v1/user/students',
-    GET_STUDENT_DETAILS: BASE_URL + '/api/v1/user/student-details',
+    CREATE_STUDENT_API: BASE_URL + '/api/v1/user/student/create',
+    UPDATE_STUDENT_API: BASE_URL + '/api/v1/user/student/update',
+    DELETE_STUDENT_API: BASE_URL + '/api/v1/user/student/delete',
+    ALL_STUDENTS_API: BASE_URL + '/api/v1/user/student/students',
+    GET_STUDENT_DETAILS: BASE_URL + '/api/v1/user/student/student-details',
 }
 
 // TEACHER ENDPOINTS
 export const teacherEndPoints = {
-    // CREATE_TEACHER_API: BASE_URL + '/api/v1/auth/signup',
-    // UPDATE_TEACHER_API: BASE_URL + '/api/v1/class/update',
-    // DELETE_TEACHER_API: BASE_URL + '/api/v1/class/delete',
-    ALL_TEACHERS_API: BASE_URL + '/api/v1/user/teachers',
-    GET_TEACHER_DETAILS: BASE_URL + '/api/v1/user/teacher-details',
+    CREATE_TEACHER_API: BASE_URL + '/api/v1/user/teacher/create',
+    UPDATE_TEACHER_API: BASE_URL + '/api/v1/user/teacher/update',
+    DELETE_TEACHER_API: BASE_URL + '/api/v1/user/teacher/delete',
+    ALL_TEACHERS_API: BASE_URL + '/api/v1/user/teacher/teachers',
+    GET_TEACHER_DETAILS: BASE_URL + '/api/v1/user/teacher/teacher-details',
 }
 
 // PARENT ENDPOINTS
 export const parentEndPoints = {
-    ALL_PARENTS_API: BASE_URL + '/api/v1/user/parents',
-    // GET_TEACHER_DETAILS: BASE_URL + '/api/v1/class/classes',
+    CREATE_PARENT_API: BASE_URL + '/api/v1/user/parent/create',
+    UPDATE_PARENT_API: BASE_URL + '/api/v1/user/parent/update',
+    DELETE_PARENT_API: BASE_URL + '/api/v1/user/parent/delete',
+    ALL_PARENTS_API: BASE_URL + '/api/v1/user/parent/parents',
 }
 
 // SUBJECT ENDPOINTS

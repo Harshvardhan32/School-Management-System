@@ -62,8 +62,8 @@ const TeacherList = () => {
                     </div>
                 </td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.teacherId}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.subjects.length > 0 ? data?.subjects.join(', ') : '_'}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classes.length > 0 ? data?.classes.join(', ') : '_'}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.subjects.length > 0 ? data?.subjects.map(subject => subject.subjectName).join(', ') : '_'}</td>
+                <td className="hidden md:table-cell p-4 dark:text-gray-200">{data?.classes.length > 0 ? data?.classes.map(item => item?.className).join(', ') : '_'}</td>
                 <td className="hidden lg:table-cell p-4 dark:text-gray-200">{data?.userId.phone}</td>
                 <td className="hidden lg:table-cell p-4 dark:text-gray-200">{data?.userId.address}</td>
                 <td className="p-4">
@@ -92,47 +92,66 @@ const TeacherList = () => {
 
     useEffect(() => {
         dispatch(getAllTeachers(token, currentPage, 10, false));
-    }, [currentPage, token, dispatch]);
+        dispatch(getAllTeachers(token, undefined, undefined, true));
+    }, []);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
+    const { allTeachers } = useSelector(state => state?.teacher);
+    const { loading } = useSelector(state => state?.teacher);
+    const teachersId = allTeachers?.map((teacher) => teacher?.teacherId) || [];
+
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
-            {/* TOP */}
-            <div className="flex items-center justify-between gap-4">
-                <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Teachers</h1>
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch />
-                    <div className="flex items-center gap-4 self-end">
-                        <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/filter.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
-                        </button>
-                        <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <BiSortDown fontSize={18} />
-                        </button>
-                        {role === 'Admin' &&
-                            <FormModal table='teacher' type={'create'} Icon={GrAdd} />
+        <>
+            {
+                loading ?
+                    <>
+                        <p>Loading...</p>
+                    </>
+                    : <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
+                        {/* TOP */}
+                        <div className="flex items-center justify-between gap-4">
+                            <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Teachers</h1>
+                            <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
+                                <TableSearch />
+                                <div className="flex items-center gap-4 self-end">
+                                    <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
+                                        <img src="/filter.png" alt=""
+                                            className="w-[14px] h-[14px]"
+                                        />
+                                    </button>
+                                    <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
+                                        <BiSortDown fontSize={18} />
+                                    </button>
+                                    {role === 'Admin' &&
+                                        <FormModal table='teacher' type={'create'} Icon={GrAdd} allData={teachersId} />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        {
+                            (!loading && paginatedTeachers.length > 0)
+                                ? <>
+                                    {/* LIST */}
+                                    <div>
+                                        <Table column={column} renderRow={renderRow} data={paginatedTeachers} />
+                                    </div>
+                                    {/* PAGINATION */}
+                                    <div>
+                                        <Pagination
+                                            totalPages={totalPages}
+                                            currentPage={currentPage}
+                                            onPageChange={handlePageChange}
+                                        />
+                                    </div>
+                                </>
+                                : <p className="text-center dark:text-gray-200 text-2xl font-medium py-5">Teachers not found!</p>
                         }
                     </div>
-                </div>
-            </div>
-            {/* LIST */}
-            <div>
-                <Table column={column} renderRow={renderRow} data={paginatedTeachers} />
-            </div>
-            {/* PAGINATION */}
-            <div>
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                />
-            </div>
-        </div>
+            }
+        </>
     );
 
 }

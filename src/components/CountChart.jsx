@@ -1,10 +1,8 @@
-import { useContext } from "react";
 import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
-import { ThemeContext } from "../utils/ThemeContext";
+import { formatNumber } from "../utils/formatNumber";
 
-const CountChart = () => {
+const CountChart = ({ total, boys, girls, others }) => {
 
-    const { darkMode } = useContext(ThemeContext);
 
     const data = [
         {
@@ -16,6 +14,11 @@ const CountChart = () => {
             name: 'Boys',
             count: 50,
             fill: '#51DFC3',
+        },
+        {
+            name: 'Others',
+            count: 50,
+            fill: '#a7f3d0',
         },
     ];
 
@@ -46,16 +49,21 @@ const CountChart = () => {
                 <img src="/maleFemale1.png" alt="" className="absolute max-w-24 max-h-24 lg:max-w-20 lg:max-h-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
             </div>
             {/* BOTTOM */}
-            <div className="flex justify-center gap-16">
+            <div className="w-full flex justify-center gap-7">
                 <div className="flex flex-col gap-1">
                     <div className="w-5 h-5 bg-lamaGreen rounded-full"></div>
-                    <h1 className="font-bold dark:text-gray-200">1,234</h1>
-                    <h2 className="text-xs text-gray-300">Boys (55%)</h2>
+                    <h1 className="font-bold dark:text-gray-200">{formatNumber(boys)}</h1>
+                    <h2 className="text-xs text-gray-300">Boys ({Math.round(boys * 100 / total)}%)</h2>
                 </div>
                 <div className="flex flex-col gap-1">
                     <div className="w-5 h-5 bg-lamaPink rounded-full"></div>
-                    <h1 className="font-bold dark:text-gray-200">1,234</h1>
-                    <h2 className="text-xs text-gray-300">Girls (55%)</h2>
+                    <h1 className="font-bold dark:text-gray-200">{formatNumber(girls)}</h1>
+                    <h2 className="text-xs text-gray-300">Girls ({Math.round(girls * 100 / total)}%)</h2>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="w-5 h-5 bg-emerald-400 rounded-full"></div>
+                    <h1 className="font-bold dark:text-gray-200">{formatNumber(others)}</h1>
+                    <h2 className="text-xs text-gray-300">Others ({Math.round(others * 100 / total)}%)</h2>
                 </div>
             </div>
         </div>

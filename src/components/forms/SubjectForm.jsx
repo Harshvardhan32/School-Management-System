@@ -27,9 +27,12 @@ const SubjectForm = ({ type, data, setOpen }) => {
     } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
-            classes: [],
-            teachers: [],
-            lessons: [],
+            classes: type === 'update'
+                ? data?.classes?.map((item) => item?._id) : [],
+            teachers: type === 'update'
+                ? data?.teachers?.map((teacher) => teacher?._id) : [],
+            lessons: type === 'update'
+                ? data?.lessons?.map((lesson) => lesson?._id) : [],
         },
     });
 
@@ -70,28 +73,36 @@ const SubjectForm = ({ type, data, setOpen }) => {
     }, [allLessons]);
 
     // Retrieve selected values from the form state
-    const selectedClasses =
-        // type === 'update' && data?.classes.length > 0
-        //     ? data?.classes.map((item) =>
-        //         classOptions.find((option) => option.id === item._id)
-        //     )
-        //     :
-        getValues("classes")?.map((id) =>
+    const selectedClasses = type === 'update' && data?.classes.length > 0
+        ? data.classes.map((item) => {
+            return {
+                id: item._id,
+                name: item.className,
+            }
+        })
+        : getValues("classes")?.map((id) =>
             classOptions.find((option) => option.id === id)
         );
 
     const selectedTeachers = type === 'update' && data?.teachers.length > 0
-        ? data?.teachers.map((id) =>
-            teacherOptions.find((option) => option.id === id)
-        )
+        ? data?.teachers.map((teacher) => {
+            return {
+                id: teacher._id,
+                name: teacher.userId.firstName + " " + teacher.userId.lastName,
+            }
+        })
         : getValues("teachers")?.map((id) =>
             teacherOptions.find((option) => option.id === id)
         );
 
+    // title: {
     const selectedLessons = type === 'update' && data?.lessons.length > 0
-        ? data?.lessons.map((id) =>
-            lessonOptions.find((option) => option.id === id)
-        )
+        ? data?.lessons.map((lesson) => {
+            return {
+                id: lesson._id,
+                name: lesson.title,
+            }
+        })
         : getValues("lessons")?.map((id) =>
             lessonOptions.find((option) => option.id === id)
         );
@@ -99,7 +110,7 @@ const SubjectForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createSubject(formData, token, setOpen));
+            dispatch(createSubject(formData, token, setOpen));
         } else {
             // console.log("Form Data: ", formData);
         }

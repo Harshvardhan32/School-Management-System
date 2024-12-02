@@ -4,13 +4,13 @@ const {
     createSubject,
     updateSubject,
     deleteSubject,
-    getAllSubject
+    getAllSubjects
 } = require('../controllers/subject/SubjectController');
 const { isAuth, isAdmin } = require('../middlewares/Auth');
 
-router.post('/create', isAuth, isAdmin, createSubject);
+router.post('/create', isAuth, createSubject);
 router.put('/update', isAuth, isAdmin, updateSubject);
 router.delete('/delete', isAuth, isAdmin, deleteSubject);
-router.get('/subjects', isAuth, getAllSubject);
+router.get('/subjects', isAuth, getAllSubjects);
 
 module.exports = router;

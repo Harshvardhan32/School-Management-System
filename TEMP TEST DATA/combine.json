@@ -1,0 +1,360 @@
+[
+    {
+        "_id": "5f5b4a3a1e4e8b1f30188b79",
+        "userId": {
+            "_id": "5f5b4a3a1e4e8b1f30188b78",
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john.doe@example.com",
+            "password": "password123",
+            "role": "parent",
+            "createdAt": "2024-12-01T10:00:00Z",
+            "updatedAt": "2024-12-01T10:00:00Z"
+        },
+        "parentId": "P12345",
+        "students": [
+            {
+                "_id": "5f5b4a3a1e4e8b1f30188b80",
+                "userId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b76",
+                    "firstName": "Jane",
+                    "lastName": "Smith",
+                    "email": "jane.smith@example.com",
+                    "password": "password123",
+                    "role": "student",
+                    "createdAt": "2024-12-01T10:00:00Z",
+                    "updatedAt": "2024-12-01T10:00:00Z"
+                },
+                "studentId": "S12345",
+                "classId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b82",
+                    "className": "Mathematics",
+                    "createdAt": "2024-12-01T10:00:00Z",
+                    "updatedAt": "2024-12-01T10:00:00Z"
+                },
+                "fatherName": "John Doe",
+                "motherName": "Jane Doe",
+                "parent": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b79",
+                    "userId": {
+                        "_id": "5f5b4a3a1e4e8b1f30188b78",
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "email": "john.doe@example.com",
+                        "password": "password123",
+                        "role": "parent",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    },
+                    "parentId": "P12345"
+                },
+                "attendance": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b83",
+                        "date": "2024-11-30",
+                        "status": "Present",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "subjects": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b85",
+                        "subjectName": "Math",
+                        "teacher": "Mr. Thomas",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "rollNumber": 1,
+                "exams": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b87",
+                        "examName": "Midterm",
+                        "date": "2024-12-05",
+                        "subject": "Mathematics",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "assignments": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b89",
+                        "assignmentName": "Algebra Assignment",
+                        "dueDate": "2024-12-10",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "createdAt": "2024-12-01T10:00:00Z",
+                "updatedAt": "2024-12-01T10:00:00Z"
+            },
+            {
+                "_id": "5f5b4a3a1e4e8b1f30188b81",
+                "userId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b77",
+                    "firstName": "Michael",
+                    "lastName": "Johnson",
+                    "email": "michael.johnson@example.com",
+                    "password": "password123",
+                    "role": "student",
+                    "createdAt": "2024-12-01T10:00:00Z",
+                    "updatedAt": "2024-12-01T10:00:00Z"
+                },
+                "studentId": "S67890",
+                "classId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b82",
+                    "className": "Mathematics",
+                    "createdAt": "2024-12-01T10:00:00Z",
+                    "updatedAt": "2024-12-01T10:00:00Z"
+                },
+                "fatherName": "John Doe",
+                "motherName": "Jane Doe",
+                "parent": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b79",
+                    "userId": {
+                        "_id": "5f5b4a3a1e4e8b1f30188b78",
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "email": "john.doe@example.com",
+                        "password": "password123",
+                        "role": "parent",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    },
+                    "parentId": "P12345"
+                },
+                "attendance": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b83",
+                        "date": "2024-11-30",
+                        "status": "Absent",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "subjects": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b85",
+                        "subjectName": "Math",
+                        "teacher": "Mr. Thomas",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "rollNumber": 2,
+                "exams": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b87",
+                        "examName": "Midterm",
+                        "date": "2024-12-05",
+                        "subject": "Mathematics",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "assignments": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b89",
+                        "assignmentName": "Algebra Assignment",
+                        "dueDate": "2024-12-10",
+                        "createdAt": "2024-12-01T10:00:00Z",
+                        "updatedAt": "2024-12-01T10:00:00Z"
+                    }
+                ],
+                "createdAt": "2024-12-01T10:00:00Z",
+                "updatedAt": "2024-12-01T10:00:00Z"
+            }
+        ],
+        "createdAt": "2024-12-01T10:00:00Z",
+        "updatedAt": "2024-12-01T10:00:00Z"
+    },
+    {
+        "_id": "5f5b4a3a1e4e8b1f30188b80",
+        "userId": {
+            "_id": "5f5b4a3a1e4e8b1f30188b79",
+            "firstName": "Alice",
+            "lastName": "Johnson",
+            "email": "alice.johnson@example.com",
+            "password": "password123",
+            "role": "parent",
+            "createdAt": "2024-12-01T11:00:00Z",
+            "updatedAt": "2024-12-01T11:00:00Z"
+        },
+        "parentId": "P67890",
+        "students": [
+            {
+                "_id": "5f5b4a3a1e4e8b1f30188b82",
+                "userId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b77",
+                    "firstName": "Emily",
+                    "lastName": "Davis",
+                    "email": "emily.davis@example.com",
+                    "password": "password123",
+                    "role": "student",
+                    "createdAt": "2024-12-01T11:00:00Z",
+                    "updatedAt": "2024-12-01T11:00:00Z"
+                },
+                "studentId": "S67890",
+                "classId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b82",
+                    "className": "Mathematics",
+                    "createdAt": "2024-12-01T11:00:00Z",
+                    "updatedAt": "2024-12-01T11:00:00Z"
+                },
+                "fatherName": "Tom Johnson",
+                "motherName": "Alice Johnson",
+                "parent": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b80",
+                    "userId": {
+                        "_id": "5f5b4a3a1e4e8b1f30188b79",
+                        "firstName": "Alice",
+                        "lastName": "Johnson",
+                        "email": "alice.johnson@example.com",
+                        "password": "password123",
+                        "role": "parent",
+                        "createdAt": "2024-12-01T11:00:00Z",
+                        "updatedAt": "2024-12-01T11:00:00Z"
+                    },
+                    "parentId": "P67890"
+                },
+                "attendance": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b83",
+                        "date": "2024-11-30",
+                        "status": "Present",
+                        "createdAt": "2024-12-01T11:00:00Z",
+                        "updatedAt": "2024-12-01T11:00:00Z"
+                    }
+                ],
+                "subjects": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b85",
+                        "subjectName": "Math",
+                        "teacher": "Mr. Thomas",
+                        "createdAt": "2024-12-01T11:00:00Z",
+                        "updatedAt": "2024-12-01T11:00:00Z"
+                    }
+                ],
+                "rollNumber": 1,
+                "exams": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b87",
+                        "examName": "Midterm",
+                        "date": "2024-12-05",
+                        "subject": "Mathematics",
+                        "createdAt": "2024-12-01T11:00:00Z",
+                        "updatedAt": "2024-12-01T11:00:00Z"
+                    }
+                ],
+                "assignments": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b89",
+                        "assignmentName": "Algebra Assignment",
+                        "dueDate": "2024-12-10",
+                        "createdAt": "2024-12-01T11:00:00Z",
+                        "updatedAt": "2024-12-01T11:00:00Z"
+                    }
+                ],
+                "createdAt": "2024-12-01T11:00:00Z",
+                "updatedAt": "2024-12-01T11:00:00Z"
+            }
+        ],
+        "createdAt": "2024-12-01T11:00:00Z",
+        "updatedAt": "2024-12-01T11:00:00Z"
+    },
+    {
+        "_id": "5f5b4a3a1e4e8b1f30188b83",
+        "userId": {
+            "_id": "5f5b4a3a1e4e8b1f30188b82",
+            "firstName": "Michael",
+            "lastName": "Taylor",
+            "email": "michael.taylor@example.com",
+            "password": "password123",
+            "role": "parent",
+            "createdAt": "2024-12-01T12:00:00Z",
+            "updatedAt": "2024-12-01T12:00:00Z"
+        },
+        "parentId": "P11223",
+        "students": [
+            {
+                "_id": "5f5b4a3a1e4e8b1f30188b84",
+                "userId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b77",
+                    "firstName": "Sophia",
+                    "lastName": "Martinez",
+                    "email": "sophia.martinez@example.com",
+                    "password": "password123",
+                    "role": "student",
+                    "createdAt": "2024-12-01T12:00:00Z",
+                    "updatedAt": "2024-12-01T12:00:00Z"
+                },
+                "studentId": "S11223",
+                "classId": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b85",
+                    "className": "English",
+                    "createdAt": "2024-12-01T12:00:00Z",
+                    "updatedAt": "2024-12-01T12:00:00Z"
+                },
+                "fatherName": "Michael Taylor",
+                "motherName": "Elizabeth Taylor",
+                "parent": {
+                    "_id": "5f5b4a3a1e4e8b1f30188b83",
+                    "userId": {
+                        "_id": "5f5b4a3a1e4e8b1f30188b82",
+                        "firstName": "Michael",
+                        "lastName": "Taylor",
+                        "email": "michael.taylor@example.com",
+                        "password": "password123",
+                        "role": "parent",
+                        "createdAt": "2024-12-01T12:00:00Z",
+                        "updatedAt": "2024-12-01T12:00:00Z"
+                    },
+                    "parentId": "P11223"
+                },
+                "attendance": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b86",
+                        "date": "2024-11-30",
+                        "status": "Present",
+                        "createdAt": "2024-12-01T12:00:00Z",
+                        "updatedAt": "2024-12-01T12:00:00Z"
+                    }
+                ],
+                "subjects": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b88",
+                        "subjectName": "English",
+                        "teacher": "Ms. Roberts",
+                        "createdAt": "2024-12-01T12:00:00Z",
+                        "updatedAt": "2024-12-01T12:00:00Z"
+                    }
+                ],
+                "rollNumber": 1,
+                "exams": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b90",
+                        "examName": "Final Exam",
+                        "date": "2024-12-10",
+                        "subject": "English",
+                        "createdAt": "2024-12-01T12:00:00Z",
+                        "updatedAt": "2024-12-01T12:00:00Z"
+                    }
+                ],
+                "assignments": [
+                    {
+                        "_id": "5f5b4a3a1e4e8b1f30188b91",
+                        "assignmentName": "Essay on Literature",
+                        "dueDate": "2024-12-15",
+                        "createdAt": "2024-12-01T12:00:00Z",
+                        "updatedAt": "2024-12-01T12:00:00Z"
+                    }
+                ],
+                "createdAt": "2024-12-01T12:00:00Z",
+                "updatedAt": "2024-12-01T12:00:00Z"
+            }
+        ],
+        "createdAt": "2024-12-01T12:00:00Z",
+        "updatedAt": "2024-12-01T12:00:00Z"
+    }
+]
