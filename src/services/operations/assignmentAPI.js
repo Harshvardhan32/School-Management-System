@@ -24,17 +24,82 @@ export const createAssignment = (data, token, setOpen) => {
                 }
             );
 
-            // console.log("CREATE ASSIGNMENT API RESPONSE............", response);
+            console.log("CREATE ASSIGNMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Assignment Created Successfully!');
             setOpen(false);
         } catch (error) {
-            // console.log("CREATE ASSIGNMENT API ERROR............", error.message);
+            console.log("CREATE ASSIGNMENT API ERROR............", error.message);
             toast.error(error?.message || "Assignment Creation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const updateAssignment = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("PUT", UPDATE_ASSIGNMENT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("UPDATE ASSIGNMENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Assignment Updated Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("UPDATE ASSIGNMENT API ERROR............", error.message);
+            toast.error(error?.message || "Assignment Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteAssignment = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_ASSIGNMENT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE ASSIGNMENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Assignment Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE ASSIGNMENT API ERROR............", error.message);
+            toast.error(error?.message || "Assignment Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);

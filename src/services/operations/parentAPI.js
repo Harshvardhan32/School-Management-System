@@ -48,18 +48,18 @@ export const updateParent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE PARENT API RESPONSE............", response);
+            console.log("UPDATE PARENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Parent Created Successfully!');
+            toast.success('Parent Updated Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE PARENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("UPDATE PARENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Updation Failed!`);
         } finally {
             toast.dismiss(toastId);
         }

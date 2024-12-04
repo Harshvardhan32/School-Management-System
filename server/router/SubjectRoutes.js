@@ -6,10 +6,10 @@ const {
     deleteSubject,
     getAllSubjects
 } = require('../controllers/subject/SubjectController');
-const { isAuth, isAdmin } = require('../middlewares/Auth');
+const { isAuth, isAdmin, isAdminOrTeacher } = require('../middlewares/Auth');
 
-router.post('/create', isAuth, createSubject);
-router.put('/update', isAuth, isAdmin, updateSubject);
+router.post('/create', isAuth, isAdmin, createSubject);
+router.put('/update', isAuth, isAdminOrTeacher, updateSubject);
 router.delete('/delete', isAuth, isAdmin, deleteSubject);
 router.get('/subjects', isAuth, getAllSubjects);
 

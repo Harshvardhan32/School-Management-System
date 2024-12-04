@@ -8,7 +8,7 @@ import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllLessons } from "../../services/operations/lessonAPI";
+import { deleteLesson, getAllLessons } from "../../services/operations/lessonAPI";
 import { GrAdd } from "react-icons/gr";
 
 const LessonList = () => {
@@ -42,7 +42,7 @@ const LessonList = () => {
                         {(role === 'Admin' || role === 'Teacher') && (
                             <>
                                 <FormModal table='lesson' type='update' Icon={FaRegEdit} data={data} />
-                                <FormModal table='lesson' type='delete' Icon={RiDeleteBin6Line} data={data} />
+                                <FormModal table='lesson' type='delete' Icon={RiDeleteBin6Line} data={data} deleteFunction={deleteLesson} />
                             </>
                         )}
                     </div>
@@ -81,7 +81,7 @@ const LessonList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {(role === 'Admin' || role === 'Teacher') &&
-                            <FormModal table='lesson' type='create' Icon={GrAdd} data={{ id: 1 }} />
+                            <FormModal table='lesson' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>

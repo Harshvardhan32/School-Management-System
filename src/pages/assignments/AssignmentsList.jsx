@@ -1,6 +1,5 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
@@ -8,7 +7,7 @@ import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllAssignments } from "../../services/operations/assignmentAPI";
+import { deleteAssignment, getAllAssignments } from "../../services/operations/assignmentAPI";
 import extractDate from '../../utils/extractDate';
 import { GrAdd } from "react-icons/gr";
 
@@ -61,7 +60,7 @@ const AssignmentList = () => {
                         {(role === 'Admin' || role === 'Teacher') && (
                             <>
                                 <FormModal table='assignment' type='update' Icon={FaRegEdit} data={data} />
-                                <FormModal table='assignment' type='delete' Icon={RiDeleteBin6Line} data={data} />
+                                <FormModal table='assignment' type='delete' Icon={RiDeleteBin6Line} data={data} deleteFunction={deleteAssignment} />
                             </>
                         )}
                     </div>
@@ -70,9 +69,9 @@ const AssignmentList = () => {
         );
     }
 
+    const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const { token } = useSelector(state => state?.auth);
-    const dispatch = useDispatch();
     const { paginatedAssignments, totalPages } = useSelector(state => state?.assignment);
 
     useEffect(() => {
@@ -100,7 +99,7 @@ const AssignmentList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='assignment' type='create' Icon={GrAdd} data={{ id: 1 }} />
+                            <FormModal table='assignment' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>

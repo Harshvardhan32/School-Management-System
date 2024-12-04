@@ -1,8 +1,8 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createAnnouncement, updateAnnouncement } from "../../services/operations/announcementAPI";
 import { useDispatch, useSelector } from "react-redux";
-import * as z from 'zod';
 
 const AnnouncementForm = ({ type, data, setOpen }) => {
 
@@ -16,8 +16,6 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
     const {
         register,
         handleSubmit,
-        getValues,
-        setValue,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema)
@@ -29,11 +27,11 @@ const AnnouncementForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createAnnouncement(formData, token));
+            dispatch(createAnnouncement(formData, token, setOpen));
         } else {
-            // dispatch(updateAnnouncement(formData));
+            formData.id = data._id;
+            dispatch(updateAnnouncement(formData, token, setOpen));
         }
-        // setOpen(false);
     })
 
     return (

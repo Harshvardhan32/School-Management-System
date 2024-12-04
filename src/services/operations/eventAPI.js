@@ -16,24 +16,24 @@ export const createEvent = (data, token, setOpen) => {
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", CREATE_EVENT_API,
-                data,
+            const response = await apiConnector("POST", CREATE_EVENT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE EVENT API RESPONSE............", response);
+            console.log("CREATE EVENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Event Created Successfully!');
             setOpen(false);
         } catch (error) {
-            // console.log("CREATE EVENT API ERROR............", error.message);
+            console.log("CREATE EVENT API ERROR............", error.message);
             toast.error(error?.message || "Event Creation Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -48,7 +48,7 @@ export const updateEvent = (data, token, setOpen) => {
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", UPDATE_EVENT_API,
+            const response = await apiConnector("PUT", UPDATE_EVENT_API,
                 data,
                 {
                     "Content-Type": "application/json",
@@ -56,17 +56,50 @@ export const updateEvent = (data, token, setOpen) => {
                 }
             );
 
-            // console.log("CREATE EVENT API RESPONSE............", response);
+            console.log("UPDATE EVENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Event Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Event Updated Successfully!');
             setOpen(false);
         } catch (error) {
-            // console.log("CREATE EVENT API ERROR............", error.message);
-            toast.error(error?.message || "Event Creation Failed!");
+            console.log("UPDATE EVENT API ERROR............", error.message);
+            toast.error(error?.message || "Event Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteEvent = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_EVENT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE EVENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Event Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE EVENT API ERROR............", error.message);
+            toast.error(error?.message || "Event Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);

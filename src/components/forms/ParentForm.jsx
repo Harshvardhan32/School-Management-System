@@ -83,9 +83,10 @@ const ParentForm = ({ type, data, allData, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            dispatch(createParent(formData, setOpen));
+            // dispatch(createParent(formData, token, setOpen));
         } else {
-            // dispatch(updateParent(formData, setOpen));
+            formData.id = data._id;
+            dispatch(updateParent(formData, token, setOpen));
         }
     });
 

@@ -1,12 +1,12 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from "react-hot-toast";
 import MultiSelectComponent from "../MultiSelectComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
-import * as z from 'zod';
 import { useEffect, useMemo } from "react";
-import { createExam } from "../../services/operations/examAPI";
+import { createExam, updateExam } from "../../services/operations/examAPI";
 import { getAllClasses } from "../../services/operations/classAPI";
 
 const ExamForm = ({ type, data, setOpen }) => {
@@ -87,9 +87,10 @@ const ExamForm = ({ type, data, setOpen }) => {
 
         console.log(formData);
         if (type === 'create') {
-            dispatch(createExam(formData, token, setOpen))
+            dispatch(createExam(formData, token, setOpen));
         } else {
-            // console.log(formData);
+            formData.id = data._id;
+            dispatch(updateExam(formData, token, setOpen));
         }
     });
 

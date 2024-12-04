@@ -17,6 +17,7 @@ exports.createTeacher = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
+            remarks,
             teacherId,
             classes,
             subjects
@@ -76,6 +77,7 @@ exports.createTeacher = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
+            remarks,
             photo: image
         });
 
@@ -89,25 +91,17 @@ exports.createTeacher = async (req, res) => {
 
         // Update teachers in Class Schema
         if (classes?.length > 0) {
-            await Promise.all(
-                classes.map((classId) =>
-                    Class.findByIdAndUpdate(
-                        classId,
-                        { $push: { teachers: userResponse?._id } }
-                    )
-                )
+            await Class.updateMany(
+                { _id: { $in: classes } }, // Match all classes with _id in the provided classes array
+                { $push: { teachers: userResponse?._id } } // Push the teacher ID to the teachers array
             );
         }
 
         // Update teachers in Subject Schema
         if (subjects?.length > 0) {
-            await Promise.all(
-                subjects.map((subjectId) =>
-                    Subject.findByIdAndUpdate(
-                        subjectId,
-                        { $push: { teachers: userResponse?._id } }
-                    )
-                )
+            await Subject.updateMany(
+                { _id: { $in: subjects } }, // Match all subjects with _id in the provided subjects array
+                { $push: { teachers: userResponse?._id } } // Push the teacher ID to the teachers array
             );
         }
 
@@ -140,8 +134,9 @@ exports.updateTeacher = async (req, res) => {
             dateOfBirth,
             sex,
             teacherId,
-            classes,
-            subjects
+            classes = [],
+            subjects = [],
+            remarks
         } = req.body;
 
         // Validate required fields for a user
@@ -162,8 +157,8 @@ exports.updateTeacher = async (req, res) => {
             });
         }
 
-        // Update profile
-        await User.findByIdAndUpdate(existingTeacher?.userId,
+        // Update user profile
+        await User.findByIdAndUpdate(existingTeacher.userId,
             {
                 firstName,
                 lastName,
@@ -175,71 +170,51 @@ exports.updateTeacher = async (req, res) => {
                 remarks
             });
 
-        // Update Teacher
+        // Update Teacher record
         const updatedTeacher = await Teacher.findByIdAndUpdate(id,
-            { teacherId, classes, subjects });
+            { teacherId, classes, subjects }, { new: true });
 
-        // Find classes which are not present in existing teacher data
-        const addedClasses = classes.filter((item) => !existingTeacher?.classes.includes(item));
+        // Handle added and removed classes
+        const addedClasses = classes.filter(classId => !existingTeacher.classes.includes(classId));
 
-        // Find classes which are present in existingTeacher?.classes but not present in classes
-        const removedClasses = existingTeacher?.classes.filter((item) => !classes.includes(item));
+        const removedClasses = existingTeacher.classes.filter(classId => !classes.includes(classId));
 
-        // Push new addedClasses
+        // Update class relationships
         if (addedClasses?.length > 0) {
-            await Promise.all(
-                addedClasses.map((classId) =>
-                    Class.findByIdAndUpdate(
-                        classId,
-                        { $push: { teachers: id } }
-                    )
-                )
+            await Class.updateMany(
+                { _id: { $in: addedClasses } }, // Match classes in the addedClasses array
+                { $addToSet: { teachers: id } } // Add teacher ID to the teachers array, avoiding duplicates
             );
         }
 
-        // Pull removedClasses
         if (removedClasses?.length > 0) {
-            await Promise.all(
-                removedClasses.map((classId) =>
-                    Class.findByIdAndUpdate(
-                        classId,
-                        { $pull: { teachers: id } }
-                    )
-                )
+            await Class.updateMany(
+                { _id: { $in: removedClasses } }, // Match classes in the removedClasses array
+                { $pull: { teachers: id } } // Remove teacher ID from the teachers array
             );
         }
 
+        // Handle added and removed subjects
+        const addedSubjects = subjects.filter(subjectId => !existingTeacher.subjects.includes(subjectId));
 
-        // Find subjects which are not present in existing teacher data
-        const addedSubjects = classes.filter((item) => !existingTeacher?.classes.includes(item));
+        const removedSubjects = existingTeacher.subjects.filter(subjectId => !subjects.includes(subjectId));
 
-        // Find subjects which are present in existingTeacher?.subjects but not present in classes
-        const removedSubjects = existingTeacher?.classes.filter((item) => !classes.includes(item));
-
-        // Push new addedSubjects
+        // Update subject relationships
         if (addedSubjects?.length > 0) {
-            await Promise.all(
-                addedSubjects.map((subjectId) =>
-                    Subject.findByIdAndUpdate(
-                        subjectId,
-                        { $push: { teachers: id } }
-                    )
-                )
+            await Subject.updateMany(
+                { _id: { $in: addedSubjects } }, // Match subjects in the addedSubjects array
+                { $addToSet: { teachers: id } } // Add teacher ID to the teachers array, avoiding duplicates
             );
         }
 
-        // Pull removedSubjects
         if (removedSubjects.length > 0) {
-            await Promise.all(
-                removedSubjects.map((subjectId) =>
-                    Subject.findByIdAndUpdate(
-                        subjectId,
-                        { $pull: { teachers: id } }
-                    )
-                )
+            await Subject.updateMany(
+                { _id: { $in: removedSubjects } }, // Match subjects in the removedSubjects array
+                { $pull: { teachers: id } } // Remove teacher ID from the teachers array
             );
         }
 
+        // Send the successful response
         return res.status(200).json({
             success: true,
             data: updatedTeacher,
@@ -257,7 +232,7 @@ exports.updateTeacher = async (req, res) => {
 
 exports.deleteTeacher = async (req, res) => {
     try {
-        
+
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({

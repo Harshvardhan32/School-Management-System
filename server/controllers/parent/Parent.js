@@ -1,4 +1,4 @@
-const Class = require("../../models/Class");
+const bcrypt = require('bcryptjs');
 const Parent = require("../../models/Parent");
 const Student = require("../../models/Student");
 const User = require("../../models/User");
@@ -13,8 +13,6 @@ exports.createParent = async (req, res) => {
             phone,
             address,
             role,
-            bloodType,
-            dateOfBirth,
             sex,
             parentId,
             students
@@ -71,8 +69,6 @@ exports.createParent = async (req, res) => {
             phone,
             address,
             role,
-            bloodType,
-            dateOfBirth,
             sex,
             photo: image
         });
@@ -86,10 +82,9 @@ exports.createParent = async (req, res) => {
 
         // Update parent in Student Schema
         if (students?.length > 0) {
-            await Promise.all(
-                students.map((studentId) =>
-                    Student.findByIdAndUpdate(studentId, { parent: userResponse?._id })
-                )
+            await Student.updateMany(
+                { _id: { $in: students } }, // Match all students whose _id is in the students array
+                { parent: userResponse?._id } // Update the parent field with the given userResponse._id
             );
         }
 
@@ -110,7 +105,86 @@ exports.createParent = async (req, res) => {
 }
 
 exports.updateParent = async (req, res) => {
+    try {
+        const {
+            id,
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            sex,
+            parentId,
+            students
+        } = req.body;
 
+        // Validate required fields for a user
+        if (!id || !firstName || !email || !phone || !address || !sex || !parentId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please fill all required details!'
+            });
+        }
+
+        // Check for existing Parent by id
+        const existingParent = await Parent.findById(id);
+
+        if (!existingParent) {
+            return res.status(400).json({
+                success: false,
+                message: 'Parent not found with the id!'
+            });
+        }
+
+        // Update user profile
+        await User.findByIdAndUpdate(existingParent?.userId,
+            {
+                firstName,
+                lastName,
+                phone,
+                address,
+                sex,
+            });
+
+        // Determine added and removed students
+        const addedStudents = students.filter((studentId) => !existingParent?.students.includes(studentId));
+
+        const removedStudents = existingParent?.students.filter((studentId) => !students.includes(studentId));
+
+        // Update student relationships
+        if (addedStudents?.length > 0) {
+            await Student.updateMany(
+                { _id: { $in: addedStudents } }, // Match all students whose _id is in the addedStudents array
+                { parent: id } // Set the parent field to the given id
+            );
+        }
+
+        if (removedStudents?.length > 0) {
+            await Student.updateMany(
+                { _id: { $in: removedStudents } }, // Match all students whose _id is in the removedStudents array
+                { parent: null } // Set the parent field to null
+            );
+        }
+
+        // Update parent with new students array
+        const updatedParent = await Parent.findByIdAndUpdate(id,
+            { parentId, students },
+            { new: true });
+
+        // Send the successful response
+        return res.status(200).json({
+            success: true,
+            data: updatedParent,
+            message: 'Parent updated Successfully!'
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
+    }
 }
 
 exports.deleteParent = async (req, res) => {

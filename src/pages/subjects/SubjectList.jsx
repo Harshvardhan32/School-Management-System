@@ -84,7 +84,7 @@ const SubjectList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='subject' type='create' Icon={GrAdd} data={{ id: 1 }} />
+                            <FormModal table='subject' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>

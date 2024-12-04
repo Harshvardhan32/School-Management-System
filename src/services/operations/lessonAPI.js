@@ -30,6 +30,7 @@ export const createLesson = (data, token, setOpen) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Lesson Created Successfully!');
             setOpen(false);
         } catch (error) {
@@ -42,30 +43,63 @@ export const createLesson = (data, token, setOpen) => {
     }
 }
 
-export const updateClass = (data, token) => {
+export const updateLesson = (data, token, setOpen) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", UPDATE_CLASS_API,
-                data,
+            const response = await apiConnector("PUT", UPDATE_LESSON_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("UPDATE LESSON API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Announcement Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Lesson Updated Successfully!');
+            setOpen(false);
         } catch (error) {
-            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Creation Failed!");
+            console.log("UPDATE LESSON API ERROR............", error.message);
+            toast.error(error?.message || "Lesson Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteLesson = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_LESSON_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE LESSON API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Lesson Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE LESSON API ERROR............", error.message);
+            toast.error(error?.message || "Lesson Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -75,7 +109,9 @@ export const updateClass = (data, token) => {
 
 export const getAllLessons = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading lessons...');
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
         try {
             // Construct query parameters based on whether we need all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
@@ -109,6 +145,7 @@ export const getAllLessons = (token, page = 1, limit = 10, allData = false) => {
             console.log("ALL LESSONS API ERROR............", error.message);
             toast.error(error.message || 'Failed to load lessons.');
         } finally {
+            dispatch(setLoading(false));
             toast.dismiss(toastId);
         }
     };

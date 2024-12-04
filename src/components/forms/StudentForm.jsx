@@ -19,7 +19,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
             : allData;
     }, [type]);
 
-    console.log(allData);
+    // console.log(allData);
 
     // Password zod schema for create and update 
     const passwordSchema = (type) =>
@@ -115,11 +115,12 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
         );
 
     const onSubmit = handleSubmit(formData => {
-        console.log(formData);
+        // console.log(formData);
         if (type === 'create') {
-            dispatch(createStudent(formData, token, setOpen));
+            // dispatch(createStudent(formData, token, setOpen));
         } else {
-            // dispatch(updateStudent(formData, token, setOpen));
+            formData.id = data._id;
+            dispatch(updateStudent(formData, token, setOpen));
         }
         // setOpen(false);
     });
@@ -307,7 +308,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                         name='parent'
                         control={control}
                         options={parentOptions}
-                        defaultValue={type === 'update' && data?.parent ? data.parent : undefined}
+                        defaultValue={type === 'update' && data?.parent ? data.parent._id : undefined}
                         placeholder='Please Select'
                         label='Parent'
                     />

@@ -9,7 +9,7 @@ exports.createAnnouncement = async (req, res) => {
             date
         } = req.body;
 
-        if (!title || !description) {
+        if (!title || !description || !date) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
@@ -24,8 +24,7 @@ exports.createAnnouncement = async (req, res) => {
             success: true,
             data: announcementResponse,
             message: "Announcement  Created Successfully!"
-        })
-
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -40,35 +39,40 @@ exports.updateAnnouncement = async (req, res) => {
     try {
 
         const {
-            announcementId,
+            id,
             title,
             description,
             date
         } = req.body;
 
-        if (!announcementId) {
+        if (!id || !title || !description || !date) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const announcementData = await Announcement.findById(announcementId);
+        const existingAnnouncement = await Announcement.findById(id);
 
-        if (!announcementData) {
+        if (!existingAnnouncement) {
             return res.status(404).json({
                 success: false,
-                message: 'Announcement not exist with the given ID!'
+                message: 'Announcement not found with the given ID!'
             })
         }
 
-        const updatedResponse = await Announcement.findByIdAndUpdate(announcementId, { title, description, date }, { new: true });
+        const updatedAnnouncement = await Announcement.findByIdAndUpdate(id,
+            {
+                title,
+                description,
+                date
+            }, { new: true });
 
         return res.status(200).json({
             success: true,
-            data: updatedResponse,
-            message: "Announcement  Created Successfully!"
-        })
+            data: updatedAnnouncement,
+            message: "Announcement  Updated Successfully!"
+        });
 
     } catch (error) {
         console.log(error.message);
@@ -83,21 +87,30 @@ exports.updateAnnouncement = async (req, res) => {
 exports.deleteAnnouncement = async (req, res) => {
     try {
 
-        const { announcementId } = req.body;
+        const { _id } = req.body;
 
-        if (!announcementId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
                 message: 'Announcement ID is required!'
             })
         }
 
-        const deletedResponse = await Announcement.findByIdAndDelete(announcementId);
+        const existingAnnouncement = await Announcement.findById(_id);
+
+        if (!existingAnnouncement) {
+            return res.status(404).json({
+                success: false,
+                message: 'Announcement not found with the given ID!'
+            })
+        }
+
+        const deletedAnnouncement = await Announcement.findByIdAndDelete(_id);
 
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
-            message: 'Announcement deleted successfully!'
+            data: deletedAnnouncement,
+            message: 'Announcement Deleted Successfully!'
         })
 
     } catch (error) {

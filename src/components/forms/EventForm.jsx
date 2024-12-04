@@ -28,7 +28,8 @@ const EventForm = ({ type, data, setOpen }) => {
         formState: { errors },
     } = useForm({
         resolver: zodResolver(schema), defaultValues: {
-            classes: []
+            classes: type === 'update'
+                ? data?.classes?.map((item) => item?._id) : []
         }
     });
 
@@ -51,10 +52,13 @@ const EventForm = ({ type, data, setOpen }) => {
     }, [allClasses]);
 
     // Retrieve selected values from the form state
-    const selectedClasses = type === 'update' && data?.classes.length > 0
-        ? data?.classes.map((id) =>
-            classOptions.find((option) => option.id === id)
-        )
+    const selectedClasses = (type === 'update' && data?.classes.length > 0)
+        ? data?.classes?.map((item) => {
+            return {
+                id: item?._id,
+                name: item?.className,
+            }
+        })
         : getValues("classes")?.map((id) =>
             classOptions.find((option) => option.id === id)
         );
@@ -69,9 +73,10 @@ const EventForm = ({ type, data, setOpen }) => {
 
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createEvent(formData, token, setOpen));
+            dispatch(createEvent(formData, token, setOpen));
         } else {
-            // dispatch(updateEvent(formData, token, setOpen));
+            formData.id = data._id;
+            dispatch(updateEvent(formData, token, setOpen));
         }
     });
 
@@ -122,6 +127,7 @@ const EventForm = ({ type, data, setOpen }) => {
                             value.map((item) => item.id)
                         )}
                 />
+                {errors?.classes && <p className="text-xs text-red-700 py-2">{errors?.classes?.message}</p>}
             </div>
             <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm text-gray-500">Content</label>

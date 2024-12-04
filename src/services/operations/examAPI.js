@@ -43,6 +43,70 @@ export const createExam = (data, token, setOpen) => {
     }
 }
 
+export const updateExam = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("PUT", UPDATE_EXAM_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("UPDATE EXAM API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Exam Updated Successfully!');
+            setOpen(false);
+        } catch (error) {
+            // console.log("UPDATE EXAM API ERROR............", error.message);
+            toast.error(error?.message || "Exam Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteExam = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_EXAM_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE EXAM API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Exam Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE EXAM API ERROR............", error.message);
+            toast.error(error?.message || "Exam Deletion Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
 export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
         dispatch(setLoading(true)); // Set loading to true

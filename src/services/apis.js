@@ -43,15 +43,8 @@ export const parentEndPoints = {
 export const subjectEndPoints = {
     CREATE_SUBJECT_API: BASE_URL + '/api/v1/subject/create',
     UPDATE_SUBJECT_API: BASE_URL + '/api/v1/subject/update',
+    DELETE_SUBJECT_API: BASE_URL + '/api/v1/subject/delete',
     ALL_SUBJECTS_API: BASE_URL + '/api/v1/subject/subjects',
-}
-
-// LESSON ENDPOINTS
-export const lessonEndPoints = {
-    CREATE_LESSON_API: BASE_URL + '/api/v1/lesson/create',
-    UPDATE_LESSON_API: BASE_URL + '/api/v1/lesson/update',
-    DELETE_LESSON_API: BASE_URL + '/api/v1/lesson/delete',
-    ALL_LESSONS_API: BASE_URL + '/api/v1/lesson/lessons',
 }
 
 // CLASS ENDPOINTS
@@ -60,6 +53,14 @@ export const classEndPoints = {
     UPDATE_CLASS_API: BASE_URL + '/api/v1/class/update',
     DELETE_CLASS_API: BASE_URL + '/api/v1/class/delete',
     ALL_CLASSES_API: BASE_URL + '/api/v1/class/classes',
+}
+
+// LESSON ENDPOINTS
+export const lessonEndPoints = {
+    CREATE_LESSON_API: BASE_URL + '/api/v1/lesson/create',
+    UPDATE_LESSON_API: BASE_URL + '/api/v1/lesson/update',
+    DELETE_LESSON_API: BASE_URL + '/api/v1/lesson/delete',
+    ALL_LESSONS_API: BASE_URL + '/api/v1/lesson/lessons',
 }
 
 // ASSIGNMENT ENDPOINTS

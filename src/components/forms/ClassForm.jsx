@@ -1,25 +1,36 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { useMemo } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import SelectOption from "../common/SelectOption";
 import MultiSelectComponent from "../MultiSelectComponent";
 import { useEffect } from "react";
-import { createClass } from "../../services/operations/classAPI";
+import { createClass, updateClass } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllStudents } from "../../services/operations/studentAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
-import * as z from 'zod';
 
-const ClassForm = ({ type, data, setOpen }) => {
+const ClassForm = ({ type, data, allData, setOpen }) => {
+
+    // Memoized computation of allData based on the type
+    allData = useMemo(() => {
+        return type === 'update'
+            ? allData.filter((item) => item !== data?.className) // Exclude current className if updating
+            : allData;
+    }, [type]);
 
     // Zod schema for form validation
     const schema = z.object({
-        className: z.string().min(1, { message: 'Class name is required!' }),
+        className: z.string()
+            .min(1, { message: 'Class is required!' })
+            .regex(/^\S+$/, { message: "Class must not contain spaces!" })
+            .refine(
+                (id) => !allData.includes(id), // Check for uniqueness in allData
+                { message: "Class already exists!" }
+            ),
         capacity: z.string().min(1, { message: 'Class capacity is required!' }).transform((val) => parseInt(val)),
         supervisor: z.string().optional(),
         teachers: z.array(z.string()).optional(),
-        students: z.array(z.string()).optional(),
         subjects: z.array(z.string()).optional(),
     });
 
@@ -35,8 +46,6 @@ const ClassForm = ({ type, data, setOpen }) => {
         defaultValues: {
             teachers: type === 'update'
                 ? data?.teachers?.map((teacher) => teacher?._id) : [],
-            students: type === 'update'
-                ? data?.students?.map((student) => student?._id) : [],
             subjects: type === 'update'
                 ? data?.subjects?.map((subject) => subject?._id) : [],
         },
@@ -47,14 +56,11 @@ const ClassForm = ({ type, data, setOpen }) => {
 
     useEffect(() => {
         dispatch(getAllTeachers(token, undefined, undefined, true));
-        dispatch(getAllStudents(token, undefined, undefined, true));
         dispatch(getAllSubjects(token, undefined, undefined, true));
-        console.log("DATASS: ", data);
     }, []);
 
     const { allTeachers } = useSelector(state => state?.teacher);
     const { allSubjects } = useSelector(state => state?.subject);
-    const { allStudents } = useSelector(state => state?.student);
 
     // Options for teachers, students, and subjects
     const teacherOptions = useMemo(() => {
@@ -71,13 +77,6 @@ const ClassForm = ({ type, data, setOpen }) => {
         })) || [];
     }, [allSubjects]);
 
-    const studentOptions = useMemo(() => {
-        return allStudents?.map((item) => ({
-            id: item?._id,
-            name: item?.userId.firstName + " " + item?.userId.lastName,
-        })) || [];
-    }, [allStudents]);
-
     // Retrieve selected values from the form state
     const selectedTeachers = type === 'update' && data?.teachers.length > 0
         ? data?.teachers.map((teacher) => {
@@ -88,17 +87,6 @@ const ClassForm = ({ type, data, setOpen }) => {
         })
         : getValues("teachers")?.map((id) =>
             teacherOptions.find((option) => option.id === id)
-        );
-
-    const selectedStudents = type === 'update' && data?.students.length > 0
-        ? data?.students?.map((student) => {
-            return {
-                id: student?._id,
-                name: student.userId.firstName + " " + student.userId.lastName,
-            }
-        })
-        : getValues("students")?.map((id) =>
-            studentOptions.find((option) => option.id === id)
         );
 
     const selectedSubjects = type === 'update' && data?.subjects.length > 0
@@ -116,9 +104,10 @@ const ClassForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit((formData) => {
         console.log("Form Data: ", formData);
         if (type === 'create') {
-            // dispatch(createClass(formData, token, setOpen));
+            dispatch(createClass(formData, token, setOpen));
         } else {
-            // console.log("Form Data: ", formData);
+            formData.id = data._id;
+            dispatch(updateClass(formData, token, setOpen));
         }
     });
 
@@ -170,19 +159,6 @@ const ClassForm = ({ type, data, setOpen }) => {
                     setSelectedValue={(value) =>
                         setValue(
                             "teachers",
-                            value.map((item) => item.id)
-                        )
-                    }
-                />
-            </div>
-            <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">
-                <label className="text-sm text-gray-500">Students</label>
-                <MultiSelectComponent
-                    options={studentOptions}
-                    selectedValue={selectedStudents}
-                    setSelectedValue={(value) =>
-                        setValue(
-                            "students",
                             value.map((item) => item.id)
                         )
                     }

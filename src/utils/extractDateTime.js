@@ -1,9 +1,8 @@
 const extractDateTime = (dateString) => {
     const date = new Date(dateString);
 
-    const formattedDate = `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getUTCDate().toString().padStart(2, "0")}`;
+    const formattedDate = `${date.getUTCDate().toString().padStart(2, "0")}-${(date.getUTCMonth() + 1).toString()
+        .padStart(2, "0")}-${date.getUTCFullYear()}`;
 
     let hours = date.getUTCHours();
     const minutes = date.getUTCMinutes().toString().padStart(2, "0");

@@ -80,7 +80,7 @@ const ParentList = () => {
     useEffect(() => {
         dispatch(getAllParents(token, currentPage, 10, false));
         dispatch(getAllParents(token, undefined, undefined, true));
-    }, [token]);
+    }, [currentPage, token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

@@ -3,7 +3,13 @@ const Event = require('../../models/Event');
 exports.createEvent = async (req, res) => {
     try {
 
-        const { title, content, startDate, endDate, classes } = req.body;
+        const {
+            title,
+            content,
+            classes,
+            startDate,
+            endDate,
+        } = req.body;
 
         if (!title || !content || !startDate || !endDate) {
             return res.status(400).json({
@@ -12,7 +18,13 @@ exports.createEvent = async (req, res) => {
             })
         }
 
-        const eventResponse = await Event.create({ title, content, startDate, endDate, classes });
+        const eventResponse = await Event.create({
+            title,
+            content,
+            classes,
+            startDate,
+            endDate,
+        });
 
         return res.status(200).json({
             success: true,
@@ -31,20 +43,44 @@ exports.createEvent = async (req, res) => {
 
 exports.updateEvent = async (req, res) => {
     try {
-        const { eventId, title, content, classes, startDate, endDate } = req.body;
+        const {
+            id,
+            title,
+            content,
+            classes,
+            startDate,
+            endDate
+        } = req.body;
 
-        if (!eventId || !title || !content || !startDate || !endDate) {
+        if (!id || !title || !content || !startDate || !endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
-        const updatedResponse = await Event.findByIdAndUpdate(eventId, { title, content, classes, startDate, endDate }, { new: true });
+        // Check for existing Event by id
+        const existingEvent = await Event.findById(id);
+
+        if (!existingEvent) {
+            return res.status(400).json({
+                success: false,
+                message: 'Event not found with the given ID.'
+            });
+        }
+
+        const updatedEvent = await Event.findByIdAndUpdate(id,
+            {
+                title,
+                content,
+                classes,
+                startDate,
+                endDate
+            }, { new: true });
 
         return res.status(200).json({
             success: true,
-            data: updatedResponse,
+            data: updatedEvent,
             message: 'Event updated successfully!'
         })
     } catch (error) {
@@ -59,33 +95,32 @@ exports.updateEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
     try {
 
-        const { eventId } = req.body;
+        const { _id } = req.body;
 
-        if (!eventId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
                 message: 'Event ID is required!'
             })
         }
 
-        // Find the event with the given ID and delete the record
-        const deletedResponse = await Event.findByIdAndDelete(eventId);
+        const existingEvent = await Event.findById(_id);
 
-        // If no event was found with that ID
-        if (!deletedResponse) {
+        if (!existingEvent) {
             return res.status(404).json({
                 success: false,
-                message: 'Event not found!'
-            });
+                message: 'Event not found with the given ID!'
+            })
         }
+
+        const deletedEvent = await Event.findByIdAndDelete(_id);
 
         // Send the successful response
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
-            message: 'Event deleted successfully!'
-        })
-
+            data: deletedEvent,
+            message: 'Event Deleted Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -103,7 +138,7 @@ exports.getAllEvent = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
         const skip = (page - 1) * limit;
 
-        let query = Event.find();
+        let query = Event.find().populate('classes');
 
         if (!allData) {
             query = query.skip(skip).limit(limit); // Apply pagination if allData is false
@@ -125,6 +160,55 @@ exports.getAllEvent = async (req, res) => {
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
+            message: 'Internal Server Error!',
+        });
+    }
+}
+
+
+
+exports.deleteLesson = async (req, res) => {
+    try {
+        const { _id } = req.body;
+
+        // Validate _id
+        if (!_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Lesson ID is required!',
+            });
+        }
+
+        // Fetch the existing lesson
+        const existingLesson = await Lesson.findById(_id);
+
+        if (!existingLesson) {
+            return res.status(404).json({
+                success: false,
+                message: 'Lesson not found with the given ID!',
+            });
+        }
+
+        // Delete the lesson
+        const deletedLesson = await Lesson.findByIdAndDelete(_id);
+
+        // Remove lesson from Subject schema
+        await Subject.updateMany(
+            { lessons: _id },
+            {
+                $pull: { lessons: _id },
+            }
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: deletedLesson,
+            message: 'Lesson deleted successfully!',
+        });
+    } catch (error) {
+        console.error('Error deleting lesson:', error.message);
+        return res.status(500).json({
+            success: false,
             message: 'Internal Server Error!',
         });
     }

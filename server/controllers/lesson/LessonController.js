@@ -1,4 +1,5 @@
 const Lesson = require('../../models/Lesson');
+const Subject = require('../../models/Subject');
 
 exports.createLesson = async (req, res) => {
     try {
@@ -36,25 +37,25 @@ exports.createLesson = async (req, res) => {
 exports.updateLesson = async (req, res) => {
     try {
 
-        const { lessonId, title, description } = req.body;
+        const { id, title, description } = req.body;
 
-        if (!lessonId) {
+        if (!id || !title || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'Lesson ID is required!'
             })
         }
 
-        const lessonData = await Lesson.findById(lessonId);
+        const existingLesson = await Lesson.findById(id);
 
-        if (!lessonData) {
+        if (!existingLesson) {
             return res.status(404).json({
                 success: false,
                 message: 'Lesson not found with the given ID!'
             })
         }
 
-        const updatedResponse = await Lesson.findByIdAndUpdate(lessonId,
+        const updatedLesson = await Lesson.findByIdAndUpdate(id,
             {
                 title,
                 description,
@@ -63,10 +64,9 @@ exports.updateLesson = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: updatedResponse,
+            data: updatedLesson,
             message: 'Lesson updated successfully!'
-        })
-
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -79,24 +79,41 @@ exports.updateLesson = async (req, res) => {
 
 exports.deleteLesson = async (req, res) => {
     try {
+        const { _id } = req.body;
 
-        const { lessonId } = req.params;
-
-        if (!lessonId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Lesson ID is required!'
             })
         }
 
-        const deletedResponse = await Lesson.findByIdAndDelete(lessonId);
+        // Fetch the existing lesson
+        const existingLesson = await Lesson.findById(_id);
+
+        if (!existingLesson) {
+            return res.status(404).json({
+                success: false,
+                message: 'Lesson not found with the given ID!'
+            })
+        }
+
+        // Delete the lesson
+        const deletedLesson = await Lesson.findByIdAndDelete(_id);
+
+        // Remove lesson from Subject schema
+        await Subject.updateMany(
+            { lessons: _id },
+            {
+                $pull: { lessons: _id },
+            }
+        );
 
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
-            message: 'Lesson deleted successfully!'
-        })
-
+            data: deletedLesson,
+            message: 'Lesson Deleted Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({

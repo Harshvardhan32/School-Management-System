@@ -6,6 +6,7 @@ import apiConnector from "../apiConnect";
 const {
     CREATE_SUBJECT_API,
     UPDATE_SUBJECT_API,
+    DELETE_SUBJECT_API,
     ALL_SUBJECTS_API
 } = subjectEndPoints;
 
@@ -15,15 +16,14 @@ export const createSubject = (data, token, setOpen) => {
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", CREATE_SUBJECT_API,
-                data,
+            const response = await apiConnector("POST", CREATE_SUBJECT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE SUBJECT API RESPONSE............", response);
+            console.log("CREATE SUBJECT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -33,8 +33,8 @@ export const createSubject = (data, token, setOpen) => {
             toast.success('Subject Created Successfully!');
             setOpen(false);
         } catch (error) {
-            // console.log("CREATE SUBJECT API ERROR............", error.message);
-            toast.error(error?.message || "Class Creation Failed!");
+            console.log("CREATE SUBJECT API ERROR............", error.message);
+            toast.error(error?.message || "Subject Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -42,68 +42,75 @@ export const createSubject = (data, token, setOpen) => {
     }
 }
 
-// export const updateSubject = (data, token) => {
-//     return async (dispatch) => {
-//         const toastId = toast.loading('Loading...');
-//         dispatch(setLoading(true));
+export const updateSubject = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
-//         try {
-//             const response = await apiConnector("POST", CREATE_ANNOUNCEMENT_API,
-//                 data,
-//                 {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token}`
-//                 }
-//             );
+        try {
+            const response = await apiConnector("PUT", UPDATE_SUBJECT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
 
-//             // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("UPDATE SUBJECT API RESPONSE............", response);
 
-//             if (!response?.data?.success) {
-//                 throw new Error(response?.data?.message || "Something went wrong!");
-//             }
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
 
-//             toast.success('Announcement Created Successfully!');
-//         } catch (error) {
-//             // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-//             toast.error(error?.message || "Announcement Creation Failed!");
-//         } finally {
-//             dispatch(setLoading(false));
-//             toast.dismiss(toastId);
-//         }
-//     }
-// }
+            toast.dismiss(toastId);
+            toast.success('Subject Updated Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("UPDATE SUBJECT API ERROR............", error.message);
+            toast.error(error?.message || "Subject Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
 
-// export const getAllSubjects = (token) => {
-//     return async (dispatch) => {
-//         dispatch(setLoading(true));
-//         try {
-//             const response = await apiConnector("GET", ALL_SUBJECTS_API, null,
-//                 {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token}`
-//                 }
-//             );
+export const deleteSubject = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
-//             // console.log("ALL SUBJECTS API RESPONSE............", response);
+        try {
+            const response = await apiConnector("PUT", DELETE_SUBJECT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
 
-//             if (!response?.data?.success) {
-//                 throw new Error(response?.data?.message || "Something went wrong!");
-//             }
+            console.log("UPDATE SUBJECT API RESPONSE............", response);
 
-//             dispatch(setSubjects(response?.data?.data));
-//         } catch (error) {
-//             // console.log("ALL SUBJECTS API ERROR............", error.message);
-//             toast.error(error?.message);
-//         } finally {
-//             dispatch(setLoading(true));
-//         }
-//     }
-// }
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Subject Updated Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("UPDATE SUBJECT API ERROR............", error.message);
+            toast.error(error?.message || "Subject Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
 
 export const getAllSubjects = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading subjects...');
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+
         try {
             // Construct query parameters based on whether we need all data or paginated data
             const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;

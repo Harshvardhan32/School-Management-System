@@ -36,21 +36,9 @@ exports.createSubject = async (req, res) => {
         // Update subjects in Teacher Schema
         if (teachers?.length > 0) {
             await Promise.all(
-                teachers.map((teacher) =>
+                teachers.map((teacherId) =>
                     Teacher.findByIdAndUpdate(
-                        teacher,
-                        { $push: { subjects: subjectResponse?._id } }
-                    )
-                )
-            );
-        }
-
-        // Update subjects in Lesson Schema
-        if (teachers?.length > 0) {
-            await Promise.all(
-                teachers.map((teacher) =>
-                    Teacher.findByIdAndUpdate(
-                        teacher,
+                        teacherId,
                         { $push: { subjects: subjectResponse?._id } }
                     )
                 )
@@ -60,9 +48,8 @@ exports.createSubject = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: subjectResponse,
-            message: "Subject created successfully!"
-        })
-
+            message: "Subject Created Successfully!"
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -77,44 +64,82 @@ exports.updateSubject = async (req, res) => {
     try {
 
         const {
-            subjectId,
+            id,
             subjectName,
             classes,
             teachers,
-            lessons } = req.body;
+            lessons
+        } = req.body;
 
-        if (!subjectId || !subjectName || !classes) {
+        if (!id || !subjectName || !classes) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all required details!"
             })
         }
 
-        const subjectData = await Subject.findById(subjectId);
+        // Check for existing Subject by id
+        const existingSubject = await Subject.findById(id);
 
-        if (!subjectData) {
+        if (!existingSubject) {
             return res.status(404).json({
                 success: false,
                 message: 'Subject not found with the given ID!'
             })
         }
 
-        const updatedResponse = await Subject.findByIdAndUpdate(subjectId,
+        const updatedResponse = await Subject.findByIdAndUpdate(id,
             {
                 subjectName,
                 classes,
                 teachers,
                 lessons
-            },
-            { new: true })
-            .populate('classes')
-            .populate('teachers')
-            .populate('lessons');
+            }, { new: true });
+
+        // Handle added and removed classes
+        const addedClasses = classes.filter(classId => !existingSubject.classes.includes(classId));
+
+        const removedClasses = existingSubject.classes.filter(classId => !classes.includes(classId));
+
+        // Update class relationships
+        if (addedClasses?.length > 0) {
+            await Class.updateMany(
+                { _id: { $in: addedClasses } }, // Match all classes in the addedClasses array
+                { $push: { subjects: id } } // Push the subject ID to the subjects array
+            );
+        }
+
+        if (removedClasses?.length > 0) {
+            await Class.updateMany(
+                { _id: { $in: removedClasses } }, // Match all classes in the removedClasses array
+                { $pull: { subjects: id } } // Remove the subject ID from the subjects array
+            );
+        }
+
+        // Handle added and removed classes
+        const addedTeachers = teachers.filter(teacherId => !existingSubject.teachers.includes(teacherId));
+
+        const removedTeachers = existingSubject.teachers.filter(teacherId => !teachers.includes(teacherId));
+
+        // Update teacher relationships
+        if (addedTeachers?.length > 0) {
+            await Teacher.updateMany(
+                { _id: { $in: addedTeachers } }, // Match all teachers in the addedTeachers array
+                { $push: { subjects: id } } // Push the subject ID to the subjects array
+            );
+        }
+
+        if (removedTeachers?.length > 0) {
+            await Teacher.updateMany(
+                { _id: { $in: removedTeachers } }, // Match all teachers in the removedTeachers array
+                { $pull: { subjects: id } } // Remove the subject ID from the subjects array
+            );
+        }
 
         return res.status(200).json({
             success: true,
             data: updatedResponse,
-            message: "Subject updated successfully!"
+            message: "Subject Updated Successfully!"
         });
 
     } catch (error) {
@@ -198,33 +223,3 @@ exports.getAllSubjects = async (req, res) => {
         });
     }
 };
-
-// exports.getSubject = async (req, res) => {
-//     try {
-
-//         const { subjectId } = req.body;
-
-//         if (!subjectId) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Please fill all required details!"
-//             })
-//         }
-
-//         const subjectResponse = await Subject.findById(subjectId);
-
-//         return res.status(200).json({
-//             success: true,
-//             data: subjectResponse,
-//             message: "Subject fetched successfully!"
-//         })
-
-//     } catch (error) {
-//         console.log(error.message);
-//         return res.status(500).json({
-//             success: false,
-//             errorMessage: error.message,
-//             message: "Internal Server Error!"
-//         })
-//     }
-// }

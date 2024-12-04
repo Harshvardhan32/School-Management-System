@@ -1,4 +1,5 @@
 const Class = require('../../models/Class');
+const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
 
 // Function to create class
@@ -9,7 +10,6 @@ exports.createClass = async (req, res) => {
             capacity,
             supervisor,
             teachers,
-            students,
             subjects
         } = req.body;
 
@@ -25,9 +25,24 @@ exports.createClass = async (req, res) => {
             capacity,
             supervisor,
             teachers,
-            students,
             subjects
         });
+
+        // Update classes in Teacher Schema
+        if (teachers?.length > 0) {
+            await Teacher.updateMany(
+                { _id: { $in: teachers } }, // Match all teachers in the teachers array
+                { $push: { classes: classResponse?._id } } // Add class ID to the classes array
+            );
+        }
+
+        // Update classes in Subject Schema
+        if (subjects?.length > 0) {
+            await Subject.updateMany(
+                { _id: { $in: subjects } }, // Match all subjects in the subjects array
+                { $push: { classes: classResponse?._id } } // Add class ID to the classes array
+            );
+        }
 
         return res.status(200).json({
             success: true,
@@ -50,16 +65,15 @@ exports.updateClass = async (req, res) => {
     try {
 
         const {
-            classId,
+            id,
             className,
             capacity,
             supervisor,
             teachers,
-            students,
             subjects
         } = req.body;
 
-        if (!classId || !className ||
+        if (!id || !className ||
             !capacity) {
             return res.status(400).json({
                 success: true,
@@ -67,32 +81,73 @@ exports.updateClass = async (req, res) => {
             });
         }
 
-        const classData = await Class.findById(classId);
+        // Check for existing Class by id
+        const existingClass = await Class.findById(id);
 
-        if (!classData) {
+        if (!existingClass) {
             return res.status(404).json({
                 success: false,
                 message: 'Class not found with the given ID!'
             });
         }
 
-        const updatedResponse = await Class.findByIdAndUpdate(classId, {
-            className,
-            capacity,
-            supervisor,
-            teachers,
-            students,
-            subjects
-        }, { new: true })
-            .populate('supervisor')
-            .populate('teachers')
-            .populate('students')
-        // .populate('subjects');
+        const updatedResponse = await Class.findByIdAndUpdate(id,
+            {
+                className,
+                capacity,
+                supervisor,
+                teachers,
+                subjects
+            }, { new: true });
+
+        // Handle added and removed teachers
+        const addedTeachers = teachers.filter(teacherId =>
+            !existingClass.teachers.includes(teacherId));
+
+        const removedTeachers = existingClass.teachers.filter(teacherId =>
+            !teachers.includes(teacherId));
+
+        // Update teacher relationships
+        if (addedTeachers?.length > 0) {
+            await Teacher.updateMany(
+                { _id: { $in: addedTeachers } }, // Match all teachers in the addedTeachers array
+                { $push: { classes: id } } // Add the class ID to the classes array for each matched teacher
+            );
+        }
+
+        if (removedTeachers?.length > 0) {
+            await Teacher.updateMany(
+                { _id: { $in: removedTeachers } }, // Match all teachers in the removedTeachers array
+                { $pull: { classes: id } } // Remove the class ID from the classes array for each matched teacher
+            );
+        }
+
+        // Handle added and removed subjects
+        const addedSubjects = subjects.filter(subjectId =>
+            !existingClass.subjects.includes(subjectId));
+
+        const removedSubjects = existingClass.subjects.filter(subjectId =>
+            !subjects.includes(subjectId));
+
+        // Update subject relationships
+        if (addedSubjects?.length > 0) {
+            await Subject.updateMany(
+                { _id: { $in: addedSubjects } }, // Match all subjects in the addedSubjects array
+                { $push: { classes: id } } // Add the class ID to the classes array for each matched subject
+            );
+        }
+
+        if (removedSubjects?.length > 0) {
+            await Subject.updateMany(
+                { _id: { $in: removedSubjects } }, // Match all subjects in the removedSubjects array
+                { $pull: { classes: id } } // Remove the class ID from the classes array for each matched subject
+            );
+        }
 
         return res.status(200).json({
             success: true,
             data: updatedResponse,
-            message: 'Class update successfully!'
+            message: 'Class Update Successfully!'
         });
     } catch (error) {
         console.log(error.message);
@@ -108,22 +163,40 @@ exports.updateClass = async (req, res) => {
 exports.deleteClass = async (req, res) => {
     try {
 
-        const { classId } = req.body;
+        const { _id } = req.body;
 
-        if (!classId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
+                message: 'Class ID is required!'
             })
         }
 
-        // const classRecord = await Class.findById(classId);
+        // Fetch the existing lesson
+        const existingClass = await Class.findById(_id);
 
-        const deletedResponse = await Class.findByIdAndDelete(classId);
+        if (!existingClass) {
+            return res.status(404).json({
+                success: false,
+                message: 'Class not found with the given ID!'
+            })
+        }
+
+        // Delete the class
+        const deletedClass = await Class.findByIdAndDelete(_id);
+
+        // Remove the class from the Assignment
+        // Remove the class from the Attendance
+        // Remove the class from the Event
+        // Remove the class from the Exam
+        // Remove the class from the Result
+        // Remove the class from the Student
+        // Remove the class from the Subject
+        // Remove the class from the Teacher
 
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
+            data: deletedClass,
             message: 'Class deleted successfully!'
         })
 
@@ -146,14 +219,18 @@ exports.getAllClasses = async (req, res) => {
         const skip = (page - 1) * limit;
 
         let query = Class.find()
-            .populate('supervisor')
+            .populate({
+                path: 'supervisor',
+                populate: {
+                    path: 'userId'
+                }
+            })
             .populate({
                 path: 'teachers',
                 populate: {
                     path: 'userId'
                 }
             })
-            .populate('students')
             .populate('subjects');
 
         if (!allData) {

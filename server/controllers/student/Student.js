@@ -1,4 +1,5 @@
 const Class = require("../../models/Class");
+const Parent = require("../../models/Parent");
 const Student = require("../../models/Student");
 const User = require("../../models/User");
 const bcrypt = require('bcryptjs');
@@ -115,7 +116,113 @@ exports.createStudent = async (req, res) => {
 }
 
 exports.updateStudent = async (req, res) => {
+    try {
+        const {
+            id,
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            bloodType,
+            dateOfBirth,
+            sex,
+            remarks,
+            studentId,
+            classId,
+            fatherName,
+            motherName,
+            parent,
+            subjects,
+            rollNumber,
+        } = req.body;
 
+        // Validate required fields for a user
+        if (!id || !firstName || !email || !phone || !address || !sex || !studentId || !classId || !fatherName || !motherName || !rollNumber) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please fill all required details!'
+            });
+        }
+
+        // Check for existing Student by id
+        const existingStudent = await Student.findById(id);
+
+        if (!existingStudent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student not found with the id!'
+            });
+        }
+
+        // Update user profile
+        await User.findByIdAndUpdate(existingStudent.userId,
+            {
+                firstName,
+                lastName,
+                phone,
+                address,
+                bloodType,
+                dateOfBirth,
+                sex,
+                remarks
+            });
+
+        // Update Student
+        const updatedStudent = await Student.findByIdAndUpdate(id,
+            {
+                studentId,
+                classId,
+                fatherName,
+                motherName,
+                parent,
+                subjects,
+                rollNumber,
+            },
+            { new: true });
+
+        // if existing Student classId is not similar to fetched classId
+        if (existingStudent?.classId.toString() !== classId) {
+            // Add student to new class
+            await Class.findByIdAndUpdate(classId,
+                { $push: { students: id } }
+            );
+
+            // Remove student from old class
+            await Class.findByIdAndUpdate(existingStudent.classId,
+                { $pull: { students: id } }
+            )
+        }
+
+        // Handle parent changes
+        if (existingStudent.parent.toString() !== parent) {
+            // Add student to new parent
+            await Parent.findByIdAndUpdate(parent,
+                { $push: { students: id } }
+            );
+
+            // Remove student from old parent
+            if (existingStudent.parent) {
+                await Parent.findByIdAndUpdate(existingStudent.parent,
+                    { $pull: { students: id } }
+                )
+            }
+        }
+
+        // Send the successful response
+        return res.status(200).json({
+            success: true,
+            data: updatedStudent,
+            message: 'Student updated successfully!'
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
+    }
 }
 
 exports.deleteStudent = async (req, res) => {

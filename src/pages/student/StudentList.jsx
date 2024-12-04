@@ -87,7 +87,7 @@ const StudentList = () => {
     useEffect(() => {
         dispatch(getAllStudents(token, currentPage, 10, false));
         dispatch(getAllStudents(token, undefined, undefined, true));
-    }, []);
+    }, [currentPage, token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

@@ -24,12 +24,13 @@ export const createClass = (data, token, setOpen) => {
                 }
             );
 
-            // console.log("CREATE CLASS API RESPONSE............", response);
+            console.log("CREATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Class Created Successfully!');
             setOpen(false);
         } catch (error) {
@@ -42,13 +43,13 @@ export const createClass = (data, token, setOpen) => {
     }
 }
 
-export const updateClass = (data, token) => {
+export const updateClass = (data, token, setOpen) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", UPDATE_CLASS_API,
+            const response = await apiConnector("PUT", UPDATE_CLASS_API,
                 data,
                 {
                     "Content-Type": "application/json",
@@ -56,16 +57,18 @@ export const updateClass = (data, token) => {
                 }
             );
 
-            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("UPDATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Announcement Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Class Updated Successfully!');
+            setOpen(false);
         } catch (error) {
-            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Creation Failed!");
+            // console.log("UPDATE CLASS API ERROR............", error.message);
+            toast.error(error?.message || "Class Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -73,66 +76,37 @@ export const updateClass = (data, token) => {
     }
 }
 
-// export const getAllClasses = (token) => {
-//     return async (dispatch) => {
-//         const toastId = toast.loading('Loading...');
-//         try {
-//             const response = await apiConnector("GET", ALL_CLASSES_API, null,
-//                 {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token}`
-//                 }
-//             );
+export const deleteClass = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
-//             // console.log("ALL CLASSES API RESPONSE............", response);
+        try {
+            const response = await apiConnector("DELETE", DELETE_CLASS_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
 
-//             if (!response?.data?.success) {
-//                 throw new Error(response?.data?.message || "Something went wrong!");
-//             }
+            console.log("DELETE CLASS API RESPONSE............", response);
 
-//             dispatch(setClasses(response?.data?.data));
-//         } catch (error) {
-//             console.log("ALL CLASSES API ERROR............", error.message);
-//         } finally {
-//             toast.dismiss(toastId);
-//         }
-//     }
-// }
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
 
-// export const getAllClasses = (token, page = 1, limit = 10) => {
-//     return async (dispatch) => {
-//         const toastId = toast.loading('Loading...');
-//         try {
-//             // Construct query parameters for pagination
-//             const queryParams = `?page=${page}&limit=${limit}`;
-//             const url = `${ALL_CLASSES_API}${queryParams}`;
-
-//             // Make the API request
-//             const response = await apiConnector("GET", url, null, {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token}`,
-//             });
-
-//             // Check for success in the response
-//             if (!response?.data?.success) {
-//                 throw new Error(response?.data?.message || "Failed to fetch classes.");
-//             }
-
-//             // Dispatch the data to the Redux store
-//             dispatch(setClasses({
-//                 data: response.data.data,
-//                 totalPages: response.data.totalPages,
-//                 currentPage: response.data.currentPage
-//             }));
-//             toast.success('Classes loaded successfully!');
-//         } catch (error) {
-//             console.error("Error fetching classes:", error.message);
-//             toast.error(error.message || 'Failed to load classes.');
-//         } finally {
-//             toast.dismiss(toastId);
-//         }
-//     };
-// };
+            toast.dismiss(toastId);
+            toast.success('Class Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE CLASS API ERROR............", error.message);
+            toast.error(error?.message || "Class Deletion Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
 
 export const getAllClasses = (token, page = 1, limit = 10, allData = false) => {
     return async (dispatch) => {

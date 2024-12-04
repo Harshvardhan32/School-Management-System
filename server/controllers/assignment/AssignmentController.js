@@ -1,4 +1,5 @@
 const Assignment = require('../../models/Assignment');
+const Student = require('../../models/Student');
 
 exports.createAssignment = async (req, res) => {
     try {
@@ -26,11 +27,17 @@ exports.createAssignment = async (req, res) => {
             dueDate
         });
 
+        // Update in Student schema
+        await Student.updateMany(
+            { classId: classId }, // Match all students with the given classId
+            { $push: { assignments: assignmentResponse._id } } // Push the assignment ID to their assignments array
+        );
+
         return res.status(200).json({
             success: true,
             data: assignmentResponse,
-            message: 'Assignment created successfully!'
-        })
+            message: 'Assignment Created Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -45,49 +52,61 @@ exports.updateAssignment = async (req, res) => {
     try {
 
         const {
-            assignmentId,
-            classId,
+            id,
             subject,
+            classId,
             teacher,
             assignedDate,
             dueDate
         } = req.body;
 
-        if (!assignmentId) {
+        if (!id || !subject || !classId || !teacher || !assignedDate || !dueDate) {
             return res.status(400).json({
                 success: false,
-                message: 'Assignment ID is required!'
+                message: 'Please fill all required details!'
             })
         }
 
-        const assignmentData = await Assignment.findById(assignmentId);
+        const existingAssignment = await Assignment.findById(id);
 
-        if (!assignmentData) {
+        if (!existingAssignment) {
             return res.status(404).json({
                 success: false,
-                message: 'Assignment not found with the given ID!'
-            })
+                message: 'Assignment not found with the id!'
+            });
         }
 
-        const updatedResponse = await Assignment.findByIdAndUpdate(assignmentId,
+        // Update the assignment with new data
+        const updatedAssignment = await Assignment.findByIdAndUpdate(id,
             {
                 subject,
                 classId,
                 teacher,
                 assignedDate,
                 dueDate
-            },
-            { new: true })
-        // .populate('subject')
-        // .populate('classId')
-        // .populate('teacher');
+            }, { new: true });
+
+        // If the classId has changed, update students
+        if (existingAssignment.classId.toString() !== classId) {
+
+            // Remove the assignment from students in the old class
+            await Student.updateMany(
+                { classId: existingAssignment.classId },
+                { $pull: { assignments: id } }
+            );
+
+            // Add the assignment to students in the new class
+            await Student.updateMany(
+                { classId: classId },
+                { $push: { assignments: id } }
+            );
+        }
 
         return res.status(200).json({
             success: true,
-            data: updatedResponse,
-            message: 'Assignment updated successfully!'
-        })
-
+            data: updatedAssignment,
+            message: 'Assignment Updated Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -101,33 +120,49 @@ exports.updateAssignment = async (req, res) => {
 exports.deleteAssignment = async (req, res) => {
     try {
 
-        const { assignmentId } = req.params;
+        const { _id } = req.body;
 
-        if (!assignmentId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
-                message: 'Please fill all required details!'
-            })
+                message: 'Id is required!'
+            });
         }
 
-        const deletedResponse = await Assignment.findByIdAndDelete(assignmentId);
+        // Fetch the assignment before deleting it to get the classId
+        const existingAssignment = await Assignment.findById(_id);
+
+        if (!existingAssignment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Assignment not found with the given ID!'
+            });
+        }
+
+        // Delete the assignment
+        const deletedAssignment = await Assignment.findByIdAndDelete(_id);
+
+        // Remove the assignment from students' assignments array
+        await Student.updateMany(
+            { classId: existingAssignment.classId },
+            { $pull: { assignments: _id } }
+        );
 
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
-            message: 'Assignment deleted successfully!'
-        })
-
+            data: deletedAssignment,
+            message: 'Assignment Deleted Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }
 
-exports.getAllAssignment = async (req, res) => {
+exports.getAllAssignments = async (req, res) => {
     try {
         const allData = req.query.allData === 'true'; // Check if allData is requested
         const page = parseInt(req.query.page) || 1;  // Default to page 1

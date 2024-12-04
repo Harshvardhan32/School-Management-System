@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import SelectOption from "../common/SelectOption";
 import { useDispatch, useSelector } from "react-redux";
-import { createLesson } from "../../services/operations/lessonAPI";
+import { createLesson, updateLesson } from "../../services/operations/lessonAPI";
 
 const LessonForm = ({ type, data, setOpen }) => {
 
@@ -14,7 +14,6 @@ const LessonForm = ({ type, data, setOpen }) => {
 
     const {
         register,
-        control,
         handleSubmit,
         formState: { errors },
     } = useForm({ resolver: zodResolver(schema) });
@@ -27,10 +26,11 @@ const LessonForm = ({ type, data, setOpen }) => {
         if (type === 'create') {
             dispatch(createLesson(formData, token, setOpen));
         } else {
-            // console.log("Form Data: ", formData);
+            formData.id = data._id;
+            dispatch(updateLesson(formData, token, setOpen));
         }
-        // console.log(formData);
     })
+    console.log("DATA: ", data);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>

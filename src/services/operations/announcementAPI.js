@@ -10,29 +10,30 @@ const {
     ALL_ANNOUNCEMENTS_API
 } = announcementEndPoints;
 
-export const createAnnouncement = (data, token) => {
+export const createAnnouncement = (data, token, setOpen) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", CREATE_ANNOUNCEMENT_API,
-                data,
+            const response = await apiConnector("POST", CREATE_ANNOUNCEMENT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
+            toast.dismiss(toastId);
             toast.success('Announcement Created Successfully!');
+            setOpen(false);
         } catch (error) {
-            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
+            console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
             toast.error(error?.message || "Announcement Creation Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -41,30 +42,63 @@ export const createAnnouncement = (data, token) => {
     }
 }
 
-export const updateAnnouncement = (data, token) => {
+export const updateAnnouncement = (data, token, setOpen) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", CREATE_ANNOUNCEMENT_API,
-                data,
+            const response = await apiConnector("PUT", UPDATE_ANNOUNCEMENT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("UPDATE ANNOUNCEMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Announcement Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Announcement Updated Successfully!');
+            setOpen(false);
         } catch (error) {
-            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Creation Failed!");
+            console.log("UPDATE ANNOUNCEMENT API ERROR............", error.message);
+            toast.error(error?.message || "Announcement Updation Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const deleteAnnouncement = (data, token, setOpen) => {
+    return async (dispatch) => {
+        const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
+
+        try {
+            const response = await apiConnector("DELETE", DELETE_ANNOUNCEMENT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE ANNOUNCEMENT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Announcement Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE ANNOUNCEMENT API ERROR............", error.message);
+            toast.error(error?.message || "Announcement Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);

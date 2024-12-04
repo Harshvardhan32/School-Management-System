@@ -49,23 +49,23 @@ export const updateTeacher = (data, token, setOpen) => {
         const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", UPDATE_TEACHER_API, data, {
+            const response = await apiConnector("PUT", UPDATE_TEACHER_API, data, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE TEACHER API RESPONSE............", response);
+            console.log("UPDATE TEACHER API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Teacher Created Successfully!');
+            toast.success('Teacher Updated Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE TEACHER API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("UPDATE TEACHER API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Updation Failed!`);
         } finally {
             toast.dismiss(toastId);
         }

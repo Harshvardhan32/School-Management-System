@@ -1,3 +1,4 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from "react-hot-toast";
@@ -7,7 +8,7 @@ import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { useEffect, useMemo } from "react";
-import * as z from 'zod';
+import { createAssignment, updateAssignment } from '../../services/operations/assignmentAPI';
 
 const AssignmentForm = ({ type, data, setOpen }) => {
 
@@ -37,7 +38,6 @@ const AssignmentForm = ({ type, data, setOpen }) => {
         dispatch(getAllSubjects(token, undefined, undefined, true));
         dispatch(getAllClasses(token, undefined, undefined, true)); // Fetch all classes
         dispatch(getAllTeachers(token, undefined, undefined, true));
-        console.log("DDDDDDDDd: ", data);
     }, [dispatch, token]);
 
     // Access Redux states
@@ -76,13 +76,13 @@ const AssignmentForm = ({ type, data, setOpen }) => {
             return;
         }
 
-        // Log or dispatch data based on the form type
         if (type === 'create') {
             console.log("Creating assignment:", formData);
-            // dispatch(createAssignment(formData, token, setOpen));
+            dispatch(createAssignment(formData, token, setOpen));
         } else {
             console.log("Updating assignment:", formData);
-            // Update logic here
+            formData.id = data._id;
+            dispatch(updateAssignment(formData, token, setOpen));
         }
     });
 

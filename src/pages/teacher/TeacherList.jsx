@@ -93,7 +93,7 @@ const TeacherList = () => {
     useEffect(() => {
         dispatch(getAllTeachers(token, currentPage, 10, false));
         dispatch(getAllTeachers(token, undefined, undefined, true));
-    }, []);
+    }, [currentPage, token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

@@ -1,3 +1,4 @@
+import * as z from 'zod';
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,8 +6,7 @@ import MultiSelectComponent from "../MultiSelectComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
-import { createSubject } from "../../services/operations/subjectAPI";
-import * as z from 'zod';
+import { createSubject, updateSubject } from "../../services/operations/subjectAPI";
 import { getAllLessons } from "../../services/operations/lessonAPI";
 
 const SubjectForm = ({ type, data, setOpen }) => {
@@ -43,14 +43,13 @@ const SubjectForm = ({ type, data, setOpen }) => {
         dispatch(getAllClasses(token, undefined, undefined, true));
         dispatch(getAllTeachers(token, undefined, undefined, true));
         dispatch(getAllLessons(token, undefined, undefined, true));
-        console.log("DATAAAA: ", data);
     }, []);
 
     const { allLessons } = useSelector(state => state?.lesson);
     const { allClasses } = useSelector(state => state?.class);
     const { allTeachers } = useSelector(state => state?.teacher);
 
-    // Options for teachers, students, and subjects
+    // Options for classes, teachers, and lessons
     const classOptions = useMemo(() => {
         return (allClasses?.map((item) => ({
             id: item?._id,
@@ -95,7 +94,6 @@ const SubjectForm = ({ type, data, setOpen }) => {
             teacherOptions.find((option) => option.id === id)
         );
 
-    // title: {
     const selectedLessons = type === 'update' && data?.lessons.length > 0
         ? data?.lessons.map((lesson) => {
             return {
@@ -110,9 +108,10 @@ const SubjectForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            dispatch(createSubject(formData, token, setOpen));
+            // dispatch(createSubject(formData, token, setOpen));
         } else {
-            // console.log("Form Data: ", formData);
+            formData.id = data._id;
+            // dispatch(updateSubject(formData, token, setOpen));
         }
     });
 

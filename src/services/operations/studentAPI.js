@@ -54,18 +54,18 @@ export const updateStudent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE STUDENT API RESPONSE............", response);
+            console.log("UPDATE STUDENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Student Created Successfully!');
+            toast.success('Student Updated Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE STUDENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("UPDATE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Updation Failed!`);
         } finally {
             toast.dismiss(toastId);
         }

@@ -8,7 +8,7 @@ import FormModal from "../../components/FormModal";
 import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllAnnouncement } from "../../services/operations/announcementAPI";
+import { deleteAnnouncement, getAllAnnouncement } from "../../services/operations/announcementAPI";
 import extractDateTime from "../../utils/extractDateTime";
 import { GrAdd } from "react-icons/gr";
 
@@ -34,7 +34,7 @@ const AnnouncementList = () => {
     ]
 
     const renderRow = (data) => {
-        // console.log("DATTT: ", data);
+        
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="p-4 font-semibold dark:text-gray-200">{data?.title}</td>
@@ -43,7 +43,7 @@ const AnnouncementList = () => {
                     {(role === 'Admin' || role === 'Teacher') && (
                         <>
                             <FormModal table='announcement' type='update' Icon={FaRegEdit} data={data} />
-                            <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={data} />
+                            <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={data} deleteFunction={deleteAnnouncement} />
                         </>
                     )}
                 </td>
@@ -81,7 +81,7 @@ const AnnouncementList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='announcement' type='create' Icon={GrAdd} data={{ id: 1 }} />
+                            <FormModal table='announcement' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>

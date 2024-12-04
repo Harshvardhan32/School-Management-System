@@ -46,6 +46,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
         role: z.string().default('Teacher'),
         subjects: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
+        remarks: z.string().optional()
     });
 
     // Form initialization with React Hook Form and Zod resolver
@@ -81,8 +82,8 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
     // Memoized options for classes
     const classOptions = useMemo(() => {
         return (allClasses?.map((item) => ({
-            id: item?._id, // Class ID
-            name: item?.className, // Class name
+            id: item?._id,
+            name: item?.className,
         })) || []);
     }, [allClasses]);
 
@@ -120,12 +121,14 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
 
     // Submit handler for the form
     const onSubmit = handleSubmit(formData => {
-        console.log(formData);
+        // console.log(formData);
         if (type === 'create') {
-            dispatch(createTeacher(formData, token, setOpen));
+            // dispatch(createTeacher(formData, token, setOpen));
         } else {
-            // dispatch(updateTeacher(formData, token, setOpen));
+            formData.id = data._id;
+            dispatch(updateTeacher(formData, token, setOpen));
         }
+        console.log(formData);
     });
 
     return (
@@ -298,6 +301,16 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
                     />
                     {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects?.message}</p>}
                 </div>
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Remark</label>
+                <textarea
+                    rows={3}
+                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                    {...register("remarks")}
+                    defaultValue={type === 'update' ? data?.userId.remarks : ''}
+                />
+                {errors?.remarks && <p className="text-xs text-red-700 py-2">{errors?.remarks?.message}</p>}
             </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">{type === 'create' ? 'Create' : 'Update'}</button>
         </form>

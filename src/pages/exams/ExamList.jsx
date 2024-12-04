@@ -9,7 +9,7 @@ import { BiSortDown } from "react-icons/bi";
 import { GrAdd } from "react-icons/gr";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllExams } from "../../services/operations/examAPI";
+import { deleteExam, getAllExams } from "../../services/operations/examAPI";
 import extractDateTime from "../../utils/extractDateTime";
 
 const ExamList = () => {
@@ -47,7 +47,7 @@ const ExamList = () => {
         return (
             <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
                 <td className="flex flex-col p-4 font-semibold dark:text-gray-200">{data?.examName}</td>
-                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data.classes.map((item) => item.className).join(',')}</td>
+                <td className="hidden sm:table-cell p-4 dark:text-gray-200">{data.classes.map((item) => item.className).join(', ')}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.startDate)}</td>
                 <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.endDate)}</td>
                 <td className="p-4">
@@ -55,7 +55,7 @@ const ExamList = () => {
                         {role === 'Admin' && (
                             <>
                                 <FormModal table='exam' type='update' Icon={FaRegEdit} data={data} />
-                                <FormModal table='exam' type='delete' Icon={RiDeleteBin6Line} data={data} />
+                                <FormModal table='exam' type='delete' Icon={RiDeleteBin6Line} data={data} deleteFunction={deleteExam} />
                             </>
                         )}
                     </div>
@@ -94,7 +94,7 @@ const ExamList = () => {
                             <BiSortDown fontSize={18} />
                         </button>
                         {role === 'Admin' &&
-                            <FormModal table='exam' type='create' Icon={GrAdd} data={{ id: 1 }} />
+                            <FormModal table='exam' type='create' Icon={GrAdd} />
                         }
                     </div>
                 </div>
