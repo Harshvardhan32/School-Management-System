@@ -6,7 +6,7 @@ const {
     deleteStudent,
     getAllStudents,
     getStudentDetails
-} = require('../controllers/student/Student');
+} = require('../controllers/student/StudentController');
 const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createStudent);

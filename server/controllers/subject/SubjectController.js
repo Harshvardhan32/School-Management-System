@@ -1,4 +1,8 @@
+const Assignment = require('../../models/Assignment');
 const Class = require('../../models/Class');
+const Exam = require('../../models/Exam');
+const Result = require('../../models/Result');
+const Student = require('../../models/Student');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
 
@@ -104,15 +108,15 @@ exports.updateSubject = async (req, res) => {
         // Update class relationships
         if (addedClasses?.length > 0) {
             await Class.updateMany(
-                { _id: { $in: addedClasses } }, // Match all classes in the addedClasses array
-                { $push: { subjects: id } } // Push the subject ID to the subjects array
+                { _id: { $in: addedClasses } },
+                { $push: { subjects: id } }
             );
         }
 
         if (removedClasses?.length > 0) {
             await Class.updateMany(
-                { _id: { $in: removedClasses } }, // Match all classes in the removedClasses array
-                { $pull: { subjects: id } } // Remove the subject ID from the subjects array
+                { _id: { $in: removedClasses } },
+                { $pull: { subjects: id } }
             );
         }
 
@@ -124,15 +128,15 @@ exports.updateSubject = async (req, res) => {
         // Update teacher relationships
         if (addedTeachers?.length > 0) {
             await Teacher.updateMany(
-                { _id: { $in: addedTeachers } }, // Match all teachers in the addedTeachers array
-                { $push: { subjects: id } } // Push the subject ID to the subjects array
+                { _id: { $in: addedTeachers } },
+                { $push: { subjects: id } }
             );
         }
 
         if (removedTeachers?.length > 0) {
             await Teacher.updateMany(
-                { _id: { $in: removedTeachers } }, // Match all teachers in the removedTeachers array
-                { $pull: { subjects: id } } // Remove the subject ID from the subjects array
+                { _id: { $in: removedTeachers } },
+                { $pull: { subjects: id } }
             );
         }
 
@@ -155,23 +159,57 @@ exports.updateSubject = async (req, res) => {
 exports.deleteSubject = async (req, res) => {
     try {
 
-        const { subjectId } = req.body;
+        const { _id } = req.body;
 
-        if (!subjectId) {
+        if (!_id) {
             return res.status(400).json({
                 success: false,
-                message: "Please fill all required details!"
+                message: "Subject ID is required!"
             })
         }
 
-        const deletedResponse = await Subject.findByIdAndDelete(subjectId);
+        // Check if the subject exists
+        const existingSubject = await Subject.findById(_id);
+
+        if (!existingSubject) {
+            return res.status(404).json({
+                success: false,
+                message: 'Subject not found with the given ID!',
+            });
+        }
+
+        // Delete the subject
+        const deletedSubject = await Subject.findByIdAndDelete(_id);
+
+        await Promise.all([
+            Assignment.deleteMany({ subject: _id }),
+            Class.updateMany(
+                { subjects: _id },
+                { $pull: { subjects: _id } }
+            ),
+            Exam.updateMany(
+                { subjects: _id },
+                { $pull: { subjects: _id } }
+            ),
+            Result.updateMany(
+                { 'subjectResults.subject': _id },
+                { $pull: { subjectResults: { subject: _id } } }
+            ),
+            Student.updateMany(
+                { subjects: _id },
+                { $pull: { subjects: _id } }
+            ),
+            Teacher.updateMany(
+                { subjects: _id },
+                { $pull: { subjects: _id } }
+            ),
+        ])
 
         return res.status(200).json({
             success: true,
-            data: deletedResponse,
-            message: "Subject deleted successfully!"
-        })
-
+            data: deletedSubject,
+            message: "Subject Deleted Successfully!"
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -183,13 +221,9 @@ exports.deleteSubject = async (req, res) => {
 }
 
 exports.getAllSubjects = async (req, res) => {
-    try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
 
-        let query = Subject.find()
+    try {
+        const subjectData = await Subject.find()
             .populate('classes')
             .populate({
                 path: 'teachers',
@@ -199,19 +233,9 @@ exports.getAllSubjects = async (req, res) => {
             })
             .populate('lessons');
 
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Subject.countDocuments();
-
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: subjectData,
             message: "Subjects fetched successfully!",
         });
     } catch (error) {
@@ -222,4 +246,4 @@ exports.getAllSubjects = async (req, res) => {
             message: "Internal Server Error!",
         });
     }
-};
+}

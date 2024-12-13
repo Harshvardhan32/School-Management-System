@@ -5,8 +5,8 @@ import { formatDate } from "../../services/formatDate";
 
 const Profile = () => {
 
-    const { role } = useSelector(state => state?.profile?.user?.userId);
     const { user } = useSelector(state => state?.profile);
+    const { role } = user?.userId;
 
     return (
         <div className="flex flex-col gap-2 mx-4 max-w-[1200px]">
@@ -85,7 +85,7 @@ const Profile = () => {
                     <div className="min-w-[150px] flex flex-col gap-2 flex-1 break-words">
                         <div>
                             <p className='text-base dark:text-gray-200 font-medium'>Blood Group</p>
-                            <p className="text-base dark:text-gray-400">{user?.userId.bloodType}</p>
+                            <p className="text-base dark:text-gray-400">{user?.userId.bloodType ? user?.userId.bloodType : '---'}</p>
                         </div>
                         <div>
                             <p className='text-base dark:text-gray-200 font-medium'>Address</p>

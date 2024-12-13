@@ -1,6 +1,6 @@
 const express = require('express');
 const { isAuth, isAdmin } = require('../middlewares/Auth');
-const { createAdmin, updateAdmin, getAdminDetails } = require('../controllers/admin/Admin');
+const { createAdmin, updateAdmin, getAdminDetails } = require('../controllers/admin/AdminController');
 const router = express.Router();
 
 router.post('/create', createAdmin);

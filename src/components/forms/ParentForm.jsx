@@ -30,11 +30,15 @@ const ParentForm = ({ type, data, allData, setOpen }) => {
                 (id) => !allData.includes(id),
                 { message: "Parent ID already exists!" }
             ),
-        email: z.string().email({ message: 'Invalid email address!' }),
+        email: z.string().toLowerCase().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
+        phone: z.string()
+            .min(10, { message: 'Phone number must be 10 characters!' })
+            .max(10, { message: 'Phone number must be 10 characters!' })
+            .regex(/^\d+$/, { message: 'Phone number must contain only digits!' })
+            .transform((val) => parseInt(val) || 0),
         address: z.string().min(1, { message: 'Address is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Parent'),
@@ -65,9 +69,9 @@ const ParentForm = ({ type, data, allData, setOpen }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const studentOptions = useMemo(() => {
-        return allStudents?.map((item) => ({
-            id: item?._id,
-            name: item?.userId.firstName + " " + item?.userId.lastName,
+        return allStudents?.map((student) => ({
+            id: student?._id,
+            name: student?.userId.firstName + " " + student?.userId.lastName + " " + student?.classId.className,
         })) || [];
     }, [allStudents]);
 
@@ -75,7 +79,7 @@ const ParentForm = ({ type, data, allData, setOpen }) => {
         ? data?.students?.map((student) => {
             return {
                 id: student?._id,
-                name: student?.userId?.firstName + " " + student?.userId?.lastName
+                name: student?.userId?.firstName + " " + student?.userId?.lastName + " " + student?.classId.className,
             }
         })
         : getValues("students")?.map((id) => studentOptions.find((option) => option.id === id));
@@ -83,7 +87,7 @@ const ParentForm = ({ type, data, allData, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createParent(formData, token, setOpen));
+            dispatch(createParent(formData, token, setOpen));
         } else {
             formData.id = data._id;
             dispatch(updateParent(formData, token, setOpen));

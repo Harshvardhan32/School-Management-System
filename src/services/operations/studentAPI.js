@@ -1,10 +1,5 @@
 import toast from "react-hot-toast";
-import {
-    setLoading,
-    setPaginatedStudents,
-    setStudentDetails,
-    setStudents
-} from "../../slices/studentSlice";
+import { setLoading, setStudentDetails, setStudents } from "../../slices/studentSlice";
 import { studentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -44,7 +39,7 @@ export const createStudent = (data, token, setOpen) => {
     }
 }
 
-export const updateStudent = (data, token, setOpen) => {
+export const updateStudent = (data, token, setOpen = true) => {
     return async () => {
         const toastId = toast.loading('Loading...');
 
@@ -73,73 +68,64 @@ export const updateStudent = (data, token, setOpen) => {
 }
 
 export const deleteStudent = (data, token, setOpen) => {
-    return async () => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", DELETE_STUDENT_API, data, {
+            const response = await apiConnector("DELETE", DELETE_STUDENT_API, data, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE STUDENT API RESPONSE............", response);
+            console.log("DELETE STUDENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Student Created Successfully!');
+            toast.success('Student Deleted Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE STUDENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("DELETE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || `${data?.role} Deletion Failed!`);
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(false));
         }
     }
 }
 
-export const getAllStudents = (token, page = 1, limit = 10, allData = false) => {
+export const getAllStudents = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
-            // Construct the query parameters for either all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_STUDENTS_API}${queryParams}`;
-
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_STUDENTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
+
+            // console.log("ALL STUDENTS API RESPONSE............", response);
 
             // Check for success in the response
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Failed to fetch students.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setStudents(response.data.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedStudents({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setStudents(response?.data?.data));
 
+            toast.dismiss(toastId);
             toast.success('Students loaded successfully!');
         } catch (error) {
             console.log("ALL STUDENTS API ERROR............", error.message);
             toast.error(error.message || 'Failed to load students.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 };

@@ -1,3 +1,4 @@
+const Assignment = require('../../models/Assignment');
 const Class = require('../../models/Class');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
@@ -134,8 +135,8 @@ exports.updateTeacher = async (req, res) => {
             dateOfBirth,
             sex,
             teacherId,
-            classes = [],
-            subjects = [],
+            classes,
+            subjects,
             remarks
         } = req.body;
 
@@ -232,7 +233,43 @@ exports.updateTeacher = async (req, res) => {
 
 exports.deleteTeacher = async (req, res) => {
     try {
+        const { _id } = req.body;
 
+        if (!_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Teacher ID is required!"
+            })
+        }
+
+        // Check if the teacher exists
+        const existingTeacher = await Teacher.findById(_id);
+
+        if (!existingTeacher) {
+            return res.status(404).json({
+                success: false,
+                message: 'Teacher not found with the given ID!',
+            });
+        }
+
+        // Delete teacher profile
+        await User.findByIdAndDelete(existingTeacher.userId);
+
+        // Delete the teacher
+        const deletedTeacher = await Teacher.findByIdAndDelete(_id);
+
+        await Promise.all([
+            Assignment.deleteMany({ teacher: _id }),
+            Class.updateMany({ supervisor: _id }, { supervisor: null }),
+            Class.updateMany({ teachers: _id }, { $pull: { teachers: _id } }),
+            Subject.updateMany({ teachers: _id }, { $pull: { teachers: _id } }),
+        ])
+
+        return res.status(200).json({
+            success: true,
+            data: deletedTeacher,
+            message: "Teacher Deleted Successfully!"
+        });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({
@@ -244,30 +281,16 @@ exports.deleteTeacher = async (req, res) => {
 }
 
 exports.getAllTeachers = async (req, res) => {
-    try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
 
-        let query = Teacher.find()
+    try {
+        const teacherData = await Teacher.find()
             .populate('userId')
             .populate('classes')
             .populate('subjects');
 
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Teacher.countDocuments();
-
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: teacherData,
             message: 'Teachers fetched successfully!',
         });
     } catch (error) {

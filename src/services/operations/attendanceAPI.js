@@ -2,21 +2,22 @@ import toast from "react-hot-toast";
 import { attendanceEndPoints } from "../apis";
 import { setAssignments, setLoading } from "../../slices/assignmentSlice";
 import apiConnector from "../apiConnect";
+import { setAttendance } from "../../slices/attendanceSlice";
 
 const {
-    CREATE_ASSIGNMENT_API,
-    UPDATE_ASSIGNMENT_API,
-    DELETE_ASSIGNMENT_API,
-    ALL_ASSIGNMENTS_API
-} = assignmentEndPoints;
+    CREATE_ATTENDANCE_API,
+    UPDATE_ATTENDANCE_API,
+    DELETE_ATTENDANCE_API,
+    ALL_ATTENDANCE_API
+} = attendanceEndPoints;
 
-export const createAssignment = (data, token, setOpen) => {
+export const createAttendance = (data, token, setOpen) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            const response = await apiConnector("POST", CREATE_ASSIGNMENT_API,
+            const response = await apiConnector("POST", CREATE_ATTENDANCE_API,
                 data,
                 {
                     "Content-Type": "application/json",
@@ -42,17 +43,14 @@ export const createAssignment = (data, token, setOpen) => {
     }
 }
 
-export const getAllAttendance = (token, page = 1, limit = 10, allData = false) => {
+export const getAllAttendance = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading attendance...');
-        try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_ATTENDANCE_API}${queryParams}`;
+        const toastId = toast.loading('Loading...');
 
+        try {
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_ATTENDANCE_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -62,18 +60,7 @@ export const getAllAttendance = (token, page = 1, limit = 10, allData = false) =
                 throw new Error(response?.data?.message || "Failed to fetch attendance.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setAttendance(response.data.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedAttendance({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
-
+            dispatch(setAttendance(response.data.data));
             toast.success('Attendance loaded successfully!');
         } catch (error) {
             console.log("ALL ATTENDANCE API ERROR............", error.message);

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import { ThemeContext } from '../utils/ThemeContext';
 
-const MultiSelectComponent = ({ options, selectedValue, setSelectedValue }) => {
+const MultiSelectComponent = ({ options, isDisabled, selectedValue, setSelectedValue }) => {
 
     const { darkMode } = useContext(ThemeContext);
 
@@ -50,6 +50,7 @@ const MultiSelectComponent = ({ options, selectedValue, setSelectedValue }) => {
         <Multiselect
             options={options}
             selectedValues={selectedValue}
+            disable={isDisabled}
             onSelect={onSelect}
             onRemove={onRemove}
             displayValue="name"

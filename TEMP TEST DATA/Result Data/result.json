@@ -1,166 +1,77 @@
 [
     {
-        "student": "64c1f0b1a1b1cfc1d8b1e1a1",
-        "classId": "64c1f0b1a1b1cfc1d8b1e1b2",
+        "student": "64cf8f12345abcde12345678",
+        "classId": "64cf8f54321abcd987654321",
         "subjectResults": [
             {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c3",
+                "subject": "64cf8f99999abcd987654321",
                 "examResults": [
                     {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d4",
+                        "exam": "64cf8f88888abcd987654321",
                         "score": 85,
                         "maxScore": 100,
                         "percentage": 85,
-                        "grade": "B"
-                    }
-                ],
-                "finalGrade": "B"
-            },
-            {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c5",
-                "examResults": [
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d6",
-                        "score": 92,
-                        "maxScore": 100,
-                        "percentage": 92,
                         "grade": "A"
-                    }
-                ],
-                "finalGrade": "A"
-            }
-        ],
-        "overallPercentage": 88.5,
-        "remarks": "Good performance"
-    },
-    {
-        "student": "64c1f0b1a1b1cfc1d8b1e1a2",
-        "classId": "64c1f0b1a1b1cfc1d8b1e1b3",
-        "subjectResults": [
-            {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c4",
-                "examResults": [
+                    },
                     {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d5",
+                        "exam": "64cf8f77777abcd987654321",
                         "score": 78,
                         "maxScore": 100,
                         "percentage": 78,
-                        "grade": "C"
+                        "grade": "B"
                     }
                 ],
-                "finalGrade": "C"
+                "subjectGrade": "A"
+            },
+            {
+                "subject": "64cf8f66666abcd987654321",
+                "examResults": [
+                    {
+                        "exam": "64cf8f55555abcd987654321",
+                        "score": 90,
+                        "maxScore": 100,
+                        "percentage": 90,
+                        "grade": "A"
+                    }
+                ],
+                "subjectGrade": "A"
             }
         ],
-        "overallPercentage": 78,
-        "remarks": "Needs improvement"
+        "overallPercentage": 84.33,
+        "remarks": "Excellent performance."
     },
     {
-        "student": "64c1f0b1a1b1cfc1d8b1e1a5",
-        "classId": "64c1f0b1a1b1cfc1d8b1e1b6",
+        "student": "64cf8f44444abcd987654321",
+        "classId": "64cf8f33333abcd987654321",
         "subjectResults": [
             {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c2",
+                "subject": "64cf8f22222abcd987654321",
                 "examResults": [
                     {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 72,
+                        "exam": "64cf8f11111abcd987654321",
+                        "score": 60,
                         "maxScore": 100,
-                        "percentage": 72,
+                        "percentage": 60,
                         "grade": "C"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d9",
-                        "score": 88,
-                        "maxScore": 100,
-                        "percentage": 88,
-                        "grade": "B"
                     }
                 ],
-                "finalGrade": "B"
+                "subjectGrade": "C"
             },
             {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c2",
+                "subject": "64cf8f00000abcd987654321",
                 "examResults": [
                     {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
+                        "exam": "64cf8efffffabcd987654321",
+                        "score": 70,
                         "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d9",
-                        "score": 83,
-                        "maxScore": 100,
-                        "percentage": 83,
+                        "percentage": 70,
                         "grade": "B"
                     }
                 ],
-                "finalGrade": "A"
-            },
-            {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c2",
-                "examResults": [
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
-                        "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d9",
-                        "score": 83,
-                        "maxScore": 100,
-                        "percentage": 83,
-                        "grade": "B"
-                    }
-                ],
-                "finalGrade": "A"
-            },
-            {
-                "subject": "64c1f0b1a1b1cfc1d8b1e1c2",
-                "examResults": [
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
-                        "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d9",
-                        "score": 83,
-                        "maxScore": 100,
-                        "percentage": 83,
-                        "grade": "B"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
-                        "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
-                        "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    },
-                    {
-                        "exam": "64c1f0b1a1b1cfc1d8b1e1d8",
-                        "score": 95,
-                        "maxScore": 100,
-                        "percentage": 95,
-                        "grade": "A"
-                    }
-                ],
-                "finalGrade": "A"
+                "subjectGrade": "B"
             }
         ],
-        "overallPercentage": 84,
-        "remarks": "Good progress; keep up the work."
+        "overallPercentage": 65,
+        "remarks": "Good effort. Keep improving."
     }
 ]

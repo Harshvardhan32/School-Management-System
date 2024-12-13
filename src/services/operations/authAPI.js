@@ -1,8 +1,8 @@
-import toast from "react-hot-toast";
-import apiConnector from "../apiConnect";
 import { authEndPoints } from '../apis';
 import { setLoading, setToken } from "../../slices/authSlice";
 import { setUser } from "../../slices/profileSlice";
+import toast from "react-hot-toast";
+import apiConnector from "../apiConnect";
 
 const {
     LOGIN_API,
@@ -28,15 +28,24 @@ export const login = (data) => {
             }
 
             toast.dismiss(toastId);
-            toast.success("Login Successfull!");
+            toast.success("Login Successfully!");
 
             // Dispatch Redux actions to store token and user
             dispatch(setToken(response?.data?.token));
             dispatch(setUser({ ...response?.data?.data }));
 
-            // Store token and user data locally
-            localStorage.setItem("token", JSON.stringify(response?.data?.token));
-            localStorage.setItem("user", JSON.stringify(response?.data?.data));
+            // Calculate expiration timestamp (24 hours)
+            const expiresAt = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+            // Store token, user data, and expiration timestamp in localStorage
+            localStorage.setItem(
+                "auth",
+                JSON.stringify({
+                    token: response?.data?.token,
+                    user: response?.data?.data,
+                    expiresAt,
+                })
+            );
         } catch (error) {
             console.log("LOGIN API ERROR............", error.message);
             toast.error(error?.message || "Login Failed!");
@@ -47,12 +56,29 @@ export const login = (data) => {
     };
 }
 
+export const checkAuthExpiration = () => {
+    return (dispatch) => {
+        const authData = JSON.parse(localStorage.getItem("auth"));
+
+        if (authData) {
+            const currentTime = new Date().getTime();
+
+            // Check if token has expired
+            if (currentTime >= authData.expiresAt) {
+                // Clear localStorage and Redux state
+                localStorage.removeItem("auth");
+                dispatch(setToken(null));
+                dispatch(setUser(null));
+            }
+        }
+    };
+};
+
 export const logout = (navigate) => {
     return (dispatch) => {
         dispatch(setToken(null));
         dispatch(setUser(null));
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('auth');
         toast.success("Logout Successfully!");
         navigate('/');
     }

@@ -2,12 +2,12 @@ import * as z from 'zod';
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import MultiSelectComponent from "../MultiSelectComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { createSubject, updateSubject } from "../../services/operations/subjectAPI";
 import { getAllLessons } from "../../services/operations/lessonAPI";
+import MultiSelectComponent from "../MultiSelectComponent";
 
 const SubjectForm = ({ type, data, setOpen }) => {
 
@@ -108,10 +108,10 @@ const SubjectForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         console.log(formData);
         if (type === 'create') {
-            // dispatch(createSubject(formData, token, setOpen));
+            dispatch(createSubject(formData, token, setOpen));
         } else {
             formData.id = data._id;
-            // dispatch(updateSubject(formData, token, setOpen));
+            dispatch(updateSubject(formData, token, setOpen));
         }
     });
 

@@ -92,7 +92,7 @@ export const attendanceEndPoints = {
     CREATE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/create',
     UPDATE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/update',
     DELETE_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/delete',
-    ALL_ATTENDANCES_API: BASE_URL + '/api/v1/attendance/attendances',
+    ALL_ATTENDANCE_API: BASE_URL + '/api/v1/attendance/attendances',
 }
 
 // ANNOUNCEMENT ENDPOINTS

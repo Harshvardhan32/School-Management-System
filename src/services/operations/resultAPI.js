@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { resultEndPoints } from "../apis";
-import { setLoading, setPaginatedResults, setResults } from "../../slices/resultSlice";
+import { setLoading, setResults } from "../../slices/resultSlice";
 import apiConnector from "../apiConnect";
 
 const {
@@ -10,31 +10,31 @@ const {
     ALL_RESULTS_API
 } = resultEndPoints;
 
-export const createLesson = (data, token, setOpen) => {
+export const createResult = (data, token, setOpen) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", CREATE_LESSON_API,
-                data,
+            const response = await apiConnector("POST", CREATE_RESULT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE LESSON API RESPONSE............", response);
+            console.log("CREATE RESULT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Lesson Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Result Created Successfully!');
             setOpen(false);
         } catch (error) {
-            // console.log("CREATE LESSON API ERROR............", error.message);
-            toast.error(error?.message || "Lesson Creation Failed!");
+            console.log("CREATE RESULT API ERROR............", error.message);
+            toast.error(error?.message || "Result Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -42,30 +42,31 @@ export const createLesson = (data, token, setOpen) => {
     }
 }
 
-export const updateClass = (data, token) => {
+export const updateResult = (data, token, setOpen) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", UPDATE_CLASS_API,
-                data,
+            const response = await apiConnector("PUT", UPDATE_RESULT_API, data,
                 {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             );
 
-            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            console.log("UPDATE RESULT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            toast.success('Announcement Created Successfully!');
+            toast.dismiss(toastId);
+            toast.success('Result Updated Successfully!');
+            setOpen(false);
         } catch (error) {
-            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Creation Failed!");
+            console.log("UPDATE RESULT API ERROR............", error.message);
+            toast.error(error?.message || "Result Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -73,16 +74,46 @@ export const updateClass = (data, token) => {
     }
 }
 
-export const getAllResults = (token, page = 1, limit = 10, allData = false) => {
+export const deleteResult = (token, data, setOpen) => {
     return async (dispatch) => {
-        const toastId = toast.loading('Loading results...');
-        try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_RESULTS_API}${queryParams}`;
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
-            // Make the API request
-            const response = await apiConnector("GET", url, null, {
+        try {
+            const response = await apiConnector("DELETE", DELETE_RESULT_API, data,
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            );
+
+            console.log("DELETE RESULT API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Result Deleted Successfully!');
+            setOpen(false);
+        } catch (error) {
+            console.log("DELETE RESULT API ERROR............", error.message);
+            toast.error(error?.message || "Result Deletion Failed!");
+        } finally {
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const getAllResults = (token) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+
+        try {
+
+            const response = await apiConnector("GET", ALL_RESULTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -92,17 +123,7 @@ export const getAllResults = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            if (allData) {
-                // Dispatch all results to the store (non-paginated data)
-                dispatch(setResults(response.data.data));
-            } else {
-                // Dispatch paginated results to the store
-                dispatch(setPaginatedResults({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setResults(response?.data?.data));
 
             toast.success('Results loaded successfully!');
         } catch (error) {
@@ -110,6 +131,7 @@ export const getAllResults = (token, page = 1, limit = 10, allData = false) => {
             toast.error(error.message || 'Failed to load results.');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(false));
         }
     };
-};
+}

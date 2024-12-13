@@ -2,10 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    paginatedAttendance: [],
-    allAttendance: [],
-    totalPages: 0,
-    currentPage: 1,
+    allAttendance: []
 };
 
 const attendanceSlice = createSlice({
@@ -16,15 +13,10 @@ const attendanceSlice = createSlice({
             state.loading = action.payload;
         },
         setAttendance(state, action) {
-            state.allAttendance = action.payload; // Non-paginated attendance data
-        },
-        setPaginatedAttendance(state, action) {
-            state.paginatedAttendance = action.payload.data; // Paginated attendance data
-            state.totalPages = action.payload.totalPages;
-            state.currentPage = action.payload.currentPage;
-        },
+            state.allAttendance = action.payload;
+        }
     },
 });
 
-export const { setLoading, setAttendance, setPaginatedAttendance } = attendanceSlice.actions;
+export const { setLoading, setAttendance } = attendanceSlice.actions;
 export default attendanceSlice.reducer;

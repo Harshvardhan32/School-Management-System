@@ -1,5 +1,5 @@
 import toast from "react-hot-toast"
-import { setLoading, setAnnouncements, setPaginatedAnnouncements } from "../../slices/announcementSlice";
+import { setLoading, setAnnouncements } from "../../slices/announcementSlice";
 import apiConnector from "../apiConnect";
 import { announcementEndPoints } from "../apis";
 
@@ -106,18 +106,14 @@ export const deleteAnnouncement = (data, token, setOpen) => {
     }
 }
 
-export const getAllAnnouncement = (token, page = 1, limit = 10, allData = false) => {
+export const getAllAnnouncement = (token) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading announcements...');
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
         try {
-            // Construct the query parameters for either all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_ANNOUNCEMENTS_API}${queryParams}`;
-
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_ANNOUNCEMENTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -127,17 +123,7 @@ export const getAllAnnouncement = (token, page = 1, limit = 10, allData = false)
                 throw new Error(response?.data?.message || "Failed to fetch announcements.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setAnnouncements(response?.data?.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedAnnouncements({
-                    data: response?.data?.data,
-                    totalPages: response?.data?.totalPages,
-                    currentPage: response?.data?.currentPage,
-                }));
-            }
+            dispatch(setAnnouncements(response?.data?.data));
 
             toast.success('Announcements loaded successfully!');
         } catch (error) {

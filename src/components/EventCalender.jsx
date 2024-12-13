@@ -11,14 +11,14 @@ const EventCalendar = () => {
     const { token } = useSelector(state => state?.auth);
 
     useEffect(() => {
-        dispatch(getAllEvents(token, 1, 10, false));
+        dispatch(getAllEvents(token));
     }, []);
 
     const [value, setValue] = useState(new Date());
-    const { paginatedEvents } = useSelector(state => state?.event);
+    const { allEvents } = useSelector(state => state?.event);
 
     return (
-        paginatedEvents.length > 0 &&
+        allEvents.length > 0 &&
         <div className='bg-white dark:bg-slate-900 rounded-[6px] w-full p-4'>
             <Calendar
                 onChange={setValue}
@@ -30,7 +30,7 @@ const EventCalendar = () => {
                 <Link to='/list/events' className="text-xs text-gray-400">View All</Link>
             </div>
             <div className='flex flex-col gap-4'>
-                {paginatedEvents?.slice(0, 3).map((event) => (
+                {allEvents?.slice(0, 3).map((event) => (
                     <div className='p-5 rounded-[6px] border-2 border-gray-100 border-t-4 odd:border-t-emerald-400 even:border-t-pink-400' key={event._id}>
                         <div className='flex items-center justify-between'>
                             <h1 className='font-semibold text-gray-700 dark:text-gray-100'>{event.title}</h1>

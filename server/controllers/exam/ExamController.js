@@ -1,4 +1,5 @@
 const Exam = require('../../models/Exam');
+const Result = require('../../models/Result');
 const Student = require('../../models/Student');
 
 exports.createExam = async (req, res) => {
@@ -163,6 +164,16 @@ exports.deleteExam = async (req, res) => {
             );
         }
 
+        // Remove Exam from Results
+        await Result.updateMany(
+            { "subjectResults.examResults.exam": _id },
+            {
+                $pull: {
+                    "subjectResults.$[].examResults": { exam: _id }
+                }
+            }
+        );
+
         return res.status(200).json({
             success: true,
             data: deletedResponse,
@@ -181,26 +192,11 @@ exports.deleteExam = async (req, res) => {
 
 exports.getAllExams = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
-
-        let query = Exam.find().populate('subjects').populate('classes');
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Exam.countDocuments();
+        let examData = await Exam.find().populate('subjects').populate('classes');
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: examData,
             message: 'Exams fetched successfully!',
         });
     } catch (error) {

@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setExams, setPaginatedExams } from "../../slices/examSlice";
+import { setLoading, setExams } from "../../slices/examSlice";
 import { examEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -107,17 +107,14 @@ export const deleteExam = (data, token, setOpen) => {
     }
 }
 
-export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
+export const getAllExams = (token) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
-        try {
-            // Construct query parameters for either all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_EXAMS_API}${queryParams}`;
 
+        try {
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_EXAMS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -127,17 +124,7 @@ export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Failed to fetch exams.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setExams(response.data.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedExams({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setExams(response.data.data));
 
             toast.success('Exams loaded successfully!');
         } catch (error) {
@@ -145,7 +132,7 @@ export const getAllExams = (token, page = 1, limit = 10, allData = false) => {
             toast.error(error.message || 'Failed to load exams.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 };

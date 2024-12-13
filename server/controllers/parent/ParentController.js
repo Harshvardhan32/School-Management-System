@@ -188,38 +188,60 @@ exports.updateParent = async (req, res) => {
 }
 
 exports.deleteParent = async (req, res) => {
-
-}
-
-exports.getAllParents = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true';
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
+        const { _id } = req.body;
 
-        let query = Parent.find()
-            .populate('userId')
-            .populate({
-                path: "students",
-                populate: {
-                    path: "userId",
-                }
-            });
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
+        if (!_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Parent ID is required!"
+            })
         }
 
-        const data = await query;
-        const total = allData ? data.length : await Parent.countDocuments();
+        // Check if the parent exists
+        const existingParent = await Parent.findById(_id);
+
+        if (!existingParent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Parent not found with the given ID!',
+            });
+        }
+
+        // Delete parent profile
+        await User.findByIdAndDelete(existingParent.userId);
+
+        // Delete the parent
+        const deletedParent = await Parent.findByIdAndDelete(_id);
+
+        await Student.updateMany({ parent: _id }, { $set: { parent: null } });
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: deletedParent,
+            message: "Parent Deleted Successfully!"
+        });
+    } catch (error) {
+
+    }
+}
+
+exports.getAllParents = async (req, res) => {
+
+    try {
+        const parentData = await Parent.find()
+            .populate('userId')
+            .populate({
+                path: "students",
+                populate: [
+                    { path: "userId" },
+                    { path: "classId" }
+                ]
+            });
+
+        return res.status(200).json({
+            success: true,
+            data: parentData,
             message: 'Parents fetched successfully!',
         });
     } catch (error) {

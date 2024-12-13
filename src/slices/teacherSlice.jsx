@@ -2,11 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    paginatedTeachers: [],
     allTeachers: [],
     teacherDetails: null,
-    totalPages: 0,
-    currentPage: 1,
 };
 
 const teacherSlice = createSlice({
@@ -17,12 +14,7 @@ const teacherSlice = createSlice({
             state.loading = action.payload;
         },
         setTeachers(state, action) {
-            state.allTeachers = action.payload; // Non-paginated teachers
-        },
-        setPaginatedTeachers(state, action) {
-            state.paginatedTeachers = action.payload.data; // Paginated teachers
-            state.totalPages = action.payload.totalPages;
-            state.currentPage = action.payload.currentPage;
+            state.allTeachers = action.payload;
         },
         setTeacherDetails(state, action) {
             state.teacherDetails = action.payload;
@@ -30,5 +22,5 @@ const teacherSlice = createSlice({
     },
 });
 
-export const { setLoading, setTeachers, setPaginatedTeachers, setTeacherDetails } = teacherSlice.actions;
+export const { setLoading, setTeachers, setTeacherDetails } = teacherSlice.actions;
 export default teacherSlice.reducer;

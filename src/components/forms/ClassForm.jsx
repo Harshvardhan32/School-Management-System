@@ -2,13 +2,13 @@ import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { useMemo } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
-import SelectOption from "../common/SelectOption";
-import MultiSelectComponent from "../MultiSelectComponent";
 import { useEffect } from "react";
 import { createClass, updateClass } from "../../services/operations/classAPI";
 import { getAllTeachers } from "../../services/operations/teacherAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
+import SelectOption from "../common/SelectOption";
+import MultiSelectComponent from "../MultiSelectComponent";
 
 const ClassForm = ({ type, data, allData, setOpen }) => {
 
@@ -109,7 +109,7 @@ const ClassForm = ({ type, data, allData, setOpen }) => {
             formData.id = data._id;
             dispatch(updateClass(formData, token, setOpen));
         }
-    });
+    })
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -144,11 +144,10 @@ const ClassForm = ({ type, data, allData, setOpen }) => {
                         name='supervisor'
                         control={control}
                         options={teacherOptions}
-                        defaultValue={(type === 'update' && data?.supervisor) && data?.supervisor}
+                        defaultValue={type === 'update' && data?.supervisor ? data.supervisor._id : ''}
                         placeholder='Please Select'
                         label='Supervisor'
                     />
-                    {errors?.supervisor && <p className="text-xs text-red-700 py-2">{errors?.supervisor.message}</p>}
                 </div>
             </div>
             <div className="min-w-[150px] w-full flex flex-col gap-2 flex-1">

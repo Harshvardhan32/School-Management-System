@@ -2,10 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    announcements: [],          // For non-paginated data
-    paginatedAnnouncements: [], // For paginated data
-    totalPages: 0,
-    currentPage: 1,
+    announcements: [],
 };
 
 const announcementSlice = createSlice({
@@ -16,15 +13,10 @@ const announcementSlice = createSlice({
             state.loading = action.payload;
         },
         setAnnouncements(state, action) {
-            state.announcements = action.payload; // Non-paginated data
-        },
-        setPaginatedAnnouncements(state, action) {
-            state.paginatedAnnouncements = action.payload.data; // Paginated data
-            state.totalPages = action.payload.totalPages;
-            state.currentPage = action.payload.currentPage;
-        },
+            state.announcements = action.payload;
+        }
     },
 });
 
-export const { setLoading, setAnnouncements, setPaginatedAnnouncements } = announcementSlice.actions;
+export const { setLoading, setAnnouncements } = announcementSlice.actions;
 export default announcementSlice.reducer;

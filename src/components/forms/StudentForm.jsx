@@ -3,23 +3,23 @@ import { useForm } from "react-hook-form";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { zodResolver } from '@hookform/resolvers/zod';
-import SelectOption from "../common/SelectOption";
-import MultiSelectComponent from "../MultiSelectComponent";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
 import { createStudent, updateStudent } from '../../services/operations/studentAPI';
 import { getAllParents } from '../../services/operations/parentAPI';
+import SelectOption from "../common/SelectOption";
+import MultiSelectComponent from "../MultiSelectComponent";
 
 const StudentForm = ({ type, data, allData, setOpen }) => {
 
-    allData = useMemo(() => {
-        return type === 'update'
-            ? allData.filter((item) => item !== data?.studentId)
-            : allData;
-    }, [type]);
+    let uniqueId = type === 'update'
+        ? allData.studentsId.filter((item) => item !== data.studentId)
+        : allData.studentsId;
 
-    // console.log(allData);
+    let uniqueRollNumber = type === 'update'
+        ? allData.rollNumber.filter((item) => item !== data.rollNumber.toString())
+        : allData.rollNumber;
 
     // Password zod schema for create and update 
     const passwordSchema = (type) =>
@@ -33,25 +33,36 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
             .max(20, { message: "Student ID must be at most 20 characters long!" })
             .regex(/^\S+$/, { message: "Student ID must not contain spaces!" })
             .refine(
-                (id) => !allData.includes(id),
+                (id) => !uniqueId.includes(id),
                 { message: "Student ID already exists!" }
             ),
-        email: z.string().email({ message: 'Invalid email address!' }),
+        email: z.string().toLowerCase().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characher!' }).max(10, { message: 'Phone number must be 10 characher!' }).transform((val) => parseInt(val)),
+        phone: z.string()
+            .min(10, { message: 'Phone number must be 10 characters!' })
+            .max(10, { message: 'Phone number must be 10 characters!' })
+            .regex(/^\d+$/, { message: 'Phone number must contain only digits!' })
+            .transform((val) => parseInt(val) || 0),
         fatherName: z.string().min(1, { message: "Father's name is required!" }),
         motherName: z.string().min(1, { message: "Mother's name is required!" }),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         classId: z.string().min(1, { message: 'Class is required!' }),
-        rollNumber: z.string().min(1, { message: 'Roll number is required!' }),
+        rollNumber: z.string()
+            .min(1, { message: 'Roll number is required!' })
+            .regex(/^\S+$/, { message: "Roll number must not contain spaces!" })
+            .refine(
+                (number) => !uniqueRollNumber.includes(number),
+                { message: "Roll number already exists!" }
+            ),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
         sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }),
         role: z.string().default('Student'),
-        parent: z.string().optional(),
+        parent: z.string().optional().default(''),
         subjects: z.array(z.string()).optional(),
+        remarks: z.string().optional()
     });
 
     const {
@@ -70,12 +81,13 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
 
     const dispatch = useDispatch();
     const { token } = useSelector(state => state?.auth);
+    const { role } = useSelector((state) => state?.profile?.user?.userId);
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        dispatch(getAllClasses(token, undefined, undefined, true));
-        dispatch(getAllSubjects(token, undefined, undefined, true));
-        dispatch(getAllParents(token, undefined, undefined, true));
+        dispatch(getAllClasses(token));
+        dispatch(getAllSubjects(token));
+        dispatch(getAllParents(token));
     }, []);
 
     const { allClasses } = useSelector(state => state?.class);
@@ -115,14 +127,13 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
         );
 
     const onSubmit = handleSubmit(formData => {
-        // console.log(formData);
+        console.log(formData);
         if (type === 'create') {
-            // dispatch(createStudent(formData, token, setOpen));
+            dispatch(createStudent(formData, token, setOpen));
         } else {
             formData.id = data._id;
             dispatch(updateStudent(formData, token, setOpen));
         }
-        // setOpen(false);
     });
 
     return (
@@ -136,6 +147,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Student Id</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="Student ID"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("studentId")}
@@ -147,6 +159,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Email</label>
                     <input
                         type="email"
+                        disabled={role !== 'Admin'}
                         placeholder="Email"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("email")}
@@ -179,6 +192,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">First Name</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="First Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("firstName")}
@@ -190,6 +204,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Last Name</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="Last Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("lastName")}
@@ -200,6 +215,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Phone</label>
                     <input
                         type="number"
+                        disabled={role !== 'Admin'}
                         placeholder="Phone"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
                         {...register("phone")}
@@ -214,6 +230,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Father's Name</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="Father's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("fatherName")}
@@ -225,6 +242,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Mother's Name</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="Mother's Name"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("motherName")}
@@ -236,6 +254,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Address</label>
                     <input
                         type="text"
+                        disabled={role !== 'Admin'}
                         placeholder="Address"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("address")}
@@ -249,6 +268,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Sex</label>
                     <select
+                        disabled={role !== 'Admin'}
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("sex")}
                         defaultValue={type === 'update' && data?.userId?.sex?.toLowerCase()}
@@ -263,6 +283,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Blood Type</label>
                     <select
+                        disabled={role !== 'Admin'}
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("bloodType")}
                         defaultValue={type === 'update' ? data?.userId.bloodType : ''}
@@ -283,6 +304,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Date of Birth</label>
                     <input
                         type="date"
+                        disabled={role !== 'Admin'}
                         placeholder="Date of Birth"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dateOfBirth")}
@@ -293,22 +315,24 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
             </div>
 
             <div className="flex flex-wrap flex-1 justify-between gap-4">
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="min-w-[150px] flex flex-col gap-2 flex-1">
                     <SelectOption
                         name='classId'
                         control={control}
                         options={classOptions}
-                        defaultValue={type === 'update' && data?.classId ? data.classId._id : undefined}
+                        isDisabled={role !== 'Admin'}
+                        defaultValue={type === 'update' && data?.classId ? data.classId._id : ''}
                         placeholder='Please Select'
                         label='Class'
                     />
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="min-w-[150px] flex flex-col gap-2 flex-1">
                     <SelectOption
                         name='parent'
                         control={control}
                         options={parentOptions}
-                        defaultValue={type === 'update' && data?.parent ? data.parent._id : undefined}
+                        isDisabled={role !== 'Admin'}
+                        defaultValue={type === 'update' && data?.parent ? data.parent._id : ''}
                         placeholder='Please Select'
                         label='Parent'
                     />
@@ -330,6 +354,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Subjects</label>
                     <MultiSelectComponent
                         options={subjectOptions}
+                        isDisabled={role !== 'Admin'}
                         selectedValue={selectedSubjects}
                         setSelectedValue={(value) =>
                             setValue(
@@ -339,6 +364,17 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                     />
                     {errors?.subjects && <p className="text-xs text-red-700 py-2">{errors?.subjects.message}</p>}
                 </div>
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+                <label className="text-sm text-gray-500">Remark</label>
+                <textarea
+                    rows={3}
+                    disabled={role !== 'Admin'}
+                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                    {...register("remarks")}
+                    defaultValue={type === 'update' ? data?.userId.remarks : ''}
+                />
+                {errors?.remarks && <p className="text-xs text-red-700 py-2">{errors?.remarks?.message}</p>}
             </div>
             <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[2px]">
                 {type === 'create' ? 'Create' : 'Update'}

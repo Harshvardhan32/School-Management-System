@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { setLoading, setPaginatedParents, setParents } from "../../slices/parentSlice";
+import { setLoading, setParents } from "../../slices/parentSlice";
 import { parentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
 
@@ -11,7 +11,8 @@ const {
 } = parentEndPoints;
 
 export const createParent = (data, token, setOpen) => {
-    return async () => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
@@ -31,15 +32,17 @@ export const createParent = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             console.log("CREATE PARENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            toast.error(error?.message || 'Parent Creation Failed!');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(true));
         }
     }
 }
 
 export const updateParent = (data, token, setOpen) => {
-    return async () => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
@@ -62,12 +65,14 @@ export const updateParent = (data, token, setOpen) => {
             toast.error(error?.message || `${data?.role} Updation Failed!`);
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(true));
         }
     }
 }
 
 export const deleteParent = (data, token, setOpen) => {
-    return async () => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
@@ -76,35 +81,33 @@ export const deleteParent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE PARENT API RESPONSE............", response);
+            console.log("DELETE PARENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Parent Created Successfully!');
+            toast.success('Parent Deleted Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE PARENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("DELETE PARENT API ERROR............", error.message);
+            toast.error(error?.message || 'Parent Deletion Failed!');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(true));
         }
     }
 }
 
-export const getAllParents = (token, page = 1, limit = 10, allData = false) => {
+export const getAllParents = (token) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading parents...');
-        try {
-            // Construct the query parameters for either all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_PARENTS_API}${queryParams}`;
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
+        try {
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_PARENTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -114,17 +117,7 @@ export const getAllParents = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Failed to fetch parents.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setParents(response.data.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedParents({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setParents(response?.data?.data));
 
             toast.success('Parents loaded successfully!');
         } catch (error) {
@@ -132,7 +125,7 @@ export const getAllParents = (token, page = 1, limit = 10, allData = false) => {
             toast.error(error.message || 'Failed to load parents.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 };

@@ -1,30 +1,90 @@
+import * as z from 'zod';
+import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import UploadProfilePicture from "../components/UploadProfilePicture";
 import UpdatePassword from "../components/UpdatePassword";
-import * as z from 'zod';
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from 'react';
+import { getAllTeachers, updateTeacher } from '../services/operations/teacherAPI';
+import { getAllStudents, updateStudent } from '../services/operations/studentAPI';
+import { getAllParents, updateParent } from '../services/operations/parentAPI';
 
 const Settings = () => {
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
+    const { user } = useSelector(state => state?.profile);
+    const { role } = user?.userId;
+
+    useEffect(() => {
+        if (role === 'Admin') {
+
+        } else if (role === 'Teacher') {
+            dispatch(getAllTeachers(token));
+        } else if (role === 'Student') {
+            dispatch(getAllStudents(token));
+        } else {
+            dispatch(getAllParents(token));
+        }
+    }, [token, dispatch]);
+
+    let userId = [];
+    if (role === 'Admin') {
+
+    } else if (role === 'Teacher') {
+        const { allTeachers } = useSelector(state => state?.teacher);
+
+        userId = allTeachers?.map((teacher) => teacher?.teacherId);
+        userId = userId.filter((item) => item !== user?.teacherId);
+    } else if (role === 'Student') {
+        const { allStudents } = useSelector(state => state?.student);
+
+        userId = allStudents?.map((student) => student?.studentId);
+        userId = userId.filter((item) => item !== user?.studentId);
+    } else {
+        const { allParents } = useSelector(state => state?.parent);
+
+        userId = allParents?.map((parent) => parent?.parentId);
+        userId = userId.filter((item) => item !== user?.parentId);
+    }
+
     const schema = z.object({
         userId: z.string()
-            .min(3, { message: 'Student Id must be at least 3 characters long!' })
-            .max(20, { message: "Student Id must be at most 20 characters long!" }),
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
-        email: z.string().optional(),
-        phone: z.string().optional(),
-        sex: z.string().optional(),
-        dateOfBirth: z.string().optional(),
-        bloodType: z.string().optional(),
-        address: z.string().optional(),
-        rollNumber: z.string().optional(),
-        fatherName: z.string().optional(),
-        motherName: z.string().optional(),
+            .min(3, { message: 'User ID must be at least 3 characters long!' })
+            .max(20, { message: "User ID must be at most 20 characters long!" })
+            .regex(/^\S+$/, { message: "User ID must not contain spaces!" })
+            .refine(
+                (id) => !userId.includes(id),
+                { message: "User ID already exists!" }
+            ),
+        firstName: z.string().min(1, { message: 'First name is required!' }).default(user?.userId?.firstName),
+        lastName: z.string().optional().default(user?.userId?.lastName),
+        email: z.string().toLowerCase().email({ message: 'Invalid email address!' }),
+        phone: z.string()
+            .min(10, { message: 'Phone number must be 10 characters!' })
+            .max(10, { message: 'Phone number must be 10 characters!' })
+            .regex(/^\d+$/, { message: 'Phone number must contain only digits!' }),
+        dateOfBirth: role === 'Parent'
+            ? z.string().optional()
+            : z.string().min(1, { message: 'Date of Birth is required!' }).default(user?.userId?.dateOfBirth),
+        sex: z.enum(['male', 'female', 'others'], { message: 'Sex is required!' }).default(user?.userId?.sex),
+        address: z.string().min(1, { message: 'Address is required!' }).default(user?.userId.address),
+        bloodType: role === 'Parent'
+            ? z.string().optional()
+            : z.string().min(1, { message: 'Blood Type is required!' }).default(user?.userId.bloodType),
+        fatherName: role === 'Student'
+            ? z.string().min(1, { message: "Father's name is required!" }).default(user?.fatherName)
+            : z.string().optional(),
+        motherName: role === 'Student'
+            ? z.string().min(1, { message: "Mother's name is required!" }).default(user?.motherName)
+            : z.string().optional(),
+        rollNumber: role === 'Student'
+            ? z.number().min(1, { message: 'Roll number is required!' }).default(user?.rollNumber)
+            : z.number().optional(),
+        remarks: z.string().optional(),
     });
 
     const {
@@ -33,16 +93,27 @@ const Settings = () => {
         formState: { errors }
     } = useForm({ resolver: zodResolver(schema) });
 
-    const navigate = useNavigate();
-    const { role } = useSelector(state => state?.profile?.user?.userId);
-    const { user } = useSelector(state => state?.profile);
+    const onSubmit = handleSubmit((formData) => {
+        console.log("formData: ", formData);
 
-    const onSubmit = handleSubmit((data) => {
-        if (data?.phone !== '' && (data?.phone).length !== 10) {
-            toast.error('Phone number must be exactly 10 characters!');
-            return;
+        formData.id = user?._id;
+        if (role === 'Admin') {
+
+        } else if (role === 'Teacher') {
+            formData.teacherId = formData.userId;
+            formData.userId = undefined;
+            // dispatch(updateTeacher(token, formData));
+        } else if (role === 'Student') {
+            formData.studentId = formData.userId;
+            formData.userId = undefined;
+            formData.classId = user?.classId;
+            // dispatch(updateStudent(token, formData));
+        } else {
+            formData.parentId = formData.userId;
+            formData.userId = undefined;
+            // dispatch(updateParent(token, formData));
         }
-        console.log(data);
+        console.log("formData: ", formData);
     });
 
     return (
@@ -72,6 +143,7 @@ const Settings = () => {
                         <input
                             type="text"
                             id="firstName"
+                            disabled={role === 'Student'}
                             placeholder="First Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("firstName")}
@@ -84,6 +156,7 @@ const Settings = () => {
                         <input
                             type="text"
                             id="lastName"
+                            disabled={role === 'Student'}
                             placeholder="Last Name"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("lastName")}
@@ -120,6 +193,7 @@ const Settings = () => {
                         <label className="text-sm text-gray-500">Sex</label>
                         <select
                             id="sex"
+                            disabled={role === 'Student'}
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("sex")}
                             value={user?.userId?.sex?.toLowerCase()}
@@ -133,43 +207,51 @@ const Settings = () => {
                     </div>
                 </div>
                 <div className="flex flex-wrap flex-1 justify-between gap-4">
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Date Of Birth</label>
-                        <input
-                            type="date"
-                            id="dateOfBirth"
-                            placeholder="Date Of Birth"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                            {...register("dateOfBirth")}
-                            defaultValue={user?.userId.dateOfBirth && new Date(user?.userId.dateOfBirth).toISOString().slice(0, 10)}
-                        />
-                        {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
-                    </div>
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Blood Type</label>
-                        <select
-                            id="bloodType"
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                            {...register("bloodType")}
-                            defaultValue={user?.userId.bloodType}
-                        >
-                            <option value="">Please Select</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                        </select>
-                        {errors?.bloodType && <p className="text-xs text-red-700 py-2">{errors?.bloodType.message}</p>}
-                    </div>
+                    {
+                        role !== 'Parent' &&
+                        <>
+                            <div className="flex flex-col gap-2 flex-1">
+                                <label className="text-sm text-gray-500">Date Of Birth</label>
+                                <input
+                                    type="date"
+                                    id="dateOfBirth"
+                                    disabled={role === 'Student'}
+                                    placeholder="Date Of Birth"
+                                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                                    {...register("dateOfBirth")}
+                                    defaultValue={user?.userId.dateOfBirth && new Date(user?.userId.dateOfBirth).toISOString().slice(0, 10)}
+                                />
+                                {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
+                            </div>
+                            <div className="flex flex-col gap-2 flex-1">
+                                <label className="text-sm text-gray-500">Blood Type</label>
+                                <select
+                                    id="bloodType"
+                                    disabled={role === 'Student'}
+                                    className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                                    {...register("bloodType")}
+                                    defaultValue={user?.userId.bloodType}
+                                >
+                                    <option value="">Please Select</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                                {errors?.bloodType && <p className="text-xs text-red-700 py-2">{errors?.bloodType.message}</p>}
+                            </div>
+                        </>
+                    }
                     <div className="flex flex-col gap-2 flex-1">
                         <label className="text-sm text-gray-500">Address</label>
                         <input
                             id="address"
                             type="text"
+                            disabled={role === 'Student'}
                             placeholder="Address"
                             className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                             {...register("address")}
@@ -187,6 +269,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     id="rollNumber"
+                                    disabled={role === 'Student'}
                                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                                     {...register("rollNumber")}
                                     defaultValue={user?.rollNumber}
@@ -198,6 +281,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     id="fatherName"
+                                    disabled={role === 'Student'}
                                     placeholder="Father Name"
                                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                                     {...register("fatherName")}
@@ -210,6 +294,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     id="motherName"
+                                    disabled={role === 'Student'}
                                     placeholder="Mother Name"
                                     className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                                     {...register("motherName")}
@@ -219,6 +304,16 @@ const Settings = () => {
                             </div>
                         </>
                     }
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-sm text-gray-500">About</label>
+                    <textarea
+                        rows={3}
+                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        {...register("remarks")}
+                        defaultValue={user?.userId.remarks}
+                    />
+                    {errors?.remarks && <p className="text-xs text-red-700 py-2">{errors?.remarks?.message}</p>}
                 </div>
                 <div className="flex gap-4 items-center justify-end">
                     <div onClick={() => navigate(-1)} className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px] cursor-pointer">Cancel</div>

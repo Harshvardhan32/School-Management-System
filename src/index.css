@@ -24,6 +24,40 @@ body {
     -moz-appearance: textfield;
 }
 
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    background-color: #fff;
+    position: relative;
+    cursor: pointer;
+}
+
+.present:checked {
+    background-color: #51DFC3;
+    border-color: #51DFC3;
+}
+
+.absent:checked {
+    background-color: red;
+    border-color: red;
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    font-size: 15px;
+    font-weight: 800;
+    color: white;
+    position: absolute;
+    top: -12px;
+    left: -3px;
+    transform: translate(50%, 50%);
+}
+
 .react-calendar {
     width: 100% !important;
     border: none !important;

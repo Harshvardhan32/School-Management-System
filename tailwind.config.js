@@ -20,7 +20,7 @@ export default {
                 lamaSky: '',
                 lamaPurple: '#your-lama-purple-color-hex',
             },
-        },
+        }
     },
     plugins: [],
     darkMode: 'class'

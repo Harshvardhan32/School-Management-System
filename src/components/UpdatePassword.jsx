@@ -1,16 +1,19 @@
+import * as z from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { Link, useNavigate } from "react-router-dom";
-import * as z from 'zod';
+import { useNavigate } from "react-router-dom";
 
 const UpdatePassword = () => {
 
     const schema = z.object({
-        password: z.string().min(8, { message: 'Password must be at least 8 character long!' }),
-        oldPassword: z.string().min(8, { message: 'Old Password must be at least 8 character long!' }),
-        confirmPassword: z.string().min(8, { message: 'Confirm Password must be at least 8 character long!' }),
+        password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
+        oldPassword: z.string().min(8, { message: 'Old Password must be at least 8 characters long!' }),
+        confirmPassword: z.string().min(8, { message: 'Confirm Password must be at least 8 characters long!' }),
+    }).refine((data) => data.password === data.confirmPassword, {
+        message: 'Passwords must be same!',
+        path: ['confirmPassword'],
     });
 
     const {
@@ -76,6 +79,7 @@ const UpdatePassword = () => {
                     {errors?.confirmPassword && <p className="text-xs text-red-700 py-2">{errors?.confirmPassword.message}</p>}
                 </div>
             </div>
+            
             <div className="flex gap-4 items-center justify-end">
                 <div onClick={() => navigate(-1)} className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px] cursor-pointer">Cancel</div>
                 <button type="submit" className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>

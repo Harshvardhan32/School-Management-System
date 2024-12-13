@@ -12,7 +12,6 @@ const subjectSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Class',
-                required: true
             }
         ],
         teachers: [

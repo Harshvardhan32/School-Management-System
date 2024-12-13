@@ -131,28 +131,13 @@ exports.deleteEvent = async (req, res) => {
     }
 }
 
-exports.getAllEvent = async (req, res) => {
+exports.getAllEvents = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
-
-        let query = Event.find().populate('classes');
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Event.countDocuments();
+        let eventData = await Event.find().populate('classes');
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: eventData,
             message: 'Events fetched successfully!',
         });
     } catch (error) {
@@ -164,52 +149,3 @@ exports.getAllEvent = async (req, res) => {
         });
     }
 }
-
-
-
-exports.deleteLesson = async (req, res) => {
-    try {
-        const { _id } = req.body;
-
-        // Validate _id
-        if (!_id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Lesson ID is required!',
-            });
-        }
-
-        // Fetch the existing lesson
-        const existingLesson = await Lesson.findById(_id);
-
-        if (!existingLesson) {
-            return res.status(404).json({
-                success: false,
-                message: 'Lesson not found with the given ID!',
-            });
-        }
-
-        // Delete the lesson
-        const deletedLesson = await Lesson.findByIdAndDelete(_id);
-
-        // Remove lesson from Subject schema
-        await Subject.updateMany(
-            { lessons: _id },
-            {
-                $pull: { lessons: _id },
-            }
-        );
-
-        return res.status(200).json({
-            success: true,
-            data: deletedLesson,
-            message: 'Lesson deleted successfully!',
-        });
-    } catch (error) {
-        console.error('Error deleting lesson:', error.message);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal Server Error!',
-        });
-    }
-};

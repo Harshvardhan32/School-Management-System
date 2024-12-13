@@ -1,3 +1,4 @@
+import * as z from 'zod';
 import React, { useContext, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import Select from 'react-select';
@@ -10,14 +11,12 @@ import { getAllSubjects } from '../../services/operations/subjectAPI';
 import { getAllExams } from '../../services/operations/examAPI';
 import { ThemeContext } from '../../utils/ThemeContext';
 import customStyles from '../../utils/CustomStyles';
-import * as z from 'zod';
+import { createResult, updateResult } from '../../services/operations/resultAPI';
 
 const ResultForm = ({ type, data, setOpen }) => {
 
-    // Validation schema using Zod
     const schema = z.object({
         student: z.string().min(1, { message: 'Student is required!' }),
-        classId: z.string().min(1, { message: 'Class is required!' }),
         subjectResults: z.array(
             z.object({
                 subject: z.string().min(1, { message: 'Subject is required!' }),
@@ -49,134 +48,127 @@ const ResultForm = ({ type, data, setOpen }) => {
             })
         ).min(1, { message: 'At least one subject result is required!' }),
         overallPercentage: z
-            .string()
+            .string().min(1, { message: 'Overall percentage is required!' })
             .refine((val) => parseFloat(val) >= 0 && parseFloat(val) <= 100, {
                 message: 'Overall percentage must be between 0 and 100!',
             }),
         remarks: z.string().optional().default(''),
     });
 
-    // React Hook Form setup
-    const {
-        register,
-        control,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors },
-    } = useForm({
+    const { register, control, handleSubmit, setValue, reset, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
-        defaultValues: data || {
+        defaultValues: {
             student: '',
             classId: '',
-            subjectResults: [
-                {
-                    subject: '',
-                    examResults: [{ exam: '', score: '', maxScore: '', percentage: '', grade: '' }],
-                    subjectGrade: ''
-                },
-            ],
+            subjectResults: [],
             overallPercentage: '',
         },
     });
+
+    useEffect(() => {
+        if (type === 'update' && data) {
+            reset({
+                student: data.student?._id || '',
+                classId: data.classId?._id || '',
+                subjectResults: data.subjectResults?.map((result) => ({
+                    subject: result.subject?._id || '',
+                    examResults: result.examResults?.map((item) => ({
+                        exam: item.exam?._id || '',
+                        score: item.score || '',
+                        maxScore: item.maxScore || '',
+                        percentage: item.percentage || '',
+                        grade: item.grade || '',
+                    })) || [],
+                    subjectGrade: result.subjectGrade || '',
+                })) || [],
+                overallPercentage: data.overallPercentage || '',
+                remarks: data.remarks || '',
+            });
+        }
+    }, [type, data, reset]);
 
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
     const { darkMode } = useContext(ThemeContext);
 
-    // Fetch data on mount
     useEffect(() => {
-        dispatch(getAllStudents(token, undefined, undefined, true));
-        dispatch(getAllClasses(token, undefined, undefined, true));
-        dispatch(getAllSubjects(token, undefined, undefined, true));
-        dispatch(getAllExams(token, undefined, undefined, true));
+        dispatch(getAllStudents(token));
+        dispatch(getAllSubjects(token));
+        dispatch(getAllExams(token));
     }, [dispatch, token]);
 
     const { allStudents } = useSelector((state) => state?.student);
-    const { allClasses } = useSelector((state) => state?.class);
     const { allSubjects } = useSelector((state) => state?.subject);
     const { allExams } = useSelector((state) => state?.exam);
 
-    const { fields: subjectFields, append: appendSubject, remove: removeSubject } = useFieldArray({
+    const {
+        fields: subjectFields,
+        append: appendSubject,
+        remove: removeSubject,
+    } = useFieldArray({
         control,
-        name: 'subjectResults', // Ensure this matches the key in `defaultValues`
+        name: 'subjectResults',
     });
 
-    // Memoized options
-    const studentOptions = useMemo(() =>
-        allStudents?.map((item) => ({
-            value: item?._id,
-            label: `${item?.userId?.firstName || ''} ${item?.userId?.lastName || ''}`,
-        })),
-        [allStudents]
-    );
+    const removeExam = (subjectIndex, examIndex) => {
+        const examResults = getValues(`subjectResults[${subjectIndex}].examResults`);
+        examResults.splice(examIndex, 1);
+        setValue(`subjectResults[${subjectIndex}].examResults`, [...examResults]);
+    };
 
-    const classOptions = useMemo(() =>
-        allClasses?.map((item) => ({
-            value: item?._id,
-            label: item?.className
-        })),
-        [allClasses]
-    );
-
-    const subjectOptions = useMemo(() =>
-        allSubjects?.map((item) => ({
-            value: item?._id,
-            label: item?.subjectName
-        })),
-        [allSubjects]
-    );
-
-    const examOptions = useMemo(() =>
-        allExams?.map((item) => ({
-            value: item?._id,
-            label: item?.examName
-        })),
-        [allExams]
-    );
+    const handleAddExam = (subjectIndex) => {
+        const examArray = getValues(`subjectResults[${subjectIndex}].examResults`);
+        if (examArray?.length >= 5) {
+            toast.error('Maximum 5 exams per subject allowed!');
+            return;
+        }
+        setValue(`subjectResults[${subjectIndex}].examResults`, [
+            ...examArray,
+            { exam: '', score: '', maxScore: '', percentage: '', grade: '' },
+        ]);
+    };
 
     const onSubmit = (formData) => {
         let valid = true;
 
-        // Check for duplicate subjects
-        const subjectIds = formData.subjectResults.map((item) => item.subject);
-        const uniqueSubjectIds = new Set(subjectIds);
-        if (uniqueSubjectIds.size !== subjectIds.length) {
-            toast.error('Duplicate subjects are not allowed!');
-            valid = false;
-        }
-
-        // Validate percentages and score relationships
         formData.subjectResults.forEach((subjectResult, subjectIndex) => {
-            subjectResult.examResults.forEach((examResult, examIndex) => {
-                const calculatedPercentage = (examResult.score * 100) / examResult.maxScore;
-
-                if (parseFloat(calculatedPercentage.toFixed(2)) !== parseFloat(examResult.percentage)) {
-                    toast.error(
-                        `Subject ${subjectIndex + 1}, Exam ${examIndex + 1}: Percentage mismatch! Expected ${calculatedPercentage.toFixed(
-                            2
-                        )}, got ${examResult.percentage}`
-                    );
-                    valid = false;
-                }
-
-                if (parseFloat(examResult.score) > parseFloat(examResult.maxScore)) {
-                    toast.error(
-                        `Subject ${subjectIndex + 1}, Exam ${examIndex + 1}: Score (${examResult.score}) cannot exceed Max Score (${examResult.maxScore})!`
-                    );
-                    valid = false;
-                }
-            });
+            if (subjectResult.examResults.length === 0) {
+                toast.error(`Subject ${subjectIndex + 1} must have at least one exam!`);
+                valid = false;
+            }
         });
 
-        // Prevent submission if any validation failed
         if (!valid) return;
 
-        console.log('Result Submitted:', formData);
+        const selectedData = allStudents.filter((student) => student?._id === formData.student);
+
+        formData.classId = selectedData[0]?.classId._id;
         toast.success(`Result ${type === 'create' ? 'Created' : 'Updated'} Successfully!`);
 
-        if (setOpen) setOpen(false);
+        if (type === 'create') {
+            dispatch(createResult(formData, token, setOpen));
+        } else {
+            dispatch(updateResult(formData, token, setOpen));
+        }
     };
+
+    const studentOptions = useMemo(() =>
+        allStudents?.map((item) => ({
+            value: item?._id,
+            label: `${item?.userId?.firstName || ''} ${item?.userId?.lastName || ''} ${item.classId.className}`,
+        })), [allStudents]);
+
+    const subjectOptions = useMemo(() =>
+        allSubjects?.map((item) => ({
+            value: item?._id,
+            label: item?.subjectName,
+        })), [allSubjects]);
+
+    const examOptions = useMemo(() =>
+        allExams?.map((item) => ({
+            value: item?._id,
+            label: item?.examName,
+        })), [allExams]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
@@ -190,155 +182,14 @@ const ResultForm = ({ type, data, setOpen }) => {
                     <label className='text-sm text-gray-500'>Student</label>
                     <Select
                         options={studentOptions}
+                        value={studentOptions?.find((option) => option.value === watch('student')) || null}
                         onChange={(selected) => setValue('student', selected?.value)}
                         placeholder="Select Student"
                         styles={customStyles(darkMode)}
                     />
                     {errors?.student && <span className="text-xs text-red-700 py-2">{errors.student?.message}</span>}
                 </div>
-                <div className="min-w-[150px] flex flex-col gap-2 flex-1">
-                    <label className="text-sm text-gray-500">Class</label>
-                    <Select
-                        options={classOptions}
-                        onChange={(selected) => setValue('classId', selected?.value)}
-                        placeholder="Select Class"
-                        styles={customStyles(darkMode)}
-                    />
-                    {errors?.classId && <p className="text-xs text-red-700 py-2">{errors?.classId?.message}</p>}
-                </div>
-            </div>
 
-            {/* Subject Results */}
-            {subjectFields?.map((field, index) => (
-                <div key={field.id} className='flex flex-col gap-4'>
-                    <div className='min-w-[150px] flex flex-col gap-2 flex-1'>
-                        <div className="flex justify-between items-center text-sm">
-                            <h2 className='text-gray-500'>Subject {index + 1}</h2>
-                            <button type="button" onClick={() => removeSubject(index)} className="text-red-500">
-                                Remove
-                            </button>
-                        </div>
-
-                        <Select
-                            options={subjectOptions}
-                            onChange={(selected) => setValue(`subjectResults.${index}.subject`, selected?.value)}
-                            placeholder="Select Subject"
-                            styles={customStyles(darkMode)}
-                        />
-                        {errors?.subjectResults?.[index]?.subject && (
-                            <p className="text-xs text-red-700 py-2">{errors.subjectResults[index]?.subject?.message}</p>
-                        )}
-                    </div>
-
-                    {/* Exam Results for Subject */}
-                    {field?.examResults?.map((exam, examIndex) => (
-                        <div key={examIndex} className='flex flex-col gap-4'>
-                            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                                <div className="min-w-[150px] flex flex-col gap-2 flex-1">
-                                    <label className="text-sm text-gray-500">Exam</label>
-                                    <Select
-                                        options={examOptions}
-                                        value={examOptions.find((e) => e.value === exam.exam)}
-                                        onChange={(selected) =>
-                                            setValue(`subjectResults.${index}.examResults.${examIndex}.exam`, selected?.value)
-                                        }
-                                        placeholder="Select Exam"
-                                        styles={customStyles(darkMode)}
-                                        className="react-select-container"
-                                        classNamePrefix="react-select"
-                                    />
-                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.exam && (
-                                        <span className="text-xs text-red-700 py-2">
-                                            {errors.subjectResults[index]?.examResults[examIndex]?.exam?.message}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-col gap-2 flex-1">
-                                    <label className="text-sm text-gray-500">Score</label>
-                                    <input
-                                        type="number"
-                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
-                                        placeholder="Score"
-                                        {...register(`subjectResults.${index}.examResults.${examIndex}.score`)}
-                                        step={0.01}
-                                    />
-                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.score && (
-                                        <span className="text-xs text-red-700 py-2">{errors.subjectResults[index]?.examResults[examIndex]?.score?.message}</span>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-col gap-2 flex-1">
-                                    <label className="text-sm text-gray-500">Max Score</label>
-                                    <input
-                                        type="number"
-                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
-                                        placeholder="Max Score"
-                                        {...register(`subjectResults.${index}.examResults.${examIndex}.maxScore`)}
-                                        step={0.01}
-                                    />
-                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.maxScore && (
-                                        <span className="text-xs text-red-700 py-2">{errors.subjectResults[index]?.examResults[examIndex]?.maxScore?.message}</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap flex-1 justify-between gap-4">
-                                <div className="flex flex-col gap-2 flex-1">
-                                    <label className="text-sm text-gray-500">Percentage</label>
-                                    <input
-                                        type="number"
-                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
-                                        placeholder="Percentage"
-                                        {...register(`subjectResults.${index}.examResults.${examIndex}.percentage`)}
-                                        step={0.01}
-                                    />
-                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.percentage && (
-                                        <span className="text-xs text-red-700 py-2">{errors.subjectResults[index]?.examResults[examIndex]?.percentage?.message}</span>
-                                    )}
-                                </div>
-                                <div className="flex flex-col gap-2 flex-1">
-                                    <label className="text-sm text-gray-500">Grade</label>
-                                    <select
-                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                                        {...register(`subjectResults.${index}.examResults.${examIndex}.grade`)}
-                                    >
-                                        <option value="">Select Grade</option>
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                        <option value="D">D</option>
-                                        <option value="E">E</option>
-                                        <option value="F">F</option>
-                                    </select>
-                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.grade && (
-                                        <span className="text-xs text-red-700 py-2">{errors.subjectResults[index]?.examResults[examIndex]?.grade?.message}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-
-                    {/* Final Grade and Percentage */}
-                    <div className="flex flex-col gap-2 flex-1">
-                        <label className="text-sm text-gray-500">Subject Grade</label>
-                        <select
-                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
-                            {...register(`subjectResults.${index}.subjectGrade`)}
-                        >
-                            <option value="">Select Grade</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
-                            <option value="F">F</option>
-                        </select>
-                    </div>
-                </div>
-            ))}
-
-            <div className="flex flex-wrap flex-1 justify-between gap-4">
                 {/* Overall Percentage */}
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-sm text-gray-500">Overall Percentage</label>
@@ -348,6 +199,7 @@ const ResultForm = ({ type, data, setOpen }) => {
                         placeholder="Overall Percentage"
                         {...register('overallPercentage')}
                     />
+                    {errors?.overallPercentage && <span className="text-xs text-red-700 py-2">{errors.overallPercentage?.message}</span>}
                 </div>
 
                 {/* Remarks */}
@@ -362,22 +214,166 @@ const ResultForm = ({ type, data, setOpen }) => {
                 </div>
             </div>
 
-            {errors?.subjectResults && (
-                <p className="text-xs text-red-700">{errors.subjectResults?.message}</p>
-            )}
-
             {/* Add Subject Button */}
             <button
                 type="button"
-                onClick={() => appendSubject({ subject: '', examResults: [{ exam: '', score: '', maxScore: '', percentage: '', grade: '' }] })}
+                onClick={() => appendSubject({ subject: '', examResults: [], subjectGrade: '' })}
                 className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]"
             >
                 Add Subject
             </button>
 
+            {/* Subject Results */}
+            {subjectFields?.map((field, index) => (
+                <div key={field.id} className="flex flex-col gap-4">
+                    <div className="flex justify-between items-center text-sm">
+                        <h2 className="font-medium text-lg text-gray-950">Subject {index + 1}</h2>
+                        <button type="button" onClick={() => removeSubject(index)} className="text-xs text-red-600">Remove Subject</button>
+                    </div>
+
+                    <div className="flex flex-wrap flex-1 justify-between gap-4">
+                        <div className="min-w-[150px] flex flex-col gap-2 flex-1">
+                            <label className="text-sm text-gray-500">Subject</label>
+                            <Select
+                                options={subjectOptions}
+                                value={subjectOptions?.find((option) => option.value === watch(`subjectResults[${index}].subject`))}
+                                onChange={(selected) => setValue(`subjectResults[${index}].subject`, selected?.value)}
+                                placeholder="Select Subject"
+                                styles={customStyles(darkMode)}
+                            />
+                            {errors?.subjectResults && <span className="text-xs text-red-700 py-2">{errors?.subjectResults?.message}</span>}
+                        </div>
+
+                        <div className="min-w-[150px] flex flex-col gap-2 flex-1">
+                            <label className="text-sm text-gray-500">Subject Grade</label>
+                            {/* <Select
+                                options={['A', 'B', 'C', 'D', 'E', 'F'].map((grade) => ({
+                                    value: grade,
+                                    label: grade,
+                                }))}
+                                value={watch(`subjectResults[${index}].subjectGrade`)}
+                                onChange={(selected) => setValue(`subjectResults[${index}].subjectGrade`, selected?.value)}
+                                placeholder="Select Grade"
+                                styles={customStyles(darkMode)}
+                            /> */}
+                            <select
+                                value={watch(`subjectResults[${index}].subjectGrade`)}
+                                onChange={(selected) => setValue(`subjectResults[${index}].subjectGrade`, selected?.value)}
+                                className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                            >
+                                <option value="">Select Grade</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Add Exam Button */}
+                    <button type="button" onClick={() => handleAddExam(index)} className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]"
+                    >
+                        Add Exam
+                    </button>
+
+                    {/* Exam Results */}
+                    {watch(`subjectResults[${index}].examResults`)?.map((exam, examIndex) => (
+                        <div key={examIndex} className="flex flex-col gap-4">
+                            <div className="flex justify-between items-center text-sm">
+                                <h2 className="font-medium text-lg text-gray-950">Exam {examIndex + 1}</h2>
+                                <button
+                                    type="button"
+                                    onClick={() => removeExam(index, examIndex)}
+                                    className="text-xs text-red-600"
+                                >
+                                    Remove Exam
+                                </button>
+                            </div>
+
+                            <div className='flex flex-wrap flex-1 justify-between gap-4'>
+                                <div className="flex flex-col flex-1 gap-2">
+                                    <label className="text-sm text-gray-500">Exam</label>
+                                    <Select
+                                        options={examOptions}
+                                        value={examOptions?.find((option) => option.value === exam.exam)}
+                                        onChange={(selected) =>
+                                            setValue(`subjectResults[${index}].examResults[${examIndex}].exam`, selected?.value)
+                                        }
+                                        placeholder="Select Exam"
+                                        styles={customStyles(darkMode)}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col flex-1 gap-2">
+                                    <label className="text-sm text-gray-500">Score</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Score"
+                                        {...register(`subjectResults[${index}].examResults[${examIndex}].score`)}
+                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
+                                    />
+                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.score && (
+                                        <span className="text-xs text-red-700 py-2">{errors?.subjectResults?.[index]?.examResults?.[examIndex]?.score?.message}</span>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col flex-1 gap-2">
+                                    <label className="text-sm text-gray-500">Max Score</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Max Score"
+                                        {...register(`subjectResults[${index}].examResults[${examIndex}].maxScore`)}
+                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
+                                    />
+                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.maxScore && (
+                                        <span className="text-xs text-red-700 py-2">{errors?.subjectResults?.[index]?.examResults?.[examIndex]?.maxScore?.message}</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className='flex flex-wrap flex-1 justify-between gap-4'>
+                                <div className="flex flex-col flex-1 gap-2">
+                                    <label className="text-sm text-gray-500">Percentage</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Percentage"
+                                        {...register(`subjectResults[${index}].examResults[${examIndex}].percentage`)}
+                                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
+                                    />
+                                    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.percentage && (
+                                        <span className="text-xs text-red-700 py-2">{errors?.subjectResults?.[index]?.examResults?.[examIndex]?.percentage?.message}</span>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col flex-1 gap-2">
+                                    <label className="text-sm text-gray-500">Grade</label>
+                                    <Select
+                                        options={['A', 'B', 'C', 'D', 'E', 'F'].map((grade) => ({
+                                            value: grade,
+                                            label: grade,
+                                        }))}
+                                        value={exam?.grade}
+                                        onChange={(selected) =>
+                                            setValue(`subjectResults[${index}].examResults[${examIndex}].grade`, selected?.value)
+                                        }
+                                        placeholder="Select Grade"
+                                        styles={customStyles(darkMode)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ))}
+
             {/* Submit Button */}
-            <button className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]">
-                {type === 'create' ? 'Create' : 'Update'}
+            <button
+                type="submit"
+                className="bg-[#51DFC3] text-gray-800 font-semibold p-2 rounded-[6px]"
+            >
+                {type === 'create' ? 'Create Result' : 'Update Result'}
             </button>
         </form>
     );

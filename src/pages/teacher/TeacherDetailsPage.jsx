@@ -12,6 +12,7 @@ import { formatDate } from "../../services/formatDate";
 const TeacherDetailsPage = () => {
 
     const { token } = useSelector(state => state?.auth);
+    const { user } = useSelector(state => state?.profile);
     const dispatch = useDispatch();
     const { teacherDetails } = useSelector(state => state?.teacher);
     const location = useLocation();
@@ -43,9 +44,12 @@ const TeacherDetailsPage = () => {
                         <div className="w-2/3 flex flex-col justify-between gap-4">
                             <div className="flex gap-2 items-center justify-between">
                                 <h1 className="text-xl font-semibold">{teacherDetails?.userId.firstName} {teacherDetails?.userId.lastName}</h1>
-                                <FormModal table='teacher' type='update' Icon={FaRegEdit} data={teacherDetails} allData={teachersId} />
+                                {
+                                    (user?.userId.role === 'Admin' || user?._id === teacherDetails?._id) &&
+                                    <FormModal table='teacher' type='update' Icon={FaRegEdit} data={teacherDetails} allData={teachersId} />
+                                }
                             </div>
-                            {/* <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p> */}
+                            <p className="font-medium text-sm">{teacherDetails?.userId.remarks}</p>
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/blood.png" alt="" width={14} height={14} />

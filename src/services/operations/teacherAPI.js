@@ -2,7 +2,6 @@ import toast from "react-hot-toast";
 import {
     setLoading,
     setTeachers,
-    setPaginatedTeachers,
     setTeacherDetails
 } from "../../slices/teacherSlice";
 import { teacherEndPoints } from "../apis";
@@ -44,7 +43,7 @@ export const createTeacher = (data, token, setOpen) => {
     }
 }
 
-export const updateTeacher = (data, token, setOpen) => {
+export const updateTeacher = (data, token, setOpen = true) => {
     return async () => {
         const toastId = toast.loading('Loading...');
 
@@ -73,42 +72,43 @@ export const updateTeacher = (data, token, setOpen) => {
 }
 
 export const deleteTeacher = (data, token, setOpen) => {
-    return async () => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", DELETE_TEACHER_API, data);
+            const response = await apiConnector("DELETE", DELETE_TEACHER_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
 
-            console.log("CREATE TEACHER API RESPONSE............", response);
+            console.log("DELETE TEACHER API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success('Teacher Created Successfully!');
+            toast.success('Teacher Deleted Successfully!');
             setOpen(false);
         } catch (error) {
-            console.log("CREATE TEACHER API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.log("DELETE TEACHER API ERROR............", error.message);
+            toast.error(error?.message || 'Teacher Deletion Failed!');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(true));
         }
     }
 }
 
-export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => {
+export const getAllTeachers = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
-            // Construct the query parameters for either all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_TEACHERS_API}${queryParams}`;
-
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_TEACHERS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -118,18 +118,8 @@ export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => 
                 throw new Error(response?.data?.message || "Failed to fetch teachers.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setTeachers(response?.data?.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedTeachers({
-                    data: response?.data?.data,
-                    totalPages: response?.data?.totalPages,
-                    currentPage: response?.data?.currentPage,
-                }));
-            }
-
+            dispatch(setTeachers(response?.data?.data));
+            toast.dismiss(toastId);
             toast.success('Teachers loaded successfully!');
         } catch (error) {
             console.log("ALL TEACHERS API ERROR............", error.message);
@@ -143,7 +133,7 @@ export const getAllTeachers = (token, page = 1, limit = 10, allData = false) => 
 
 export const getTeacherDetails = (token, teacherId) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Start loading
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {

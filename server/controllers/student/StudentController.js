@@ -1,5 +1,7 @@
+const Attendance = require("../../models/Attendance");
 const Class = require("../../models/Class");
 const Parent = require("../../models/Parent");
+const Result = require("../../models/Result");
 const Student = require("../../models/Student");
 const User = require("../../models/User");
 const bcrypt = require('bcryptjs');
@@ -18,6 +20,7 @@ exports.createStudent = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
+            remarks,
             studentId,
             classId,
             fatherName,
@@ -32,14 +35,6 @@ exports.createStudent = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
-            });
-        }
-
-        // Validate role
-        if (role !== 'Student') {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role!',
             });
         }
 
@@ -81,6 +76,7 @@ exports.createStudent = async (req, res) => {
             bloodType,
             dateOfBirth,
             sex,
+            remarks,
             photo: image
         });
 
@@ -91,7 +87,7 @@ exports.createStudent = async (req, res) => {
             classId,
             fatherName,
             motherName,
-            parent,
+            parent: parent !== '' ? parent : null,
             subjects,
             rollNumber,
         });
@@ -175,7 +171,7 @@ exports.updateStudent = async (req, res) => {
                 classId,
                 fatherName,
                 motherName,
-                parent,
+                parent: parent !== '' ? parent : null,
                 subjects,
                 rollNumber,
             },
@@ -183,25 +179,21 @@ exports.updateStudent = async (req, res) => {
 
         // if existing Student classId is not similar to fetched classId
         if (existingStudent?.classId.toString() !== classId) {
-            // Add student to new class
             await Class.findByIdAndUpdate(classId,
                 { $push: { students: id } }
             );
 
-            // Remove student from old class
             await Class.findByIdAndUpdate(existingStudent.classId,
                 { $pull: { students: id } }
             )
         }
 
         // Handle parent changes
-        if (existingStudent.parent.toString() !== parent) {
-            // Add student to new parent
+        if (parent !== '' && existingStudent.parent && existingStudent.parent.toString() !== parent) {
             await Parent.findByIdAndUpdate(parent,
                 { $push: { students: id } }
             );
 
-            // Remove student from old parent
             if (existingStudent.parent) {
                 await Parent.findByIdAndUpdate(existingStudent.parent,
                     { $pull: { students: id } }
@@ -226,17 +218,52 @@ exports.updateStudent = async (req, res) => {
 }
 
 exports.deleteStudent = async (req, res) => {
+    try {
+        const { _id } = req.body;
 
+        if (!_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Student ID is required!"
+            })
+        }
+
+        // Check if the student exists
+        const existingStudent = await Student.findById(_id);
+
+        if (!existingStudent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student not found with the given ID!',
+            });
+        }
+
+        // Delete student profile
+        await User.findByIdAndDelete(existingStudent.userId);
+
+        // Delete the student
+        const deletedStudent = await Student.findByIdAndDelete(_id);
+
+        await Promise.all([
+            Attendance.findOneAndDelete({ student: _id }),
+            Parent.updateMany({ students: _id }, { $pull: { students: _id } }),
+            Result.findOneAndDelete({ student: _id }),
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: deletedStudent,
+            message: "Student Deleted Successfully!"
+        });
+    } catch (error) {
+
+    }
 }
 
 exports.getAllStudents = async (req, res) => {
-    try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
 
-        let query = Student.find()
+    try {
+        let studentData = await Student.find()
             .populate('userId')
             .populate('classId')
             .populate('parent')
@@ -245,19 +272,9 @@ exports.getAllStudents = async (req, res) => {
             .populate('exams')
             .populate('assignments');
 
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Student.countDocuments();
-
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: studentData,
             message: 'Students fetched successfully!',
         });
     } catch (error) {

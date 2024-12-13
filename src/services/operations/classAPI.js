@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { classEndPoints } from "../apis";
-import { setLoading, setPaginatedClasses, setAllClasses } from "../../slices/classSlice";
+import { setLoading, setAllClasses } from "../../slices/classSlice";
 import apiConnector from "../apiConnect";
 
 const {
@@ -108,17 +108,12 @@ export const deleteClass = (data, token, setOpen) => {
     }
 }
 
-export const getAllClasses = (token, page = 1, limit = 10, allData = false) => {
+export const getAllClasses = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading classes...');
         try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_CLASSES_API}${queryParams}`;
-
-            // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_CLASSES_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -128,18 +123,7 @@ export const getAllClasses = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Failed to fetch classes.");
             }
 
-            if (allData) {
-                // Dispatch all classes to the store
-                dispatch(setAllClasses(response.data.data));
-            } else {
-                // Dispatch paginated classes to the store
-                dispatch(setPaginatedClasses({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
-
+            dispatch(setAllClasses(response.data.data));
             toast.success('Classes loaded successfully!');
         } catch (error) {
             console.error("Error fetching classes:", error.message);

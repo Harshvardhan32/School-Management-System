@@ -21,10 +21,23 @@ exports.login = async (req, res) => {
         }
 
         // Find user with provided userId
-        const user = await Admin.findOne({ adminId: userId }).populate('userId')
-            || await Teacher.findOne({ teacherId: userId }).populate('userId')
-            || await Student.findOne({ studentId: userId }).populate('userId')
-            || await Parent.findOne({ parentId: userId }).populate('userId');
+        const user = await Admin.findOne({ adminId: userId })
+            .populate('userId')
+            || await Teacher.findOne({ teacherId: userId })
+                .populate('userId')
+                .populate('classes')
+            || await Student.findOne({ studentId: userId })
+                .populate('userId')
+                .populate('classId')
+            || await Parent.findOne({ parentId: userId })
+                .populate('userId')
+                .populate({
+                    path: "students",
+                    populate: [
+                        { path: "userId" },
+                        { path: "classId" }
+                    ]
+                });
 
         // If user not found with provided userId
         if (!user) {
@@ -304,7 +317,6 @@ exports.deleteAccount = async (req, res) => {
     }
 }
 
-// exports.signUp = async (req, res) => {
 //     const session = await mongoose.startSession(); // Start a session for transactions
 
 //     try {

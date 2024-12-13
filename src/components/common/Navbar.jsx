@@ -15,20 +15,20 @@ const Navbar = () => {
     const { announcements } = useSelector(state => state?.announcement);
 
     useEffect(() => {
-        dispatch(getAllAnnouncement(token, undefined, undefined, true));
+        dispatch(getAllAnnouncement(token));
     }, [])
 
     return (
         <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4">
             {/* Search Bar */}
-            <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
+            {/* <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
                 <img src="/search.png" alt="" className="w-[14px] h-[14px]" />
                 <input
                     type="text"
                     placeholder="Search..."
                     className="outline-none w-[200px] bg-transparent py-2 dark:text-gray-200"
                 />
-            </div>
+            </div> */}
             {/* Icons And User */}
             <div className="realtive w-full flex items-center justify-end gap-4 pr-4">
                 {

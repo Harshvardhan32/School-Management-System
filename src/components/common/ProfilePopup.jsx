@@ -9,7 +9,7 @@ const ProfilePopup = ({ setOpenProfile, photo, role }) => {
 
     return (
         <>
-            <div className="absolute top-[69px] right-7 max-w-[280px] w-11/12 flex flex-col rounded-[6px] border-[2px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 z-50">
+            <div className="absolute top-[69px] right-7 max-w-[280px] w-11/12 flex flex-col rounded-[6px] border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 z-50">
                 <Link to='/profile' onClick={() => setOpenProfile(false)} className="flex flex-row gap-4 items-center dark:text-gray-200 text-sm border-b-[1px] border-gray-300 h-[60px] p-4">
                     <div>
                         <img src={photo} alt="" className="w-[36px] h-[36px] rounded-full" />

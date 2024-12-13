@@ -42,7 +42,7 @@ const UploadProfilePicture = ({ data }) => {
                 }
             </div>
             <div className="flex flex-col gap-2">
-                <p className="text-base dark:text-gray-200">Change Profile Picture</p>
+                <p className="text-base font-medium dark:text-gray-200">Change Profile Picture</p>
                 <div className="flex flex-row gap-4">
                     <label htmlFor="photo" className="cursor-pointer bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px]">
                         Select

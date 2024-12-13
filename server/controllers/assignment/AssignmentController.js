@@ -129,7 +129,7 @@ exports.deleteAssignment = async (req, res) => {
             });
         }
 
-        // Fetch the assignment before deleting it to get the classId
+        // Fetch the assignment before deleting it
         const existingAssignment = await Assignment.findById(_id);
 
         if (!existingAssignment) {
@@ -164,29 +164,19 @@ exports.deleteAssignment = async (req, res) => {
 
 exports.getAllAssignments = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
-
-        let query = Assignment.find()
+        let assignmentData = await Assignment.find()
             .populate('subject')
             .populate('classId')
-            .populate('teacher');
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Assignment.countDocuments();
+            .populate({
+                path: 'teacher',
+                populate: {
+                    path: 'userId'
+                }
+            });
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: assignmentData,
             message: 'Assignments fetched successfully!',
         });
     } catch (error) {

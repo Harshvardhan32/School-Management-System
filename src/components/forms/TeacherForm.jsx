@@ -1,22 +1,20 @@
+import * as z from 'zod';
 import { useForm } from "react-hook-form";
 import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import MultiSelectComponent from "../MultiSelectComponent";
 import { createTeacher, updateTeacher } from "../../services/operations/teacherAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllSubjects } from "../../services/operations/subjectAPI";
-import * as z from 'zod';
+import MultiSelectComponent from "../MultiSelectComponent";
 
 const TeacherForm = ({ type, data, allData, setOpen }) => {
 
     // Memoized computation of allData based on the type
-    allData = useMemo(() => {
-        return type === 'update'
-            ? allData.filter((item) => item !== data?.teacherId) // Exclude current teacherId if updating
-            : allData;
-    }, [type]);
+    allData = type === 'update'
+        ? allData.filter((item) => item !== data?.teacherId) // Exclude current teacherId if updating
+        : allData;
 
     // Password Zod schema definition based on the operation type
     const passwordSchema = (type) =>
@@ -31,14 +29,18 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
             .max(20, { message: "Teacher ID must be at most 20 characters long!" })
             .regex(/^\S+$/, { message: "Teacher ID must not contain spaces!" })
             .refine(
-                (id) => !allData.includes(id), // Check for uniqueness in allData
+                (id) => !allData.includes(id),
                 { message: "Teacher ID already exists!" }
             ),
-        email: z.string().email({ message: 'Invalid email address!' }),
+        email: z.string().toLowerCase().email({ message: 'Invalid email address!' }),
         password: passwordSchema(type),
         firstName: z.string().min(1, { message: 'First name is required!' }),
         lastName: z.string().optional(),
-        phone: z.string().min(10, { message: 'Phone number must be 10 characters!' }).max(10, { message: 'Phone number must be 10 characters!' }).transform((val) => parseInt(val)),
+        phone: z.string()
+            .min(10, { message: 'Phone number must be 10 characters!' })
+            .max(10, { message: 'Phone number must be 10 characters!' })
+            .regex(/^\d+$/, { message: 'Phone number must contain only digits!' })
+            .transform((val) => parseInt(val) || 0),
         address: z.string().min(1, { message: 'Address is required!' }),
         bloodType: z.string().min(1, { message: 'Blood Type is required!' }),
         dateOfBirth: z.string().min(1, { message: 'Date of Birth is required!' }),
@@ -68,6 +70,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
 
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
+    const { role } = useSelector((state) => state?.profile?.user?.userId);
 
     // Fetch all classes and subjects on token change
     useEffect(() => {
@@ -121,12 +124,11 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
 
     // Submit handler for the form
     const onSubmit = handleSubmit(formData => {
-        // console.log(formData);
         if (type === 'create') {
-            // dispatch(createTeacher(formData, token, setOpen));
+            dispatch(createTeacher(formData, token, setOpen));
         } else {
             formData.id = data._id;
-            dispatch(updateTeacher(formData, token, setOpen));
+            // dispatch(updateTeacher(formData, token, setOpen));
         }
         console.log(formData);
     });
@@ -279,6 +281,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Classes</label>
                     <MultiSelectComponent
                         options={classOptions}
+                        isDisabled={role !== 'Admin'}
                         selectedValue={selectedClasses}
                         setSelectedValue={(value) =>
                             setValue(
@@ -292,6 +295,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
                     <label className="text-sm text-gray-500">Subjects</label>
                     <MultiSelectComponent
                         options={subjectOptions}
+                        isDisabled={role !== 'Admin'}
                         selectedValue={selectedSubjects}
                         setSelectedValue={(value) =>
                             setValue(

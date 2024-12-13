@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { assignmentEndPoints } from "../apis";
-import { setAssignments, setLoading, setPaginatedAssignments } from "../../slices/assignmentSlice";
+import { setAssignments, setLoading } from "../../slices/assignmentSlice";
 import apiConnector from "../apiConnect";
 
 const {
@@ -107,17 +107,14 @@ export const deleteAssignment = (data, token, setOpen) => {
     }
 }
 
-export const getAllAssignments = (token, page = 1, limit = 10, allData = false) => {
+export const getAllAssignments = (token) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
-        const toastId = toast.loading('Loading assignments...');
-        try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_ASSIGNMENTS_API}${queryParams}`;
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
 
+        try {
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_ASSIGNMENTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -127,17 +124,7 @@ export const getAllAssignments = (token, page = 1, limit = 10, allData = false) 
                 throw new Error(response?.data?.message || "Failed to fetch assignments.");
             }
 
-            if (allData) {
-                // Dispatch non-paginated data to the store
-                dispatch(setAssignments(response.data.data));
-            } else {
-                // Dispatch paginated data to the store
-                dispatch(setPaginatedAssignments({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setAssignments(response.data.data));
 
             toast.success('Assignments loaded successfully!');
         } catch (error) {
@@ -148,4 +135,4 @@ export const getAllAssignments = (token, page = 1, limit = 10, allData = false) 
             dispatch(setLoading(false)); // Set loading to false
         }
     };
-};
+}

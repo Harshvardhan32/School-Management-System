@@ -1,4 +1,11 @@
+const Assignment = require('../../models/Assignment');
+const Attendance = require('../../models/Attendance');
 const Class = require('../../models/Class');
+const Event = require('../../models/Event');
+const Exam = require('../../models/Exam');
+const Result = require('../../models/Result');
+const Student = require('../../models/Student');
+const Parent = require('../../models/Parent');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
 
@@ -58,7 +65,7 @@ exports.createClass = async (req, res) => {
             message: "Internal Server Error!"
         })
     }
-};
+}
 
 // Function to update class
 exports.updateClass = async (req, res) => {
@@ -110,15 +117,15 @@ exports.updateClass = async (req, res) => {
         // Update teacher relationships
         if (addedTeachers?.length > 0) {
             await Teacher.updateMany(
-                { _id: { $in: addedTeachers } }, // Match all teachers in the addedTeachers array
-                { $push: { classes: id } } // Add the class ID to the classes array for each matched teacher
+                { _id: { $in: addedTeachers } },
+                { $push: { classes: id } }
             );
         }
 
         if (removedTeachers?.length > 0) {
             await Teacher.updateMany(
-                { _id: { $in: removedTeachers } }, // Match all teachers in the removedTeachers array
-                { $pull: { classes: id } } // Remove the class ID from the classes array for each matched teacher
+                { _id: { $in: removedTeachers } },
+                { $pull: { classes: id } }
             );
         }
 
@@ -132,15 +139,15 @@ exports.updateClass = async (req, res) => {
         // Update subject relationships
         if (addedSubjects?.length > 0) {
             await Subject.updateMany(
-                { _id: { $in: addedSubjects } }, // Match all subjects in the addedSubjects array
-                { $push: { classes: id } } // Add the class ID to the classes array for each matched subject
+                { _id: { $in: addedSubjects } },
+                { $push: { classes: id } }
             );
         }
 
         if (removedSubjects?.length > 0) {
             await Subject.updateMany(
-                { _id: { $in: removedSubjects } }, // Match all subjects in the removedSubjects array
-                { $pull: { classes: id } } // Remove the class ID from the classes array for each matched subject
+                { _id: { $in: removedSubjects } },
+                { $pull: { classes: id } }
             );
         }
 
@@ -157,68 +164,72 @@ exports.updateClass = async (req, res) => {
             message: "Internal Server Error!"
         })
     }
-};
+}
 
-// Function to delete class
+// Function to delete a class
 exports.deleteClass = async (req, res) => {
     try {
-
         const { _id } = req.body;
 
         if (!_id) {
             return res.status(400).json({
                 success: false,
-                message: 'Class ID is required!'
-            })
+                message: 'Class ID is required!',
+            });
         }
 
-        // Fetch the existing lesson
+        // Check if the class exists
         const existingClass = await Class.findById(_id);
 
         if (!existingClass) {
             return res.status(404).json({
                 success: false,
-                message: 'Class not found with the given ID!'
-            })
+                message: 'Class not found with the given ID!',
+            });
         }
 
         // Delete the class
         const deletedClass = await Class.findByIdAndDelete(_id);
 
-        // Remove the class from the Assignment
-        // Remove the class from the Attendance
-        // Remove the class from the Event
-        // Remove the class from the Exam
-        // Remove the class from the Result
-        // Remove the class from the Student
-        // Remove the class from the Subject
-        // Remove the class from the Teacher
+        // Find and delete students associated with the class
+        const deletedStudentIds = await Student.find({ classId: _id }).distinct('_id');
+        await Student.deleteMany({ classId: _id });
 
+        // Remove references to the class from related schemas
+        await Promise.all([
+            Assignment.deleteMany({ classId: _id }),
+            Attendance.deleteMany({ classId: _id }),
+            Event.updateMany({ classes: _id }, { $pull: { classes: _id } }),
+            Exam.updateMany({ classes: _id }, { $pull: { classes: _id } }),
+            Result.deleteMany({ classId: _id }),
+            Parent.updateMany(
+                { students: { $in: deletedStudentIds } },
+                { $pull: { students: { $in: deletedStudentIds } } }
+            ),
+            Subject.updateMany({ classes: _id }, { $pull: { classes: _id } }),
+            Teacher.updateMany({ classes: _id }, { $pull: { classes: _id } }),
+        ]);
+
+        // Send the successfull response
         return res.status(200).json({
             success: true,
             data: deletedClass,
-            message: 'Class deleted successfully!'
-        })
-
+            message: 'Class Deleted Successfully!',
+        });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
-            message: "Internal Server Error!"
-        })
+            message: 'Internal Server Error!',
+        });
     }
 };
 
 // Function to get all class
 exports.getAllClasses = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
-
-        let query = Class.find()
+        const classData = await Class.find()
             .populate({
                 path: 'supervisor',
                 populate: {
@@ -233,19 +244,9 @@ exports.getAllClasses = async (req, res) => {
             })
             .populate('subjects');
 
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Class.countDocuments();
-
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: classData,
             message: 'Classes fetched successfully!',
         });
     } catch (error) {
@@ -256,4 +257,4 @@ exports.getAllClasses = async (req, res) => {
             message: "Internal Server Error!",
         });
     }
-};
+}

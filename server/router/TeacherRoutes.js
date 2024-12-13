@@ -6,7 +6,7 @@ const {
     createTeacher,
     updateTeacher,
     deleteTeacher
-} = require('../controllers/teacher/Teacher');
+} = require('../controllers/teacher/TeacherController');
 const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createTeacher);

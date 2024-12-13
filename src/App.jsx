@@ -1,7 +1,11 @@
+import { useContext, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { ThemeContext } from "./utils/ThemeContext";
+import { useDispatch, useSelector } from "react-redux";
+import { checkAuthExpiration } from "./services/operations/authAPI";
 import Dashboard from "./pages/Dashboard";
 import ErrorPage from "./pages/ErrorPage";
 import Login from "./pages/Login";
-import { Routes, Route } from "react-router-dom";
 import TeacherList from "./pages/teacher/TeacherList";
 import StudentList from "./pages/student/StudentList";
 import ParentList from "./pages/parent/ParentList";
@@ -19,16 +23,19 @@ import Profile from "./pages/profile/Profile";
 import Settings from "./pages/Settings";
 import MessageList from "./pages/messages/MessageList";
 import AttendanceList from "./pages/attendance/AttendanceList";
-import { useContext } from "react";
-import { ThemeContext } from "./utils/ThemeContext";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import { useSelector } from "react-redux";
 import HomeRoute from "./components/core/Auth/HomeRoute";
 import PrivateRoute from "./components/core/Auth/PrivateRoute";
 import OpenRoute from "./components/core/Auth/OpenRoute";
 
 function App() {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(checkAuthExpiration());
+    }, []);
 
     const { darkMode } = useContext(ThemeContext);
     const { token } = useSelector((state) => state?.auth);

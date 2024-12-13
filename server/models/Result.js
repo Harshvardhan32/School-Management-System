@@ -43,7 +43,7 @@ const resultSchema = new Schema(
                             type: String,
                             enum: ['A', 'B', 'C', 'D', 'E', 'F'],
                             required: true
-                        },
+                        }
                     }
                 ],
                 subjectGrade: {
@@ -54,7 +54,7 @@ const resultSchema = new Schema(
             }
         ],
         overallPercentage: {
-            type: Number,
+            type: String,
             required: true
         },
         remarks: {

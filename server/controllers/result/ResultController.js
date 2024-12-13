@@ -2,6 +2,89 @@ const mongoose = require('mongoose');
 const Result = require('../../models/Result');
 
 // Function to create result 
+// exports.createResult = async (req, res) => {
+//     try {
+//         const {
+//             student,
+//             classId,
+//             subjectResults,
+//             overallPercentage,
+//             remarks
+//         } = req.body;
+
+//         // Top-level validation
+//         if (!student || !classId || !subjectResults || !overallPercentage) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please fill all required details!"
+//             });
+//         }
+
+//         // Convert student and classId to ObjectId
+//         const studentId = new mongoose.Types.ObjectId(student);
+//         const classObjId = new mongoose.Types.ObjectId(classId);
+
+//         // Validate and process each item in subjectResults array
+//         const processedSubjectResults = subjectResults?.map(subjectResult => {
+//             const { subject, examResults, finalGrade } = subjectResult;
+
+//             let subjectObjId;
+//             try {
+//                 subjectObjId = new mongoose.Types.ObjectId(subject);
+//             } catch (error) {
+//                 throw new Error(`Invalid Subject ID: ${subject}`);
+//             }
+
+//             const processedExamResults = examResults?.map(examResult => {
+//                 const { exam, score, maxScore, percentage, grade } = examResult;
+
+//                 let examObjId;
+//                 try {
+//                     examObjId = new mongoose.Types.ObjectId(exam);
+//                 } catch (error) {
+//                     throw new Error(`Invalid Exam ID: ${exam}`);
+//                 }
+
+//                 return {
+//                     exam: examObjId,
+//                     score,
+//                     maxScore,
+//                     percentage,
+//                     grade
+//                 };
+//             });
+
+//             return {
+//                 subject: subjectObjId,
+//                 examResults: processedExamResults,
+//                 finalGrade
+//             };
+//         });
+
+//         // Create the result record
+//         const resultResponse = await Result.create({
+//             student: studentId,
+//             classId: classObjId,
+//             subjectResults: processedSubjectResults,
+//             overallPercentage,
+//             remarks
+//         });
+
+//         return res.status(200).json({
+//             success: true,
+//             data: resultResponse,
+//             message: "Result Created Successfully!"
+//         });
+//     } catch (error) {
+//         console.log(error.message);
+//         return res.status(500).json({
+//             success: false,
+//             errorMessage: error.message,
+//             message: "Internal Server Error!"
+//         });
+//     }
+// }
+
 exports.createResult = async (req, res) => {
     try {
         const {
@@ -26,7 +109,7 @@ exports.createResult = async (req, res) => {
 
         // Validate and process each item in subjectResults array
         const processedSubjectResults = subjectResults?.map(subjectResult => {
-            const { subject, examResults, finalGrade } = subjectResult;
+            const { subject, examResults, subjectGrade } = subjectResult;
 
             let subjectObjId;
             try {
@@ -57,7 +140,7 @@ exports.createResult = async (req, res) => {
             return {
                 subject: subjectObjId,
                 examResults: processedExamResults,
-                finalGrade
+                subjectGrade
             };
         });
 
@@ -73,7 +156,7 @@ exports.createResult = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: resultResponse,
-            message: "Result created successfully!"
+            message: "Result Created Successfully!"
         });
     } catch (error) {
         console.log(error.message);
@@ -84,6 +167,89 @@ exports.createResult = async (req, res) => {
         });
     }
 };
+
+// exports.createResult = async (req, res) => {
+//     try {
+//         const {
+//             student,
+//             classId,
+//             subjectResults,
+//             overallPercentage,
+//             remarks
+//         } = req.body;
+
+//         // Top-level validation
+//         if (!student || !classId || !subjectResults || !overallPercentage) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please fill all required details!"
+//             });
+//         }
+
+//         // Convert student and classId to ObjectId
+//         const studentId = mongoose.Types.ObjectId(student);
+//         const classObjId = mongoose.Types.ObjectId(classId);
+
+//         // Validate and process each item in subjectResults array
+//         const processedSubjectResults = subjectResults?.map(subjectResult => {
+//             const { subject, examResults, finalGrade } = subjectResult;
+
+//             let subjectObjId;
+//             try {
+//                 subjectObjId = mongoose.Types.ObjectId(subject);
+//             } catch (error) {
+//                 throw new Error(`Invalid Subject ID: ${subject}`);
+//             }
+
+//             const processedExamResults = examResults?.map(examResult => {
+//                 const { exam, score, maxScore, percentage, grade } = examResult;
+
+//                 let examObjId;
+//                 try {
+//                     examObjId = mongoose.Types.ObjectId(exam);
+//                 } catch (error) {
+//                     throw new Error(`Invalid Exam ID: ${exam}`);
+//                 }
+
+//                 return {
+//                     exam: examObjId,
+//                     score,
+//                     maxScore,
+//                     percentage,
+//                     grade
+//                 };
+//             });
+
+//             return {
+//                 subject: subjectObjId,
+//                 examResults: processedExamResults,
+//                 finalGrade
+//             };
+//         });
+
+//         // Create the result record
+//         const resultResponse = await Result.create({
+//             student: studentId,
+//             classId: classObjId,
+//             subjectResults: processedSubjectResults,
+//             overallPercentage,
+//             remarks
+//         });
+
+//         return res.status(200).json({
+//             success: true,
+//             data: resultResponse,
+//             message: "Result Created Successfully!"
+//         });
+//     } catch (error) {
+//         console.log(error.message);
+//         return res.status(500).json({
+//             success: false,
+//             errorMessage: error.message,
+//             message: "Internal Server Error!"
+//         });
+//     }
+// }
 
 // TODO: Function to update result
 exports.updateResult = async (req, res) => {
@@ -207,31 +373,21 @@ exports.getResult = async (req, res) => {
 // Function to get all result
 exports.getAllResult = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
 
-        let query = Result.find()
-        // Uncomment and use populate if related data needs to be fetched
-        // .populate('student')
-        // .populate('classId')
-        // .populate('subjectResults.subject')
-        // .populate('subjectResults.examResults.exam');
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Result.countDocuments();
+        const resultData = await Result.find()
+            .populate({
+                path: 'student',
+                populate: {
+                    path: 'userId'
+                }
+            })
+            .populate('classId')
+            .populate('subjectResults.subject')
+            .populate('subjectResults.examResults.exam');
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: resultData,
             message: "Results fetched successfully!",
         });
     } catch (error) {

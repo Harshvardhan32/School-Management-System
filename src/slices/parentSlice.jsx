@@ -2,10 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    paginatedParents: [],
-    allParents: [],
-    totalPages: 0,
-    currentPage: 1,
+    allParents: []
 };
 
 const parentSlice = createSlice({
@@ -16,15 +13,10 @@ const parentSlice = createSlice({
             state.loading = action.payload;
         },
         setParents(state, action) {
-            state.allParents = action.payload; // Non-paginated parents
-        },
-        setPaginatedParents(state, action) {
-            state.paginatedParents = action.payload.data; // Paginated parents
-            state.totalPages = action.payload.totalPages;
-            state.currentPage = action.payload.currentPage;
-        },
+            state.allParents = action.payload;
+        }
     },
 });
 
-export const { setLoading, setParents, setPaginatedParents } = parentSlice.actions;
+export const { setLoading, setParents } = parentSlice.actions;
 export default parentSlice.reducer;

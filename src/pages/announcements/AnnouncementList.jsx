@@ -1,68 +1,95 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import TableSearch from "../../components/common/TableSearch";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import FormModal from "../../components/FormModal";
-import { BiSortDown } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAnnouncement, getAllAnnouncement } from "../../services/operations/announcementAPI";
 import extractDateTime from "../../utils/extractDateTime";
 import { GrAdd } from "react-icons/gr";
+import { LuListFilter } from "react-icons/lu";
 
 const AnnouncementList = () => {
-
-    const { role } = useSelector(state => state?.profile?.user?.userId);
-
-    const column = [
-        {
-            header: 'Title',
-            accessor: 'title'
-        },
-        {
-            header: 'Date',
-            accessor: 'date',
-            className: 'hidden md:table-cell'
-        },
-        {
-            header: 'Actions',
-            accessor: 'action',
-            className: `${role !== 'Admin' && role !== 'Teacher' && 'hidden'}`
-        },
-    ]
-
-    const renderRow = (data) => {
-        
-        return (
-            <tr key={data?._id} className="border-b border-gray-200 dark:even:bg-gray-900 dark:hover:bg-slate-950 even:bg-slate-50 text-sm hover:bg-purple-50">
-                <td className="p-4 font-semibold dark:text-gray-200">{data?.title}</td>
-                <td className="hidden md:table-cell p-4 dark:text-gray-200">{extractDateTime(data?.date)}</td>
-                <td className="p-4 flex items-center gap-2">
-                    {(role === 'Admin' || role === 'Teacher') && (
-                        <>
-                            <FormModal table='announcement' type='update' Icon={FaRegEdit} data={data} />
-                            <FormModal table='announcement' type='delete' Icon={RiDeleteBin6Line} data={data} deleteFunction={deleteAnnouncement} />
-                        </>
-                    )}
-                </td>
-            </tr>
-        );
-    }
-
+    const { role } = useSelector((state) => state?.profile?.user?.userId);
     const [currentPage, setCurrentPage] = useState(1);
-    const { token } = useSelector(state => state?.auth);
+    const [startDate, setStartDate] = useState({ start: '', end: '' });
+    const [showFilter, setShowFilter] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const itemsPerPage = 10;
+
     const dispatch = useDispatch();
-    const { paginatedAnnouncements, totalPages } = useSelector(state => state?.announcement);
+    const { token } = useSelector((state) => state?.auth);
+    const { announcements } = useSelector((state) => state?.announcement);
 
     useEffect(() => {
-        dispatch(getAllAnnouncement(token, currentPage, 10, false));
-    }, [currentPage, token, dispatch]);
+        dispatch(getAllAnnouncement(token));
+    }, [token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    // Filter logic based on the selected date range and search quer
+    const filteredAnnouncements = announcements?.filter((announcement) => {
+        const announcementDate = new Date(announcement.date).toISOString().split("T")[0];
+
+        const isAfterDate = !startDate.start || new Date(announcementDate) >= new Date(startDate.start);
+        const isBeforeDate = !startDate.end || new Date(announcementDate) <= new Date(startDate.end);
+
+        const matchesSearchQuery = announcement.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
+
+        return isAfterDate && isBeforeDate && matchesSearchQuery;
+    })
+
+    const totalPages = Math.ceil(filteredAnnouncements?.length / itemsPerPage);
+    const paginatedData = filteredAnnouncements?.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const columns = [
+        {
+            Header: "Title",
+            accessor: "title",
+            className: 'font-medium',
+            isSortable: true,
+        },
+        {
+            Header: "Date",
+            accessor: "date",
+            className: "hidden md:table-cell",
+            isSortable: true,
+            Cell: ({ value }) => extractDateTime(value),
+        },
+        {
+            Header: "Actions",
+            accessor: "action",
+            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"}`,
+            isSortable: false,
+            Cell: ({ row }) => {
+                const data = row.original;
+                return (
+                    <div className="flex items-center gap-2">
+                        <FormModal
+                            table="announcement"
+                            type="update"
+                            Icon={FaRegEdit}
+                            data={data}
+                        />
+                        <FormModal
+                            table="announcement"
+                            type="delete"
+                            Icon={RiDeleteBin6Line}
+                            data={data}
+                            deleteFunction={deleteAnnouncement}
+                        />
+                    </div>
+                );
+            },
+        },
+    ];
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -70,36 +97,65 @@ const AnnouncementList = () => {
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Announcements</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch />
-                    <div className="flex items-center gap-4 self-end">
-                        <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <img src="/filter.png" alt=""
-                                className="w-[14px] h-[14px]"
-                            />
+                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Pass the search props */}
+                    <div className="flex items-center gap-4 self-end relative">
+                        <button
+                            onClick={() => setShowFilter(!showFilter)}
+                            className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full"
+                        >
+                            <LuListFilter fontSize={18} color="#4b5563" />
                         </button>
-                        <button className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full">
-                            <BiSortDown fontSize={18} />
-                        </button>
-                        {role === 'Admin' &&
-                            <FormModal table='announcement' type='create' Icon={GrAdd} />
-                        }
+                        {showFilter && (
+                            <div className="absolute top-10 right-0 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
+                                <label className="font-medium text-xs dark:text-gray-200">Start Date</label>
+                                <div className="flex gap-2 text-xs">
+                                    <input
+                                        type="date"
+                                        value={startDate.start}
+                                        className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
+                                        onChange={(e) => setStartDate({ ...startDate, start: e.target.value })}
+                                    />
+                                    <input
+                                        type="date"
+                                        value={startDate.end}
+                                        className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
+                                        onChange={(e) => setStartDate({ ...startDate, end: e.target.value })}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setStartDate({ start: '', end: '' });
+                                        setShowFilter(false)
+                                    }}
+                                    className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
+                                >
+                                    Clear Filter
+                                </button>
+                            </div>
+                        )}
+                        {(role === 'Admin' || role === 'Teacher') && (
+                            <FormModal table="announcement" type="create" Icon={GrAdd} />
+                        )}
                     </div>
                 </div>
             </div>
             {/* LIST */}
             <div>
-                <Table column={column} renderRow={renderRow} data={paginatedAnnouncements} />
+                <Table columns={columns} data={paginatedData} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                />
+                {
+                    paginatedData?.length > 0 &&
+                    <Pagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+                }
             </div>
         </div>
     );
-}
+};
 
 export default AnnouncementList;

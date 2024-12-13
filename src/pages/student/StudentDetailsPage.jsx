@@ -11,19 +11,21 @@ import { formatDate } from "../../services/formatDate";
 
 const StudentDetailsPage = () => {
 
-    const { token } = useSelector(state => state?.auth);
     const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
+    const { user } = useSelector(state => state?.profile);
     const { studentDetails } = useSelector(state => state?.student);
     const location = useLocation();
     const studentId = location?.pathname.split('/').at(-1);
 
     useEffect(() => {
         dispatch(getStudentDetails(token, studentId));
-        dispatch(getAllStudents(token, undefined, undefined, true));
+        dispatch(getAllStudents(token));
     }, [studentId, token, dispatch]);
 
     const { allStudents } = useSelector(state => state?.student);
-    const studentsId = allStudents?.map((student) => student?.studentId) || [];
+    const studentsId = allStudents?.map((student) => student?.studentId);
+    const rollNumber = allStudents?.map((student) => student?.rollNumber.toString());
 
     return (
         <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
@@ -43,9 +45,12 @@ const StudentDetailsPage = () => {
                         <div className="w-2/3 flex flex-col justify-between gap-4">
                             <div className="flex gap-2 items-center justify-between">
                                 <h1 className="text-xl font-semibold">{studentDetails?.userId.firstName} {studentDetails?.userId.lastName}</h1>
-                                <FormModal table='student' type='update' Icon={FaRegEdit} data={studentDetails} allData={studentsId} />
+                                {
+                                    (user?.userId.role === 'Admin' || user?.userId.role === 'Teacher' || user?._id === studentDetails?._id) &&
+                                    <FormModal table='student' type='update' Icon={FaRegEdit} data={studentDetails} allData={{ studentsId, rollNumber }} />
+                                }
                             </div>
-                            {/* <p className="text-sm text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, illum.</p> */}
+                            <p className="font-medium text-sm">{studentDetails?.userId.remarks}</p>
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                                     <img src="/blood.png" alt="" width={14} height={14} />

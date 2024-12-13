@@ -25,14 +25,12 @@ const examSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Class',
-                required: true
             }
         ],
         subjects: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Subject',
-                required: true
             }
         ],
     },

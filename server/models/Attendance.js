@@ -3,25 +3,23 @@ const { Schema } = mongoose;
 
 const attendanceSchema = new Schema(
     {
-        student: {
-            type: Schema.Types.ObjectId,
-            ref: 'Student',
-            required: true
-        },
-        classId: {
-            type: Schema.Types.ObjectId,
-            ref: 'Class',
-            required: true
-        },
         date: {
             type: Date,
             required: true
         },
-        status: {
-            type: String,
-            enum: ['Present', 'Absent', 'Excused'],
-            required: true
-        }
+        studentAttendance: [
+            {
+                student: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Student',
+                    required: true
+                },
+                status: {
+                    type: String,
+                    enum: ['Present', 'Absent'],
+                },
+            }
+        ]
     },
     { timestamps: true }
 );

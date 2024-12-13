@@ -5,7 +5,7 @@ const {
     updateParent,
     deleteParent,
     getAllParents
-} = require('../controllers/parent/Parent');
+} = require('../controllers/parent/ParentController');
 const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createParent);

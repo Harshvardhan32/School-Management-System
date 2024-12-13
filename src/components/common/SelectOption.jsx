@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form';
 import { ThemeContext } from '../../utils/ThemeContext';
 import customStyles from '../../utils/CustomStyles';
 
-const SelectOption = ({ name, control, options, placeholder, label, defaultValue }) => {
+const SelectOption = ({ name, control, options, isDisabled, placeholder, label, defaultValue }) => {
 
     const { darkMode } = useContext(ThemeContext);
     const styles = customStyles(darkMode);
@@ -28,6 +28,7 @@ const SelectOption = ({ name, control, options, placeholder, label, defaultValue
                         <Select
                             {...field}
                             options={mappedOptions}
+                            isDisabled={isDisabled}
                             placeholder={placeholder}
                             value={mappedOptions.find(option => option.value === field.value) || null}
                             onChange={(selectedOption) => field.onChange(selectedOption?.value)}

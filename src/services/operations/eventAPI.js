@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
 import { eventEndPoints } from '../apis';
 import apiConnector from '../apiConnect';
-import { setLoading, setPaginatedEvents, setAllEvents } from '../../slices/eventSlice';
+import { setLoading, setAllEvents } from '../../slices/eventSlice';
 
 const {
     CREATE_EVENT_API,
@@ -107,17 +107,14 @@ export const deleteEvent = (data, token, setOpen) => {
     }
 }
 
-export const getAllEvents = (token, page = 1, limit = 10, allData = false) => {
+export const getAllEvents = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true)); // Set loading to true
         const toastId = toast.loading('Loading...');
-        try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_EVENTS_API}${queryParams}`;
 
+        try {
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_EVENTS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -127,17 +124,7 @@ export const getAllEvents = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Failed to fetch subjects.");
             }
 
-            if (allData) {
-                // Dispatch all events to the store
-                dispatch(setAllSubjects(response?.data?.data));
-            } else {
-                // Dispatch paginated events to the store
-                dispatch(setPaginatedEvents({
-                    data: response?.data.data,
-                    totalPages: response?.data.totalPages,
-                    currentPage: response?.data.currentPage,
-                }));
-            }
+            dispatch(setAllEvents(response?.data?.data));
 
             toast.success('Events loaded successfully!');
         } catch (error) {

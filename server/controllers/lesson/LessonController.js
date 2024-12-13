@@ -125,26 +125,11 @@ exports.deleteLesson = async (req, res) => {
 
 exports.getAllLessons = async (req, res) => {
     try {
-        const allData = req.query.allData === 'true'; // Check if allData is requested
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
-        const skip = (page - 1) * limit;
-
-        let query = Lesson.find();
-
-        if (!allData) {
-            query = query.skip(skip).limit(limit); // Apply pagination if allData is false
-        }
-
-        const data = await query;
-        const total = allData ? data.length : await Lesson.countDocuments();
+        const lessonData = await Lesson.find();
 
         return res.status(200).json({
             success: true,
-            data,
-            total,
-            totalPages: allData ? 1 : Math.ceil(total / limit), // Only 1 page for allData
-            currentPage: allData ? 1 : page,
+            data: lessonData,
             message: 'Lessons fetched successfully!',
         });
     } catch (error) {

@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { lessonEndPoints } from "../apis";
-import { setLoading, setAllLessons, setPaginatedLessons } from "../../slices/lessonSlice";
+import { setLoading, setAllLessons } from "../../slices/lessonSlice";
 import apiConnector from "../apiConnect";
 
 const {
@@ -107,18 +107,14 @@ export const deleteLesson = (data, token, setOpen) => {
     }
 }
 
-export const getAllLessons = (token, page = 1, limit = 10, allData = false) => {
+export const getAllLessons = (token) => {
     return async (dispatch) => {
         const toastId = toast.loading('Loading...');
         dispatch(setLoading(true));
 
         try {
-            // Construct query parameters based on whether we need all data or paginated data
-            const queryParams = allData ? `?allData=true` : `?page=${page}&limit=${limit}`;
-            const url = `${ALL_LESSONS_API}${queryParams}`;
-
             // Make the API request
-            const response = await apiConnector("GET", url, null, {
+            const response = await apiConnector("GET", ALL_LESSONS_API, null, {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             });
@@ -128,17 +124,7 @@ export const getAllLessons = (token, page = 1, limit = 10, allData = false) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            if (allData) {
-                // Dispatch all lessons to the store (non-paginated data)
-                dispatch(setAllLessons(response.data.data));
-            } else {
-                // Dispatch paginated lessons to the store
-                dispatch(setPaginatedLessons({
-                    data: response.data.data,
-                    totalPages: response.data.totalPages,
-                    currentPage: response.data.currentPage,
-                }));
-            }
+            dispatch(setAllLessons(response.data.data));
 
             toast.success('Lessons loaded successfully!');
         } catch (error) {
