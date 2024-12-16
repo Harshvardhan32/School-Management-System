@@ -15,13 +15,13 @@ import AnnouncementForm from "./forms/AnnouncementForm";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
-const FormModal = ({ table, type, Icon, allData, data, deleteFunction }) => {
+const FormModal = ({ table, type, title, Icon, allData, data, deleteFunction }) => {
 
     const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
     const [open, setOpen] = useState(false);
 
-    const { token } = useSelector(state => state?.auth);
     const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
 
     const { handleSubmit } = useForm();
 
@@ -55,7 +55,8 @@ const FormModal = ({ table, type, Icon, allData, data, deleteFunction }) => {
     return (
         <div>
             <button
-                className={`${size} flex items-center justify-center rounded-full ${type === 'delete' ? 'bg-pink-200' : 'bg-emerald-100'}`}
+                title={title}
+                className={`${size} flex items-center justify-center rounded-full ${type === 'delete' ? 'bg-[#FF4B96]' : 'bg-[#51DFC3]'}`}
                 onClick={() => setOpen(true)}
             >
                 {Icon && <Icon fontSize={18} className='text-gray-600' />}

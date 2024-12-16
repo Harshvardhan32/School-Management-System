@@ -34,7 +34,7 @@ const StudentDetailsPage = () => {
                 {/* TOP */}
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* USER INFO CARD */}
-                    <div className="bg-lamaGreen py-6 px-4 rounded-[6px] flex-1 flex gap-4">
+                    <div className="bg-[#51DFC3] py-6 px-4 rounded-[6px] flex-1 flex gap-4">
                         <div className="w-1/3">
                             <img src={studentDetails?.userId.photo}
                                 alt=""

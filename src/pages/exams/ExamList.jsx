@@ -126,7 +126,7 @@ const ExamList = () => {
                     <div className="relative flex items-center gap-4 self-end">
                         <button
                             onClick={() => setShowFilter(!showFilter)}
-                            className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full"
+                            className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                         >
                             <LuListFilter fontSize={18} color='#4b5563' />
                         </button>

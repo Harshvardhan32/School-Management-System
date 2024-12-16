@@ -4,12 +4,12 @@ import Table from "../../components/common/Table";
 import customStyles from '../../utils/CustomStyles';
 import { useDispatch, useSelector } from "react-redux";
 import { ThemeContext } from "../../utils/ThemeContext";
-import { extractDateReverse } from '../../utils/extractDate';
 import TableSearch from "../../components/common/TableSearch";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { getAllClasses } from "../../services/operations/classAPI";
 import { getAllStudents } from "../../services/operations/studentAPI";
 import { createAttendance, getAllAttendance, updateAttendance } from "../../services/operations/attendanceAPI";
+import { extractDateReverse } from '../../utils/extractDate';
 
 const AttendanceList = () => {
 
@@ -19,6 +19,7 @@ const AttendanceList = () => {
     const { darkMode } = useContext(ThemeContext);
     const { token } = useSelector((state) => state?.auth);
 
+    // Load data on mount
     useEffect(() => {
         dispatch(getAllStudents(token));
         dispatch(getAllAttendance(token));
@@ -33,17 +34,15 @@ const AttendanceList = () => {
     const { allAttendance } = useSelector((state) => state?.attendance);
     const { allClasses } = useSelector((state) => state?.class);
 
-    // Filter attendance based on selected date and class
+    // Filter attendance by date
     const dateBasedAttendance = useMemo(() => {
-        if (selectedDate && selectedClass) {
+        if (selectedDate) {
             return allAttendance?.filter(
-                (attendance) =>
-                    extractDateReverse(attendance.date) === selectedDate &&
-                    String(attendance.classId) === String(selectedClass.value)
+                (attendance) => extractDateReverse(attendance.date) === selectedDate
             ) || [];
         }
         return [];
-    }, [allAttendance, selectedDate, selectedClass]);
+    }, [allAttendance, selectedDate]);
 
     // Prepare attendance data
     const attendanceData = useMemo(() => {
@@ -52,17 +51,19 @@ const AttendanceList = () => {
 
         if (selectedDate) {
             if (dateBasedAttendance.length > 0) {
-                allData = dateBasedAttendance[0]?.studentAttendance.map((attendance) => ({
-                    type: 'update',
-                    id: dateBasedAttendance[0]._id,
-                    studentId: attendance.student._id,
-                    studentName: `${attendance.student.userId.firstName} ${attendance.student.userId.lastName}`,
-                    rollNumber: attendance.student.rollNumber,
-                    classId: dateBasedAttendance[0].classId,
-                    className: dateBasedAttendance[0].classId.className,
-                    status: attendance.status,
-                    date: dateBasedAttendance[0].date,
-                }));
+                allData = dateBasedAttendance[0]?.studentAttendance
+                    ?.filter((attendance) => attendance.student.classId._id === selectedClass.value)
+                    .map((attendance) => ({
+                        type: 'update',
+                        id: dateBasedAttendance[0]._id,
+                        studentId: attendance.student._id,
+                        studentName: `${attendance.student.userId.firstName} ${attendance.student.userId.lastName}`,
+                        rollNumber: attendance.student.rollNumber,
+                        classId: attendance.student.classId._id,
+                        className: attendance.student.classId.className,
+                        status: attendance.status,
+                        date: dateBasedAttendance[0].date,
+                    }));
             }
         } else {
             allData = allStudents
@@ -125,6 +126,10 @@ const AttendanceList = () => {
         );
     }
 
+    // console.log("SELECTED DATE: ", selectedDate);
+    // console.log("SELECTED DATE22: ", new Date().toLocaleDateString('en-CA'));
+
+    // Memoized submit handler
     const submitHandler = () => {
         const unmarkedStudents = studentsData.filter((student) => student.status === '');
         if (unmarkedStudents.length > 0) {
@@ -134,7 +139,6 @@ const AttendanceList = () => {
 
         const data = {
             date: selectedDate || new Date().toLocaleDateString('en-CA'),
-            classId: selectedClass.value,
             studentAttendance: studentsData.map((studentData) => ({
                 student: studentData.studentId,
                 status: studentData.status,
@@ -142,13 +146,12 @@ const AttendanceList = () => {
         };
 
         if (studentsData[0]?.type === 'create') {
-            dispatch(createAttendance(data, token));
+            // dispatch(createAttendance(data, token));
         } else {
             data.id = studentsData[0].id;
             dispatch(updateAttendance(data, token));
         }
-        console.log("Data: ", data);
-        console.log("studentsData: ", studentsData);
+        console.log(data);
     }
 
     // Columns configuration
@@ -197,7 +200,7 @@ const AttendanceList = () => {
                 />
             ),
         }
-    ]
+    ];
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
@@ -250,6 +253,6 @@ const AttendanceList = () => {
             </div>
         </div>
     );
-}
+};
 
 export default AttendanceList;

@@ -51,12 +51,12 @@ const CountChart = ({ total, boys, girls, others }) => {
             {/* BOTTOM */}
             <div className="w-full flex justify-center gap-7">
                 <div className="flex flex-col gap-1">
-                    <div className="w-5 h-5 bg-lamaGreen rounded-full"></div>
+                    <div className="w-5 h-5 bg-[#51DFC3] rounded-full"></div>
                     <h1 className="font-bold dark:text-gray-200">{formatNumber(boys)}</h1>
                     <h2 className="text-xs text-gray-300">Boys ({Math.round(boys * 100 / total)}%)</h2>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <div className="w-5 h-5 bg-lamaPink rounded-full"></div>
+                    <div className="w-5 h-5 bg-[#FF5B76] rounded-full"></div>
                     <h1 className="font-bold dark:text-gray-200">{formatNumber(girls)}</h1>
                     <h2 className="text-xs text-gray-300">Girls ({Math.round(girls * 100 / total)}%)</h2>
                 </div>

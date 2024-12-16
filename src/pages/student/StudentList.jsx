@@ -1,14 +1,14 @@
+import { GrAdd } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { GrAdd } from "react-icons/gr";
 import { IoEyeOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteStudent, getAllStudents } from "../../services/operations/studentAPI";
-import Pagination from "../../components/common/Pagination";
 import Table from "../../components/common/Table";
-import TableSearch from "../../components/common/TableSearch";
 import FormModal from "../../components/FormModal";
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
 
 const StudentList = () => {
 
@@ -20,9 +20,9 @@ const StudentList = () => {
     const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { allStudents } = useSelector(state => state?.student);
+    const { role } = user?.userId;
     const studentsId = allStudents?.map((student) => student?.studentId);
     const rollNumber = allStudents?.map((student) => student?.rollNumber.toString());
-    const { role } = user?.userId;
 
     useEffect(() => {
         dispatch(getAllStudents(token));
@@ -120,8 +120,8 @@ const StudentList = () => {
                 return (
                     <div className="flex items-center gap-2">
                         <Link to={`/list/students/${data._id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-100">
-                                <IoEyeOutline fontSize={18} />
+                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#51DFC3]">
+                                <IoEyeOutline fontSize={18} className="text-gray-600" />
                             </button>
                         </Link>
                         {role === 'Admin' &&

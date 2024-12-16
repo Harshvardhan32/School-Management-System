@@ -1,27 +1,28 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { GrAdd } from "react-icons/gr";
 import { FaRegEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import TableSearch from "../../components/common/TableSearch";
-import Table from "../../components/common/Table";
-import Pagination from "../../components/common/Pagination";
-import FormModal from "../../components/FormModal";
 import { useEffect, useState } from "react";
+import { LuListFilter } from "react-icons/lu";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteResult, getAllResults } from "../../services/operations/resultAPI";
-import { GrAdd } from "react-icons/gr";
-import { LuListFilter } from "react-icons/lu";
+import Table from "../../components/common/Table";
+import FormModal from "../../components/FormModal";
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
 
 const ResultList = () => {
-    const { token } = useSelector((state) => state?.auth);
-    const { role } = useSelector((state) => state?.profile?.user?.userId);
+
     const [currentPage, setCurrentPage] = useState(1);
-    const [rollNumber, setRollNumber] = useState({ start: '', end: '' });
-    const [overallPercentage, setOverallPercentage] = useState({ start: '', end: '' });
-    const [showFilter, setShowFilter] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 10;
 
     const dispatch = useDispatch();
+    const { token } = useSelector((state) => state?.auth);
+    const { role } = useSelector((state) => state?.profile?.user?.userId);
     const { allResults } = useSelector((state) => state?.result);
+    const [rollNumber, setRollNumber] = useState({ start: '', end: '' });
+    const [overallPercentage, setOverallPercentage] = useState({ start: '', end: '' });
+    const [showFilter, setShowFilter] = useState(false);
 
     useEffect(() => {
         dispatch(getAllResults(token));
@@ -47,10 +48,25 @@ const ResultList = () => {
         const roll = result.student.rollNumber;
         const percent = result.overallPercentage;
 
-        return roll >= rollStart && roll <= rollEnd && percent >= percentStart && percent <= percentEnd;
+        const inputBasedFilter = roll >= rollStart && roll <= rollEnd && percent >= percentStart && percent <= percentEnd;
+
+        const matchedStudentSearch = (result?.student?.userId.firstName + ' ' + result?.student?.userId.lastName).toLowerCase().includes(searchQuery.toLowerCase().trim());
+
+        const matchedRollNumberSearch = (`${result?.student.rollNumber}`).includes(searchQuery.trim());
+
+        const matchedClassSearch = result?.classId.className.toLowerCase().includes(searchQuery.toLowerCase().trim());
+
+        const matchedPercentageSearch = result?.overallPercentage.includes(searchQuery.trim());
+
+        return (inputBasedFilter && (matchedStudentSearch || matchedRollNumberSearch || matchedClassSearch || matchedPercentageSearch));
     });
 
+    // Pagination logic
     const totalPages = Math.ceil(filteredResults?.length / itemsPerPage);
+    const paginatedResults = filteredResults?.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     const columns = [
         {
@@ -88,12 +104,14 @@ const ResultList = () => {
                         <FormModal
                             table="result"
                             type="update"
+                            title="Update Result"
                             Icon={FaRegEdit}
                             data={data}
                         />
                         <FormModal
                             table="result"
                             type="delete"
+                            title='Delete Result'
                             Icon={RiDeleteBin6Line}
                             data={data}
                             deleteFunction={deleteResult}
@@ -110,11 +128,12 @@ const ResultList = () => {
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Results</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch />
+                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     <div className="relative flex items-center gap-4 self-end">
                         <button
+                            title="Filter Results"
                             onClick={() => setShowFilter(!showFilter)}
-                            className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full"
+                            className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                         >
                             <LuListFilter fontSize={18} color="#4b5563" />
                         </button>
@@ -160,7 +179,7 @@ const ResultList = () => {
                                 </div>
                                 <button
                                     onClick={clearFilter}
-                                    className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
+                                    className="mt-2 px-4 py-2 bg-[#51DFC3] text-gray-800 font-semibold rounded-[6px]"
                                 >
                                     Clear Filter
                                 </button>
@@ -172,11 +191,18 @@ const ResultList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={filteredResults} />
+                <Table columns={columns} data={paginatedResults} />
             </div>
             {/* PAGINATION */}
             <div>
-                <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
+                {
+                    paginatedResults.length > 0 &&
+                    <Pagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+                }
             </div>
         </div>
     );

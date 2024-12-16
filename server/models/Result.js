@@ -28,15 +28,15 @@ const resultSchema = new Schema(
                             required: true
                         },
                         score: {
-                            type: Number,
+                            type: String,
                             required: true
                         },
                         maxScore: {
-                            type: Number,
+                            type: String,
                             required: true
                         },
                         percentage: {
-                            type: Number,
+                            type: String,
                             required: true
                         },
                         grade: {

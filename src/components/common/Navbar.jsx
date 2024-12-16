@@ -12,7 +12,7 @@ const Navbar = () => {
     const [openProfile, setOpenProfile] = useState(false);
     const { token } = useSelector((state) => state?.auth);
     const { user } = useSelector((state) => state?.profile);
-    const { announcements } = useSelector(state => state?.announcement);
+    const { allAnnouncements } = useSelector(state => state?.announcement);
 
     useEffect(() => {
         dispatch(getAllAnnouncement(token));
@@ -51,7 +51,7 @@ const Navbar = () => {
                 </div>
                 <div className="relative rounded-full text-gray-400 cursor-pointer w-7 h-7 flex items-center justify-center">
                     <img src="/announcement.png" alt="" className="w-[20px] h-[20px]" />
-                    <span className="absolute -top-3 -right-3 w-5 h-5 rounded-full text-xs flex justify-center items-center bg-lamaGreen text-gray-800">{announcements?.length}</span>
+                    <span className="absolute -top-3 -right-3 w-5 h-5 rounded-full text-xs flex justify-center items-center bg-[#51DFC3] text-gray-800">{allAnnouncements?.length}</span>
                 </div>
                 <div className="flex flex-col">
                     <span className="text-xs leading-3 font-medium dark:text-gray-200">{user?.userId.firstName} {user?.userId.lastName}</span>

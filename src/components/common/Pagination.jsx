@@ -39,9 +39,10 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
         <div className="py-4 flex items-center justify-between text-gray-500">
             {/* Previous Button */}
             <button
+                title="Prev"
                 onClick={handlePrevClick}
                 disabled={currentPage === 1}
-                className="py-2 px-4 mr-2 rounded-[6px] bg-lamaGreen text-gray-800 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="py-2 px-4 mr-2 rounded-[6px] bg-[#51DFC3] text-gray-800 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Prev
             </button>
@@ -57,7 +58,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
                         <button
                             key={`page-${page}`}
                             onClick={() => onPageChange(page)}
-                            className={`px-2 rounded-sm ${page === currentPage && "bg-lamaGreen text-gray-800"}`}
+                            className={`px-2 rounded-sm ${page === currentPage && "bg-[#51DFC3] text-gray-800"}`}
                         >
                             {page}
                         </button>
@@ -67,9 +68,10 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
             {/* Next Button */}
             <button
+                title="Next"
                 onClick={handleNextClick}
                 disabled={currentPage === totalPages}
-                className="py-2 px-4 ml-2 rounded-[6px] bg-lamaGreen text-gray-800 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="py-2 px-4 ml-2 rounded-[6px] bg-[#51DFC3] text-gray-800 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Next
             </button>

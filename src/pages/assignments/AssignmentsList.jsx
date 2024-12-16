@@ -7,7 +7,7 @@ import FormModal from "../../components/FormModal";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAssignment, getAllAssignments } from "../../services/operations/assignmentAPI";
-import extractDate from '../../utils/extractDate';
+import { extractDate } from '../../utils/extractDate';
 import { GrAdd } from "react-icons/gr";
 import { LuListFilter } from "react-icons/lu";
 
@@ -146,7 +146,7 @@ const AssignmentList = () => {
                     <div className="relative flex items-center gap-4 self-end">
                         <button
                             onClick={() => setShowFilter(!showFilter)}
-                            className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full"
+                            className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                         >
                             <LuListFilter fontSize={18} color="#4b5563" />
                         </button>

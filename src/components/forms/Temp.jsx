@@ -402,3 +402,20 @@ const ResultForm = ({ type, data, setOpen }) => {
 };
 
 export default ResultForm;
+
+
+{/* <div className="flex flex-col flex-1 gap-2">
+    <label className="text-sm text-gray-500">Percentage</label>
+    <input
+        type="text"
+        placeholder="Percentage"
+        {...register(`subjectResults[${index}].examResults[${examIndex}].percentage`)}
+        // value={type === 'create' && getValues(`subjectResults[${index}].examResults[${examIndex}].percentage`) !== '' && getValues(`subjectResults[${index}].examResults[${examIndex}].percentage`) !== ''}
+        // onChange={() => setValue}
+        value={() => handlePercentage(type, `subjectResults[${index}].examResults[${examIndex}].percentage`, `subjectResults[${index}].examResults[${examIndex}].percentage`)}
+        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm no-spin"
+    />
+    {errors?.subjectResults?.[index]?.examResults?.[examIndex]?.percentage && (
+        <span className="text-xs text-red-700 py-2">{errors?.subjectResults?.[index]?.examResults?.[examIndex]?.percentage?.message}</span>
+    )}
+</div> */}

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     loading: false,
-    announcements: [],
+    allAnnouncements: [],
 };
 
 const announcementSlice = createSlice({
@@ -13,7 +13,7 @@ const announcementSlice = createSlice({
             state.loading = action.payload;
         },
         setAnnouncements(state, action) {
-            state.announcements = action.payload;
+            state.allAnnouncements = action.payload;
         }
     },
 });

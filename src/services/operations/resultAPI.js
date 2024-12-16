@@ -74,7 +74,7 @@ export const updateResult = (data, token, setOpen) => {
     }
 }
 
-export const deleteResult = (token, data, setOpen) => {
+export const deleteResult = (data, token, setOpen) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
@@ -98,7 +98,7 @@ export const deleteResult = (token, data, setOpen) => {
             setOpen(false);
         } catch (error) {
             console.log("DELETE RESULT API ERROR............", error.message);
-            toast.error(error?.message || "Result Deletion Failed!");
+            toast.error("Result Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);

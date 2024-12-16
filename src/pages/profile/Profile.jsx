@@ -8,18 +8,20 @@ const Profile = () => {
     const { user } = useSelector(state => state?.profile);
     const { role } = user?.userId;
 
+    const userId = role === 'Admin' ? user.adminId : role === 'Teacher' ? user.teacherId : role === 'Student' ? user.studentId : user.parentId;
+
     return (
-        <div className="flex flex-col gap-2 mx-4 max-w-[1200px]">
+        <div className="flex flex-col gap-2 mx-4">
             <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium">Profile</p>
 
             <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row flex-wrap gap-4 items-center justify-between">
                 <div className="flex gap-4 items-center dark:text-gray-200">
-                    <div className="max-[600px]:hidden">
+                    <div>
                         <img src={user?.userId.photo} alt="" className="w-[66px] h-[66px] rounded-full" />
                     </div>
-                    <div>
-                        <p className="text-xl font-medium">{user?.userId.firstName} {user?.userId.lastName}</p>
-                        <p className="text-base">{user?.userId.email}</p>
+                    <div className="max-[400px]:hidden">
+                        <p className="text-xl font-medium text-wrap">{user?.userId.firstName} {user?.userId.lastName}</p>
+                        <p className="text-base text-wrap">{user?.userId.email}</p>
                     </div>
                 </div>
                 <Link to='/settings' className="flex gap-4 items-center bg-[#51DFC3] py-2 px-4 rounded-[6px]">
@@ -39,12 +41,12 @@ const Profile = () => {
                 <div className="flex flex-wrap flex-1 justify-between gap-4">
                     <div className="min-w-[150px] flex flex-col gap-2 flex-1 break-words">
                         <div>
-                            <p className='text-base dark:text-gray-200 font-medium'>First Name</p>
-                            <p className="text-base dark:text-gray-400">{user?.userId.firstName}</p>
+                            <p className='text-base dark:text-gray-200 font-medium'>User ID</p>
+                            <p className="text-base dark:text-gray-400">{userId}</p>
                         </div>
                         <div>
-                            <p className='text-base dark:text-gray-200 font-medium'>Last Name</p>
-                            <p className="text-base dark:text-gray-400">{user?.userId.lastName}</p>
+                            <p className='text-base dark:text-gray-200 font-medium'>Name</p>
+                            <p className="text-base dark:text-gray-400">{user?.userId.firstName} {user?.userId.lastName}</p>
                         </div>
                         <div>
                             <p className='text-base dark:text-gray-200 font-medium'>Email</p>
@@ -97,6 +99,45 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Teacher Classes and Subjects */}
+                {
+                    role === 'Teacher' &&
+                    <div className="flex flex-col justify-between gap-4">
+                        <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                            <p className='text-base dark:text-gray-200 font-medium'>Classes: </p>
+                            <p className="text-base dark:text-gray-400">{user?.classes?.map((item) => item.className).join(', ')}</p>
+                        </div>
+                        <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                            <p className='text-base dark:text-gray-200 font-medium'>Subjects: </p>
+                            <p className="text-base dark:text-gray-400">{user?.subjects?.map((item) => item.subjectName).join(', ')}</p>
+                        </div>
+                    </div>
+                }
+
+                {/* Student Class and Subjects */}
+                {
+                    role === 'Student' &&
+                    <div className="flex flex-col justify-between gap-4">
+                        <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                            <p className='text-base dark:text-gray-200 font-medium'>Class: </p>
+                            <p className="text-base dark:text-gray-400">{user?.classId?.className}</p>
+                        </div>
+                        <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                            <p className='text-base dark:text-gray-200 font-medium'>Subjects: </p>
+                            <p className="text-base dark:text-gray-400">{user?.subjects?.map((item) => item.subjectName).join(', ')}</p>
+                        </div>
+                    </div>
+                }
+
+                {/* Parent Students */}
+                {
+                    role === 'Parent' &&
+                    <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                        <p className='text-base dark:text-gray-200 font-medium'>Students: </p>
+                        <p className="text-base dark:text-gray-400">{user?.students.map((student) => student.userId.firstName + ' ' + student.userId.lastName).join(', ')}</p>
+                    </div>
+                }
             </div>
         </div>
     );

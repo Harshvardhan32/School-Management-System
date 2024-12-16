@@ -5,37 +5,43 @@ const Student = require('../../models/Student');
 exports.createAttendance = async (req, res) => {
     try {
 
-        const {
-            student,
-            classId,
-            date,
-            status
-        } = req.body;
+        const { date, classId, studentAttendance } = req.body;
 
-        if (!student || !classId || !date || !status) {
+        if (!date || !classId || !studentAttendance) {
             return res.status(400).json({
                 success: false,
                 message: 'Please fill all required details!'
             })
         }
 
+        // Check for existing attendance record
+        const existingAttendance = await Attendance.findOne({ date, classId });
+
+        if (existingAttendance) {
+            return res.status(400).json({
+                success: false,
+                message: 'Attendance record already exists for the selected date and class!',
+            });
+        }
+
         const attendanceResponse = await Attendance.create({
-            student,
-            classId,
             date,
-            status
+            classId,
+            studentAttendance
         });
 
-        await Student.findById(student,
-            { $push: { attendance: attendanceResponse?._id } }
-            , { new: true });
+        const studentIds = studentAttendance?.map((item) => item.student);
+
+        await Student.updateMany(
+            { _id: { $in: studentIds } },
+            { attendance: attendanceResponse?._id }
+        );
 
         return res.status(200).json({
             success: true,
             data: attendanceResponse,
-            message: 'Attendance created successfully!'
-        })
-
+            message: 'Attendance Created Successfully!'
+        });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -50,44 +56,47 @@ exports.createAttendance = async (req, res) => {
 exports.updateAttendance = async (req, res) => {
     try {
 
-        const {
-            attendanceId,
-            student,
-            classId,
-            date,
-            status
-        } = req.body;
+        const { id, date, classId, studentAttendance } = req.body;
 
-        if (!attendanceId) {
+        if (!id || !date || !classId || !studentAttendance) {
             return res.status(400).json({
                 success: false,
-                message: 'Attendance ID is required!'
+                message: 'Please fill all required details!'
             })
         }
 
-        const attendanceData = await Attendance.findById(attendanceId);
+        // Find the attendance record by ID
+        const existingAttendance = await Attendance.findById(id);
 
-        if (!attendanceData) {
+        if (!existingAttendance) {
             return res.status(404).json({
                 success: false,
-                message: 'Attendance not found with the given ID!'
-            })
+                message: "Attendance record not found!"
+            });
         }
 
-        const updatedResponse = await Attendance.findByIdAndUpdate(attendanceId, {
-            student,
-            classId,
-            date,
-            status
-        }, { new: true })
-            // .populate('student')
-            // .populate('classId')
-            ;
+        let hasChanges = false;
+
+        // Update status only if it has changed
+        existingAttendance.studentAttendance.forEach((existingRecord) => {
+            const updatedRecord = studentAttendance.find(
+                (newRecord) => String(newRecord.student) === String(existingRecord.student)
+            );
+            if (updatedRecord && updatedRecord.status !== existingRecord.status) {
+                existingRecord.status = updatedRecord.status; // Update the status
+                hasChanges = true;
+            }
+        });
+
+        if (hasChanges) {
+            // Save the updated attendance document
+            await existingAttendance.save();
+        }
 
         return res.status(200).json({
             success: true,
-            data: updatedResponse,
-            message: 'Attendance updated successfully!'
+            data: existingAttendance,
+            message: 'Attendance Updated Successfully!'
         });
     } catch (error) {
         console.log(error.message);
@@ -131,9 +140,14 @@ exports.deleteAttendance = async (req, res) => {
 // Function to get all attendance
 exports.getAllAttendance = async (req, res) => {
     try {
-        let attendanceData = await Attendance.find()
-            .populate('student')
-            .populate('classId');
+        const attendanceData = await Attendance.find()
+            .populate({
+                path: 'studentAttendance.student',
+                populate: [
+                    { path: 'userId' },
+                    { path: 'classId' }
+                ]
+            });
 
         return res.status(200).json({
             success: true,
@@ -148,4 +162,4 @@ exports.getAllAttendance = async (req, res) => {
             message: 'Internal Server Error!',
         });
     }
-};
+}

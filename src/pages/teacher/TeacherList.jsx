@@ -111,8 +111,8 @@ const TeacherList = () => {
                 return (
                     <div className="flex items-center gap-2">
                         <Link to={`/list/teachers/${data?._id}`}>
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-emerald-100">
-                                <IoEyeOutline fontSize={18} />
+                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#51DFC3]">
+                                <IoEyeOutline fontSize={18} className="text-gray-600" />
                             </button>
                         </Link>
                         {role === 'Admin' &&

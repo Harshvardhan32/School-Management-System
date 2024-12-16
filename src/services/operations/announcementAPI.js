@@ -1,7 +1,7 @@
 import toast from "react-hot-toast"
-import { setLoading, setAnnouncements } from "../../slices/announcementSlice";
 import apiConnector from "../apiConnect";
 import { announcementEndPoints } from "../apis";
+import { setLoading, setAnnouncements } from "../../slices/announcementSlice";
 
 const {
     CREATE_ANNOUNCEMENT_API,

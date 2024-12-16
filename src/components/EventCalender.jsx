@@ -31,7 +31,7 @@ const EventCalendar = () => {
             </div>
             <div className='flex flex-col gap-4'>
                 {allEvents?.slice(0, 3).map((event) => (
-                    <div className='p-5 rounded-[6px] border-2 border-gray-100 border-t-4 odd:border-t-emerald-400 even:border-t-pink-400' key={event._id}>
+                    <div className='p-5 rounded-[6px] border-2 border-gray-100 border-t-4 odd:border-t-[#51DFC3] even:border-t-[#FF5B76]' key={event._id}>
                         <div className='flex items-center justify-between'>
                             <h1 className='font-semibold text-gray-700 dark:text-gray-100'>{event.title}</h1>
                             <span className='text-gray-600 dark:text-gray-200 text-xs'>{new Date(event.startDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} {new Date(event.endDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>

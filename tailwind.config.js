@@ -11,15 +11,7 @@ export default {
             },
             fontFamily: {
                 poppins: ['Poppins', 'sans-serif'],
-            },
-            backgroundColor: {
-                lamaGreen: '#51DFC3',
-                lamaPink: '#FF5B76'
-            },
-            colors: {
-                lamaSky: '',
-                lamaPurple: '#your-lama-purple-color-hex',
-            },
+            }
         }
     },
     plugins: [],

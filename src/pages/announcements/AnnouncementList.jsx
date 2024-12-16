@@ -21,7 +21,7 @@ const AnnouncementList = () => {
 
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
-    const { announcements } = useSelector((state) => state?.announcement);
+    const { allAnnouncements } = useSelector((state) => state?.announcement);
 
     useEffect(() => {
         dispatch(getAllAnnouncement(token));
@@ -32,7 +32,7 @@ const AnnouncementList = () => {
     };
 
     // Filter logic based on the selected date range and search quer
-    const filteredAnnouncements = announcements?.filter((announcement) => {
+    const filteredAnnouncements = allAnnouncements?.filter((announcement) => {
         const announcementDate = new Date(announcement.date).toISOString().split("T")[0];
 
         const isAfterDate = !startDate.start || new Date(announcementDate) >= new Date(startDate.start);
@@ -101,7 +101,7 @@ const AnnouncementList = () => {
                     <div className="flex items-center gap-4 self-end relative">
                         <button
                             onClick={() => setShowFilter(!showFilter)}
-                            className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full"
+                            className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                         >
                             <LuListFilter fontSize={18} color="#4b5563" />
                         </button>

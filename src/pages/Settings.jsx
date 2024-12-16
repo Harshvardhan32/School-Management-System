@@ -1,15 +1,14 @@
 import * as z from 'zod';
-import toast from "react-hot-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import UploadProfilePicture from "../components/UploadProfilePicture";
 import UpdatePassword from "../components/UpdatePassword";
-import { useEffect } from 'react';
+import UploadProfilePicture from "../components/UploadProfilePicture";
+import { getAllParents, updateParent } from '../services/operations/parentAPI';
 import { getAllTeachers, updateTeacher } from '../services/operations/teacherAPI';
 import { getAllStudents, updateStudent } from '../services/operations/studentAPI';
-import { getAllParents, updateParent } from '../services/operations/parentAPI';
 
 const Settings = () => {
 
@@ -117,7 +116,7 @@ const Settings = () => {
     });
 
     return (
-        <div className="flex flex-col gap-2 mx-4 max-w-[1200px]">
+        <div className="flex flex-col gap-2 mx-4">
             <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium">Edit Profile</p>
 
             <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row gap-4 items-center justify-between">

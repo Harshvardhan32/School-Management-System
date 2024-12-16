@@ -60,6 +60,11 @@ const studentSchema = new Schema(
                 index: true
             }
         ],
+        result: {
+            type: Schema.Types.ObjectId,
+            ref: 'Result',
+            index: true
+        },
         assignments: [
             {
                 type: Schema.Types.ObjectId,
