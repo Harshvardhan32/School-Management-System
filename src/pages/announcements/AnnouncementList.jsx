@@ -92,67 +92,69 @@ const AnnouncementList = () => {
     ];
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
-            {/* TOP */}
-            <div className="flex items-center justify-between gap-4">
-                <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Announcements</h1>
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Pass the search props */}
-                    <div className="flex items-center gap-4 self-end relative">
-                        <button
-                            onClick={() => setShowFilter(!showFilter)}
-                            className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
-                        >
-                            <LuListFilter fontSize={18} color="#4b5563" />
-                        </button>
-                        {showFilter && (
-                            <div className="absolute top-10 right-0 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
-                                <label className="font-medium text-xs dark:text-gray-200">Start Date</label>
-                                <div className="flex gap-2 text-xs">
-                                    <input
-                                        type="date"
-                                        value={startDate.start}
-                                        className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
-                                        onChange={(e) => setStartDate({ ...startDate, start: e.target.value })}
-                                    />
-                                    <input
-                                        type="date"
-                                        value={startDate.end}
-                                        className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
-                                        onChange={(e) => setStartDate({ ...startDate, end: e.target.value })}
-                                    />
+        <div className="min-h-[50vh]">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                {/* TOP */}
+                <div className="flex items-center justify-between gap-4">
+                    <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Announcements</h1>
+                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
+                        <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Pass the search props */}
+                        <div className="flex items-center gap-4 self-end relative">
+                            <button
+                                onClick={() => setShowFilter(!showFilter)}
+                                className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
+                            >
+                                <LuListFilter fontSize={18} color="#4b5563" />
+                            </button>
+                            {showFilter && (
+                                <div className="absolute top-10 right-0 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
+                                    <label className="font-medium text-xs dark:text-gray-200">Date</label>
+                                    <div className="flex gap-2 text-xs">
+                                        <input
+                                            type="date"
+                                            value={startDate.start}
+                                            className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
+                                            onChange={(e) => setStartDate({ ...startDate, start: e.target.value })}
+                                        />
+                                        <input
+                                            type="date"
+                                            value={startDate.end}
+                                            className="p-2 dark:text-gray-200 dark:bg-slate-800 border-[1.5px] border-gray-300 rounded-[6px] focus:outline-none"
+                                            onChange={(e) => setStartDate({ ...startDate, end: e.target.value })}
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setStartDate({ start: '', end: '' });
+                                            setShowFilter(false)
+                                        }}
+                                        className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
+                                    >
+                                        Clear Filter
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        setStartDate({ start: '', end: '' });
-                                        setShowFilter(false)
-                                    }}
-                                    className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
-                                >
-                                    Clear Filter
-                                </button>
-                            </div>
-                        )}
-                        {(role === 'Admin' || role === 'Teacher') && (
-                            <FormModal table="announcement" type="create" Icon={GrAdd} />
-                        )}
+                            )}
+                            {(role === 'Admin' || role === 'Teacher') && (
+                                <FormModal table="announcement" type="create" Icon={GrAdd} />
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-            {/* LIST */}
-            <div>
-                <Table columns={columns} data={paginatedData} />
-            </div>
-            {/* PAGINATION */}
-            <div>
-                {
-                    paginatedData?.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
+                {/* LIST */}
+                <div>
+                    <Table columns={columns} data={paginatedData} />
+                </div>
+                {/* PAGINATION */}
+                <div>
+                    {
+                        paginatedData?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
             </div>
         </div>
     );

@@ -32,6 +32,7 @@ export const createExam = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Exam Created Successfully!');
+            dispatch(getAllExams(token));
             setOpen(false);
         } catch (error) {
             // console.log("CREATE EXAM API ERROR............", error.message);
@@ -64,6 +65,7 @@ export const updateExam = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Exam Updated Successfully!');
+            dispatch(getAllExams(token));
             setOpen(false);
         } catch (error) {
             // console.log("UPDATE EXAM API ERROR............", error.message);
@@ -96,6 +98,7 @@ export const deleteExam = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Exam Deleted Successfully!');
+            dispatch(getAllExams(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE EXAM API ERROR............", error.message);

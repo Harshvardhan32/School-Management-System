@@ -108,35 +108,6 @@ exports.updateAttendance = async (req, res) => {
     }
 }
 
-exports.deleteAttendance = async (req, res) => {
-    try {
-
-        const { attendanceId } = req.params;
-
-        if (!attendanceId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Attendance ID is required!'
-            })
-        }
-
-        const deletedResponse = await Attendance.findByIdAndDelete(attendanceId);
-
-        return res.status(200).json({
-            success: true,
-            data: deletedResponse,
-            message: 'Attendance deleted successfully!'
-        })
-
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal Server Error!'
-        })
-    }
-}
-
 // Function to get all attendance
 exports.getAllAttendance = async (req, res) => {
     try {

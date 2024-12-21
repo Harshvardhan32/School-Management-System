@@ -1,46 +1,57 @@
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useState } from "react";
+import styled from 'styled-components';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useContext, useState } from 'react';
+import { ThemeContext } from '../utils/ThemeContext';
 
 const localizer = momentLocalizer(moment);
 
-const BigCalendar = () => {
-    const [view, setView] = useState(Views.WORK_WEEK);
+// Styled component for Calendar
+const StyledCalendar = styled(Calendar)`
+  .rbc-timeslot-group {
+    background-color: ${(props) => props.darkMode ? '#1e293b' : '#F8F9FA'} !important;
+  },
+  .rbc-time-view {
+    border-color: ${(props) => props.darkMode ? '#374151 ' : '#eee'} !important;
+  }
+  .rbc-time-content > * + * > * {
+    border-color: ${(props) => props.darkMode ? '#374151 ' : '#eee'} !important;
+  }
+  .rbc-timeslot-group {
+    border-color: ${(props) => props.darkMode ? '#374151 ' : '#eee'} !important;
+  }
+  .rbc-day-slot .rbc-time-slot {
+    border-color: ${(props) => props.darkMode ? '374151' : '#eee'} !important;  
+  }
+`;
+
+const BigCalender = ({ events }) => {
+    const { darkMode } = useContext(ThemeContext);
+    const [view, setView] = useState(Views.WEEK);
 
     const handleOnChangeView = (selectedView) => {
         setView(selectedView);
     };
 
-    const calendarEvents = [
-        {
-            allDay: false,
-            endDate: new Date('December 10, 2017 11:13:00'),
-            startDate: new Date('December 09, 2017 11:13:00'),
-            title: 'hi',
-        },
-        {
-            allDay: true,
-            endDate: new Date('December 09, 2017 11:13:00'),
-            startDate: new Date('December 09, 2017 11:13:00'),
-            title: 'All Day Event',
-        },
-    ];
-
     return (
-        <Calendar
+        <StyledCalendar
             localizer={localizer}
-            events={calendarEvents}
+            events={events}
             startAccessor="start"
             endAccessor="end"
-            views={[Views.WORK_WEEK, Views.DAY]}
+            views={[Views.WEEK, Views.DAY]}
             view={view}
-            style={{ height: "98%" }}
             onView={handleOnChangeView}
-            min={new Date(2025, 1, 0, 8, 0, 0)}
-            max={new Date(2025, 1, 0, 17, 0, 0)}
+            style={{ height: '98%' }}
+            className="dark:text-gray-200 dark:bg-slate-900"
+            darkMode={darkMode}
+            min={moment().set({ hour: 8, minute: 0 }).toDate()}
+            max={moment().set({ hour: 17, minute: 0 }).toDate()}
+            step={30}
+            timeslots={2}
         />
     );
 };
 
-export default BigCalendar;
+export default BigCalender;

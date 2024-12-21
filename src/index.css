@@ -11,37 +11,38 @@
 body {
     overflow-x: hidden;
 }
-  
+
 /* WebKit-based browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
 }
-  
+
 ::-webkit-scrollbar-track {
     background-color: #f1f1f1;
     border-radius: 20px;
 }
-  
+
 ::-webkit-scrollbar-thumb {
     background-color: #888;
     border-radius: 20px;
     border: 3px solid #f1f1f1;
 }
-  
+
 ::-webkit-scrollbar-thumb:hover {
     background-color: #4e4e4e;
 }
-  
+
 ::-webkit-scrollbar-corner {
     background-color: #f1f1f1;
 }
-  
+
 /* Firefox */
-html, body {
+html,
+body {
     scrollbar-width: thin;
     scrollbar-color: #888 #f1f1f1;
-}  
+}
 
 /* Hide the number input spin buttons */
 .no-spin::-webkit-outer-spin-button,
@@ -139,7 +140,7 @@ input[type="checkbox"]:checked::after {
 
 .rbc-btn-group:last-child button {
     border: none !important;
-    background-color: #f1f0ff !important;
+    background-color: #51DFC3 !important;
     margin-left: 2px !important;
 }
 
@@ -148,8 +149,8 @@ input[type="checkbox"]:checked::after {
     box-shadow: none !important;
 }
 
-.rbc-time-view {
-    border-color: #eee !important;
+.rbc-day-slot .rbc-time-slot {
+    border: none !important;
 }
 
 .rbc-time-header {
@@ -168,56 +169,56 @@ input[type="checkbox"]:checked::after {
     padding: 0px 20px !important;
 }
 
-.rbc-timeslot-group {
-    background-color: #f7fdff !important;
-}
-
 .rbc-day-slot {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 .rbc-event {
     border: none !important;
     color: black !important;
-    padding: 10px !important;
-    margin: 10px !important;
+    padding: 8px !important;
+    margin: 5px !important;
     width: 99% !important;
 }
 
 .rbc-event:nth-child(1) {
-    background-color: #e2f8ff !important;
+    background-color: #7CE3D0 !important;
 }
 
 .rbc-event:nth-child(2) {
-    background-color: #fefce8 !important;
+    background-color: #FF7D94 !important;
 }
 
 .rbc-event:nth-child(3) {
-    background-color: #f2f1ff !important;
+    background-color: #51DFC3 !important;
 }
 
 .rbc-event:nth-child(4) {
-    background-color: #fdf2fb !important;
+    background-color: #FF5B76 !important;
 }
 
 .rbc-event:nth-child(5) {
-    background-color: #e2f8ff !important;
+    background-color: #4EC7A8 !important;
 }
 
 .rbc-event:nth-child(6) {
-    background-color: #fefce8 !important;
+    background-color: #FF3F58 !important;
 }
 
 .rbc-event:nth-child(7) {
-    background-color: #f2f1ff !important;
+    background-color: #43B794 !important;
 }
 
 .rbc-event:nth-child(8) {
-    background-color: #fdf2fb !important;
+    background-color: #FF1F40 !important;
 }
 
 .rbc-event-label {
-    color: gray !important;
+    color: #1f2937 !important;
+}
+
+.rbc-today {
+    background: none;
 }
 
 .rbc-calendar {

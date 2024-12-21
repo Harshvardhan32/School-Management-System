@@ -32,10 +32,11 @@ export const createLesson = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Lesson Created Successfully!');
+            dispatch(getAllLessons(token));
             setOpen(false);
         } catch (error) {
             // console.log("CREATE LESSON API ERROR............", error.message);
-            toast.error(error?.message || "Lesson Creation Failed!");
+            toast.error("Lesson Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -64,6 +65,7 @@ export const updateLesson = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Lesson Updated Successfully!');
+            dispatch(getAllLessons(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE LESSON API ERROR............", error.message);
@@ -96,6 +98,7 @@ export const deleteLesson = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Lesson Deleted Successfully!');
+            dispatch(getAllLessons(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE LESSON API ERROR............", error.message);
@@ -135,4 +138,4 @@ export const getAllLessons = (token) => {
             toast.dismiss(toastId);
         }
     };
-};
+}

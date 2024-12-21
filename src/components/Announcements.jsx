@@ -19,10 +19,10 @@ const Announcements = () => {
         <>
             {
                 allAnnouncements?.length > 0 &&
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px]">
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                     <div className="flex items-center justify-between">
                         <h1 className="text-xl font-semibold dark:text-gray-200">Announcement</h1>
-                        <Link to='/list/announcements' className="text-xs text-gray-400">View All</Link>
+                        <Link to='/list/announcements' className="text-sm text-gray-400">View All</Link>
                     </div>
                     <div className="flex flex-col gap-4 mt-4">
                         {

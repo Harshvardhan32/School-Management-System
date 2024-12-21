@@ -31,6 +31,7 @@ export const createEvent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Event Created Successfully!');
+            dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE EVENT API ERROR............", error.message);
@@ -64,6 +65,7 @@ export const updateEvent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Event Updated Successfully!');
+            dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE EVENT API ERROR............", error.message);
@@ -96,6 +98,7 @@ export const deleteEvent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Event Deleted Successfully!');
+            dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE EVENT API ERROR............", error.message);
@@ -135,4 +138,4 @@ export const getAllEvents = (token) => {
             dispatch(setLoading(false)); // Set loading to false
         }
     };
-};
+}

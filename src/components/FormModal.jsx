@@ -14,6 +14,8 @@ import EventForm from "./forms/EventForm";
 import AnnouncementForm from "./forms/AnnouncementForm";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import MessageForm from "./forms/MessageForm";
+import CalendarForm from "./forms/CalendarForm";
 
 const FormModal = ({ table, type, title, Icon, allData, data, deleteFunction }) => {
 
@@ -42,13 +44,15 @@ const FormModal = ({ table, type, title, Icon, allData, data, deleteFunction }) 
                     table === 'parent' ? <ParentForm type={type} data={data} allData={allData} setOpen={setOpen} /> :
                         table === 'subject' ? <SubjectForm type={type} data={data} setOpen={setOpen} /> :
                             table === 'class' ? <ClassForm type={type} data={data} allData={allData} setOpen={setOpen} /> :
-                                table === 'lesson' ? <LessonForm type={type} data={data} setOpen={setOpen} /> :
-                                    table === 'exam' ? <ExamForm type={type} data={data} setOpen={setOpen} /> :
-                                        table === 'assignment' ? <AssignmentForm type={type} data={data} setOpen={setOpen} /> :
-                                            table === 'result' ? <ResultForm type={type} data={data} setOpen={setOpen} /> :
-                                                table === 'attendance' ? <AttendanceForm type={type} data={data} setOpen={setOpen} /> :
-                                                    table === 'event' ? <EventForm type={type} data={data} setOpen={setOpen} /> :
-                                                        table === 'announcement' && <AnnouncementForm type={type} data={data} setOpen={setOpen} />
+                                table === 'calendar' ? <CalendarForm type={type} data={data} setOpen={setOpen} /> :
+                                    table === 'lesson' ? <LessonForm type={type} data={data} setOpen={setOpen} /> :
+                                        table === 'exam' ? <ExamForm type={type} data={data} setOpen={setOpen} /> :
+                                            table === 'assignment' ? <AssignmentForm type={type} data={data} setOpen={setOpen} /> :
+                                                table === 'result' ? <ResultForm type={type} data={data} setOpen={setOpen} /> :
+                                                    table === 'attendance' ? <AttendanceForm type={type} data={data} setOpen={setOpen} /> :
+                                                        table === 'event' ? <EventForm type={type} data={data} setOpen={setOpen} /> :
+                                                            table === 'message' ? <MessageForm type={type} data={data} setOpen={setOpen} /> :
+                                                                table === 'announcement' && <AnnouncementForm type={type} data={data} setOpen={setOpen} />
         );
     }
 
@@ -62,7 +66,7 @@ const FormModal = ({ table, type, title, Icon, allData, data, deleteFunction }) 
                 {Icon && <Icon fontSize={18} className='text-gray-600' />}
             </button>
             {open && (
-                <div className="fixed inset-0 z-[1000] !mt-0 grid place-items-center overflow-auto backdrop-blur-sm w-screen min-h-screen py-10 top-0 left-0 bg-black bg-opacity-60">
+                <div className="fixed inset-0 z-[1000] !mt-0 grid place-items-center overflow-auto w-screen min-h-screen py-10 top-0 left-0 bg-black bg-opacity-50">
                     <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
                         <Form />
                         <div className="absolute top-4 right-4 cursor-pointer" onClick={() => setOpen(false)}>

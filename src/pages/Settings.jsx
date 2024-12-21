@@ -117,13 +117,16 @@ const Settings = () => {
 
     return (
         <div className="flex flex-col gap-2 mx-4">
-            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium">Edit Profile</p>
+            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">Edit Profile</p>
 
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row gap-4 items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row gap-4 items-center justify-between shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                 <UploadProfilePicture data={user} />
             </div>
 
-            <form onSubmit={onSubmit} className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4">
+            <form
+                onSubmit={onSubmit}
+                className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out"
+            >
                 <p className="text-xl font-medium">Profile Information</p>
                 <div className="flex flex-wrap flex-1 justify-between gap-4">
                     <div className="flex flex-col gap-2 flex-1">

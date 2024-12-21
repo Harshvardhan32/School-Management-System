@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getAllStudents, getStudentDetails } from "../../services/operations/studentAPI";
 import { formatDate } from "../../services/formatDate";
+import EventCalendar from "../../components/EventCalender";
 
 const StudentDetailsPage = () => {
 
@@ -105,24 +106,24 @@ const StudentDetailsPage = () => {
                     </div>
                 </div>
                 {/* BOTTOM */}
-                <div className="mt-4 bg-white rounded-[6px] p-4 h-[800px]">
-                    <h1>Student&apos;s Schedule</h1>
+                <div className="mt-4 h-[1000px] bg-white rounded-[6px] p-4 dark:bg-slate-900">
+                    <h1 className="text-xl dark:text-gray-200 font-semibold">Student&apos;s Schedule</h1>
                     <BigCalendar />
                 </div>
             </div >
             {/* RIGHT */}
             <div className="w-full xl:w-1/3 flex flex-col gap-4">
-                <div className="bg-white p-4 rounded-[6px]">
-                    <h1 className="text-xl font-semibold">Shortcuts</h1>
+                <div className="bg-white p-4 rounded-[6px] dark:bg-slate-900">
+                    <h1 className="text-xl font-semibold dark:text-gray-200">Shortcuts</h1>
                     <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-700">
-                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/'}>Student&apos;s Lessons</Link>
-                        <Link className="p-3 rounded-[6px] bg-emerald-200" to={'/'}>Student&apos;s Teachers</Link>
-                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/'}>Student&apos;s Exams</Link>
-                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Student&apos;s Assignments</Link>
-                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/'}>Student&apos;s Results</Link>
+                        <Link className="p-3 rounded-[6px] bg-sky-200" to={'/attendance/data'}>Student&apos;s Attendance</Link>
+                        <Link className="p-3 rounded-[6px] bg-orange-200" to={'/list/exams'}>Student&apos;s Exams</Link>
+                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/list/assignments'}>Student&apos;s Assignments</Link>
+                        <Link className="p-3 rounded-[6px] bg-purple-200" to={'/list/results'}>Student&apos;s Results</Link>
                     </div>
                 </div>
-                <Performance />
+                {/* <Performance /> */}
+                <EventCalendar />
                 <Announcements />
             </div>
         </div>

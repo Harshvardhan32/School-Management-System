@@ -31,6 +31,7 @@ export const createAnnouncement = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Announcement Created Successfully!');
+            dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
@@ -63,6 +64,7 @@ export const updateAnnouncement = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Announcement Updated Successfully!');
+            dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE ANNOUNCEMENT API ERROR............", error.message);
@@ -95,6 +97,7 @@ export const deleteAnnouncement = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Announcement Deleted Successfully!');
+            dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE ANNOUNCEMENT API ERROR............", error.message);

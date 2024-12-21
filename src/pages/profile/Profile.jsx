@@ -12,9 +12,9 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col gap-2 mx-4">
-            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium">Profile</p>
+            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">Profile</p>
 
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row flex-wrap gap-4 items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row flex-wrap gap-4 items-center justify-between shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                 <div className="flex gap-4 items-center dark:text-gray-200">
                     <div>
                         <img src={user?.userId.photo} alt="" className="w-[66px] h-[66px] rounded-full" />
@@ -30,7 +30,7 @@ const Profile = () => {
                 </Link>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex flex-col gap-4">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex flex-col gap-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                 <div className="flex flex-row gap-4 items-center justify-between">
                     <p className="text-xl font-medium dark:text-gray-200">Personal Details</p>
                     <Link to='/settings' className="flex gap-4 items-center bg-[#51DFC3] py-2 px-4 rounded-[6px]">
@@ -133,10 +133,12 @@ const Profile = () => {
                 {/* Parent Students */}
                 {
                     role === 'Parent' &&
-                    <div className="min-w-[150px] flex gap-2 flex-1 break-words">
-                        <p className='text-base dark:text-gray-200 font-medium'>Students: </p>
-                        <p className="text-base dark:text-gray-400">{user?.students.map((student) => student.userId.firstName + ' ' + student.userId.lastName).join(', ')}</p>
-                    </div>
+                    <>
+                        <div className="min-w-[150px] flex gap-2 flex-1 break-words">
+                            <p className='text-base dark:text-gray-200 font-medium'>Students: </p>
+                            <p className="text-base dark:text-gray-400">{user?.students.map((student) => student.userId.firstName + ' ' + student.userId.lastName + ' ' + student.classId.className).join(', ')}</p>
+                        </div>
+                    </>
                 }
             </div>
         </div>

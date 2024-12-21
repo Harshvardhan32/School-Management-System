@@ -79,7 +79,7 @@ const AttendanceList = () => {
                 }));
         }
 
-        return allData.sort((a, b) => a.rollNumber - b.rollNumber);
+        return allData?.sort((a, b) => a.rollNumber - b.rollNumber);
     }, [selectedClass, selectedDate, dateBasedAttendance, allStudents]);
 
     // Filtered data based on search query
@@ -106,8 +106,7 @@ const AttendanceList = () => {
         if (role !== 'Admin') {
             allClass = user?.classes;
         }
-        return allClass
-            .sort((a, b) => (a.className < b.className ? -1 : 1))
+        return allClass?.sort((a, b) => (a.className < b.className ? -1 : 1))
             .map((classItem) => ({
                 label: classItem?.className,
                 value: classItem?._id,
@@ -200,7 +199,7 @@ const AttendanceList = () => {
     ]
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Attendance</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">

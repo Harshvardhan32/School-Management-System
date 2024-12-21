@@ -29,6 +29,7 @@ export const createParent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Parent Created Successfully!');
+            dispatch(getAllParents(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE PARENT API ERROR............", error.message);
@@ -59,6 +60,7 @@ export const updateParent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Parent Updated Successfully!');
+            dispatch(getAllParents(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE PARENT API ERROR............", error.message);
@@ -89,6 +91,7 @@ export const deleteParent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Parent Deleted Successfully!');
+            dispatch(getAllParents(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE PARENT API ERROR............", error.message);
@@ -128,4 +131,4 @@ export const getAllParents = (token) => {
             dispatch(setLoading(false));
         }
     };
-};
+}

@@ -29,7 +29,7 @@ const Menu = () => {
                                                     key={item.label}
                                                     title={item.label}
                                                     onClick={item.label === 'Logout' ? () => setLogoutModal(true) : undefined}
-                                                    className={`flex flex-row items-center justify-center lg:justify-start gap-4 text-gray-500 dark:text-gray-200 py-2 md:px-2 rounded-[6px] hover:bg-[#51DFC3] dark:hover:bg-gray-700 ${path === item.href.split('/').at(-1) && 'bg-[#51DFC3] dark:bg-gray-700'}`}
+                                                    className={`flex flex-row items-center justify-center lg:justify-start gap-4 my-[1px] text-gray-500 dark:text-gray-200 py-2 md:px-2 rounded-[6px] hover:bg-[#51DFC3] dark:hover:bg-gray-700 ${path === item.href.split('/').at(-1) && 'bg-[#51DFC3] dark:bg-gray-700'}`}
                                                 >
                                                     <img src={item.icon} alt="" className="w-[20px] h-[20px]" />
                                                     <span className='hidden lg:block'>{item.label}</span>

@@ -119,7 +119,7 @@ const StudentList = () => {
                 const data = row.original;
                 return (
                     <div className="flex items-center gap-2">
-                        <Link to={`/list/students/${data._id}`}>
+                        <Link to={`/list/student/${data._id}`}>
                             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#51DFC3]">
                                 <IoEyeOutline fontSize={18} className="text-gray-600" />
                             </button>
@@ -140,7 +140,7 @@ const StudentList = () => {
     ];
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
             {/* TOP */}
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Students</h1>

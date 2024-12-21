@@ -31,6 +31,7 @@ export const createSubject = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Subject Created Successfully!');
+            dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE SUBJECT API ERROR............", error.message);
@@ -63,6 +64,7 @@ export const updateSubject = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Subject Updated Successfully!');
+            dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE SUBJECT API ERROR............", error.message);
@@ -95,6 +97,7 @@ export const deleteSubject = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Subject Deleted Successfully!');
+            dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE SUBJECT API ERROR............", error.message);

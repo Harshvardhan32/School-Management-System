@@ -29,6 +29,7 @@ export const createStudent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Student Created Successfully!');
+            dispatch(getAllStudents(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE STUDENT API ERROR............", error.message);
@@ -57,6 +58,7 @@ export const updateStudent = (data, token, setOpen = true) => {
 
             toast.dismiss(toastId);
             toast.success('Student Updated Successfully!');
+            dispatch(getAllStudents(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE STUDENT API ERROR............", error.message);
@@ -86,6 +88,7 @@ export const deleteStudent = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Student Deleted Successfully!');
+            dispatch(getAllStudents(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE STUDENT API ERROR............", error.message);
@@ -128,7 +131,7 @@ export const getAllStudents = (token) => {
             dispatch(setLoading(false));
         }
     };
-};
+}
 
 export const getStudentDetails = (token, studentId) => {
     return async (dispatch) => {
@@ -158,4 +161,4 @@ export const getStudentDetails = (token, studentId) => {
             dispatch(setLoading(false));
         }
     };
-};
+}

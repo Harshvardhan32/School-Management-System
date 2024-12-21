@@ -20,11 +20,13 @@ const AttendanceRoutes = require('./router/AttendanceRoutes');
 const AuthRoutes = require('./router/AuthRoutes');
 const ClassRoutes = require('./router/ClassRoutes');
 const EventRoutes = require('./router/EventRoutes');
+const MessageRoutes = require('./router/MessageRoutes');
 const ExamRoutes = require('./router/ExamRoutes');
 const LessonRoutes = require('./router/LessonRoutes');
 const ResultRoutes = require('./router/ResultRoutes');
 const SubjectRoutes = require('./router/SubjectRoutes');
 const UserRoutes = require('./router/UserRoutes');
+const CalendarRoutes = require('./router/CalendarRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -57,11 +59,13 @@ app.use('/api/v1/attendance', AttendanceRoutes);
 app.use('/api/v1/auth', AuthRoutes);
 app.use('/api/v1/class', ClassRoutes);
 app.use('/api/v1/event', EventRoutes);
+app.use('/api/v1/message', MessageRoutes);
 app.use('/api/v1/exam', ExamRoutes);
 app.use('/api/v1/lesson', LessonRoutes);
 app.use('/api/v1/result', ResultRoutes);
 app.use('/api/v1/subject', SubjectRoutes);
 app.use('/api/v1/user', UserRoutes);
+app.use('/api/v1/calendar', CalendarRoutes);
 
 // Homepage Route
 app.get('/', (req, res) => {
@@ -79,7 +83,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(`Server started successfully at port ${PORT}`);
 });
 

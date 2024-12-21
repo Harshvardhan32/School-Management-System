@@ -33,6 +33,7 @@ export const createTeacher = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Teacher Created Successfully!');
+            dispatch(getAllTeachers(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE TEACHER API ERROR............", error.message);
@@ -61,6 +62,7 @@ export const updateTeacher = (data, token, setOpen = true) => {
 
             toast.dismiss(toastId);
             toast.success('Teacher Updated Successfully!');
+            dispatch(getAllTeachers(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE TEACHER API ERROR............", error.message);
@@ -90,6 +92,7 @@ export const deleteTeacher = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Teacher Deleted Successfully!');
+            dispatch(getAllTeachers(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE TEACHER API ERROR............", error.message);

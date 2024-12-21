@@ -107,7 +107,7 @@ const SubjectList = () => {
     ]
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
             {/* TOP */}
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Subjects</h1>

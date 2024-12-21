@@ -20,7 +20,7 @@ const TeacherDetailsPage = () => {
 
     useEffect(() => {
         dispatch(getTeacherDetails(token, teacherId));
-        dispatch(getAllTeachers(token, undefined, undefined, true));
+        dispatch(getAllTeachers(token));
     }, [teacherId, token, dispatch]);
 
     const { allTeachers } = useSelector(state => state?.teacher);

@@ -28,6 +28,9 @@ import ResetPassword from "./pages/ResetPassword";
 import HomeRoute from "./components/core/Auth/HomeRoute";
 import PrivateRoute from "./components/core/Auth/PrivateRoute";
 import OpenRoute from "./components/core/Auth/OpenRoute";
+import ResultDetails from "./pages/results/ResultDetails";
+import CalendarList from "./pages/calendar/CalendarList";
+import AttendanceData from "./pages/attendance/AttendanceData";
 
 function App() {
 
@@ -55,17 +58,20 @@ function App() {
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/settings' element={<Settings />} />
                     <Route path='/list/teachers' element={<TeacherList />} />
-                    <Route path='/list/teachers/:id' element={<TeacherDetailsPage />} />
+                    <Route path='/list/teacher/:id' element={<TeacherDetailsPage />} />
                     <Route path='/list/students' element={<StudentList />} />
-                    <Route path='/list/students/:id' element={<StudentDetailsPage />} />
+                    <Route path='/list/student/:id' element={<StudentDetailsPage />} />
                     <Route path='/list/parents' element={<ParentList />} />
                     <Route path='/list/subjects' element={<SubjectList />} />
                     <Route path='/list/classes' element={<ClassList />} />
+                    <Route path='/list/calendar' element={<CalendarList />} />
                     <Route path='/list/lessons' element={<LessonList />} />
                     <Route path='/list/exams' element={<ExamList />} />
                     <Route path='/list/assignments' element={<AssignmentList />} />
                     <Route path='/list/results' element={<ResultList />} />
+                    <Route path='/list/result/:id' element={<ResultDetails />} />
                     <Route path='/list/attendance' element={<AttendanceList />} />
+                    <Route path='/attendance/data' element={<AttendanceData />} />
                     <Route path='/list/events' element={<EventList />} />
                     <Route path='/list/messages' element={<MessageList />} />
                     <Route path='/list/announcements' element={<AnnouncementList />} />

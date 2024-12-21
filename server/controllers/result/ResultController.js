@@ -276,7 +276,9 @@ exports.deleteResult = async (req, res) => {
 exports.getResult = async (req, res) => {
     try {
 
-        const { resultId } = req.body;
+        const resultId = req.query.resultId;
+
+        console.log("ID: ", resultId);
 
         if (!resultId) {
             return res.status(400).json({
@@ -285,7 +287,22 @@ exports.getResult = async (req, res) => {
             })
         }
 
-        const resultResponse = await Result.findById(resultId).populate('student').populate('classId').exec();
+        const resultResponse = await Result.findById(resultId)
+            .populate({
+                path: 'student',
+                populate: {
+                    path: 'userId'
+                }
+            })
+            .populate('classId')
+            .populate({
+                path: 'subjectResults.subject',
+                strictPopulate: false  // Allow population of non-schema paths
+            })
+            .populate({
+                path: 'subjectResults.examResults.exam',
+                strictPopulate: false  // Allow population of non-schema paths
+            });
 
         return res.status(200).json({
             success: true,

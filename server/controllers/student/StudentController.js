@@ -245,7 +245,10 @@ exports.deleteStudent = async (req, res) => {
         const deletedStudent = await Student.findByIdAndDelete(_id);
 
         await Promise.all([
-            Attendance.findOneAndDelete({ student: _id }),
+            Attendance.updateMany(
+                { 'studentAttendance.student': _id },
+                { $pull: { studentAttendance: { student: _id } } }
+            ),
             Parent.updateMany({ students: _id }, { $pull: { students: _id } }),
             Result.findOneAndDelete({ student: _id }),
         ]);

@@ -55,6 +55,13 @@ export const classEndPoints = {
     ALL_CLASSES_API: BASE_URL + '/api/v1/class/classes',
 }
 
+// CLASS ENDPOINTS
+export const calendarEndPoints = {
+    CREATE_CALENDAR_API: BASE_URL + '/api/v1/calendar/create',
+    UPDATE_CALENDAR_API: BASE_URL + '/api/v1/calendar/update',
+    ALL_CALENDARS_API: BASE_URL + '/api/v1/calendar/calendars',
+}
+
 // LESSON ENDPOINTS
 export const lessonEndPoints = {
     CREATE_LESSON_API: BASE_URL + '/api/v1/lesson/create',
@@ -76,6 +83,7 @@ export const resultEndPoints = {
     CREATE_RESULT_API: BASE_URL + '/api/v1/result/create',
     UPDATE_RESULT_API: BASE_URL + '/api/v1/result/update',
     DELETE_RESULT_API: BASE_URL + '/api/v1/result/delete',
+    GET_RESULT_API: BASE_URL + '/api/v1/result/result-details',
     ALL_RESULTS_API: BASE_URL + '/api/v1/result/results',
 }
 
@@ -109,6 +117,14 @@ export const eventEndPoints = {
     UPDATE_EVENT_API: BASE_URL + '/api/v1/event/update',
     DELETE_EVENT_API: BASE_URL + '/api/v1/event/delete',
     ALL_EVENTS_API: BASE_URL + '/api/v1/event/events',
+}
+
+// MESSAGE ENDPOINTS
+export const messageEndPoints = {
+    CREATE_MESSAGE_API: BASE_URL + '/api/v1/message/create',
+    UPDATE_MESSAGE_API: BASE_URL + '/api/v1/message/update',
+    DELETE_MESSAGE_API: BASE_URL + '/api/v1/message/delete',
+    ALL_MESSAGES_API: BASE_URL + '/api/v1/message/messages',
 }
 
 // SETTINGS PAGE API

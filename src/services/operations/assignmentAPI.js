@@ -32,6 +32,7 @@ export const createAssignment = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Assignment Created Successfully!');
+            dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE ASSIGNMENT API ERROR............", error.message);
@@ -64,6 +65,7 @@ export const updateAssignment = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Assignment Updated Successfully!');
+            dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE ASSIGNMENT API ERROR............", error.message);
@@ -96,6 +98,7 @@ export const deleteAssignment = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Assignment Deleted Successfully!');
+            dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE ASSIGNMENT API ERROR............", error.message);

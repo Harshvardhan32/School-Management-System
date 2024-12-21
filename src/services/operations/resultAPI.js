@@ -1,12 +1,13 @@
 import toast from "react-hot-toast";
 import { resultEndPoints } from "../apis";
-import { setLoading, setResults } from "../../slices/resultSlice";
+import { setLoading, setResultDetails, setResults } from "../../slices/resultSlice";
 import apiConnector from "../apiConnect";
 
 const {
     CREATE_RESULT_API,
     UPDATE_RESULT_API,
     DELETE_RESULT_API,
+    GET_RESULT_API,
     ALL_RESULTS_API
 } = resultEndPoints;
 
@@ -31,6 +32,7 @@ export const createResult = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Result Created Successfully!');
+            dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
             console.log("CREATE RESULT API ERROR............", error.message);
@@ -63,6 +65,7 @@ export const updateResult = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Result Updated Successfully!');
+            dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
             console.log("UPDATE RESULT API ERROR............", error.message);
@@ -95,6 +98,7 @@ export const deleteResult = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Result Deleted Successfully!');
+            dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE RESULT API ERROR............", error.message);
@@ -104,6 +108,36 @@ export const deleteResult = (data, token, setOpen) => {
             toast.dismiss(toastId);
         }
     }
+}
+
+export const getAResult = (resultId, token) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const url = `${GET_RESULT_API}?resultId=${resultId}`;
+            const response = await apiConnector("GET", url, null, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            // Check for success in the response
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            dispatch(setResultDetails(response?.data?.data));
+
+            toast.success('Result loaded successfully!');
+        } catch (error) {
+            console.log("ALL RESULTS API ERROR............", error.message);
+            toast.error('Failed to load result.');
+        } finally {
+            toast.dismiss(toastId);
+            dispatch(setLoading(false));
+        }
+    };
 }
 
 export const getAllResults = (token) => {

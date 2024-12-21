@@ -78,7 +78,7 @@ const FinanceChart = () => {
     }
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4">
+        <div className="bg-white dark:bg-slate-900 rounded-[6px] w-full h-full p-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
             {/* TITLE */}
             <div className="flex justify-between items-center">
                 <h1 className="text-lg font-semibold dark:text-gray-200">Finance</h1>

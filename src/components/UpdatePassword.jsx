@@ -33,7 +33,8 @@ const UpdatePassword = () => {
 
     return (
         <form onSubmit={onSubmit}
-            className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4">
+            className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 flex flex-col gap-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out"
+        >
             <p className="text-xl font-medium">Password</p>
             <div className="flex flex-wrap flex-1 justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1">
@@ -79,7 +80,7 @@ const UpdatePassword = () => {
                     {errors?.confirmPassword && <p className="text-xs text-red-700 py-2">{errors?.confirmPassword.message}</p>}
                 </div>
             </div>
-            
+
             <div className="flex gap-4 items-center justify-end">
                 <div onClick={() => navigate(-1)} className="bg-gray-500 text-gray-100 font-semibold px-4 py-2 rounded-[6px] cursor-pointer">Cancel</div>
                 <button type="submit" className="bg-[#51DFC3] text-gray-800 font-semibold px-4 py-2 rounded-[6px]">Update</button>

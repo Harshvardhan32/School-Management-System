@@ -32,6 +32,7 @@ export const createClass = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Class Created Successfully!');
+            dispatch(getAllClasses(token));
             setOpen(false);
         } catch (error) {
             // console.log("CREATE CLASS API ERROR............", error.message);
@@ -65,6 +66,7 @@ export const updateClass = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Class Updated Successfully!');
+            dispatch(getAllClasses(token));
             setOpen(false);
         } catch (error) {
             // console.log("UPDATE CLASS API ERROR............", error.message);
@@ -97,6 +99,7 @@ export const deleteClass = (data, token, setOpen) => {
 
             toast.dismiss(toastId);
             toast.success('Class Deleted Successfully!');
+            dispatch(getAllClasses(token));
             setOpen(false);
         } catch (error) {
             console.log("DELETE CLASS API ERROR............", error.message);
