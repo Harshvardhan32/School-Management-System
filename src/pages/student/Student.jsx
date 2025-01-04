@@ -17,12 +17,13 @@ const Student = () => {
         dispatch(getAllCalendars(token));
     }, [token]);
 
+    // Filter calendars for the student's class based on user classId
     const studentCalendar = allCalendars?.filter((calendar) => {
         return calendar.classId._id === user.classId._id;
     });
 
+    // Map calendar data to events
     const events = studentCalendar?.flatMap((calendar) => {
-        // Get the date of the dayOfWeek for the current week
         const targetDate = getDateOfWeek(calendar.dayOfWeek);
 
         // Map each schedule item to an event
@@ -30,7 +31,6 @@ const Student = () => {
             const startTime = item.startTime.split(':');
             const endTime = item.endTime.split(':');
 
-            // Create start and end Date objects based on the targetDate
             const startDate = new Date(
                 targetDate.getFullYear(),
                 targetDate.getMonth(),

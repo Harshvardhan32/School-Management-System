@@ -335,6 +335,13 @@ exports.getAllResult = async (req, res) => {
             .populate('subjectResults.subject')
             .populate('subjectResults.examResults.exam');
 
+        // Sort the results based on `student.userId.firstName`
+        resultData.sort((a, b) => {
+            const nameA = a.student?.userId?.firstName?.toLowerCase() || '';
+            const nameB = b.student?.userId?.firstName?.toLowerCase() || '';
+            return nameA.localeCompare(nameB);
+        });
+
         return res.status(200).json({
             success: true,
             data: resultData,

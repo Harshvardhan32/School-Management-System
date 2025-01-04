@@ -142,7 +142,7 @@ exports.updateStudent = async (req, res) => {
         }
 
         // Check for existing Student by id
-        const existingStudent = await Student.findById(id);
+        const existingStudent = await Student.findById(id).populate('userId');
 
         if (!existingStudent) {
             return res.status(404).json({
@@ -151,11 +151,24 @@ exports.updateStudent = async (req, res) => {
             });
         }
 
+        if (email !== existingStudent?.userId.email) {
+            // Check for existing user by email
+            const existingUser = await User.findOne({ email });
+
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User already registered with this email.'
+                });
+            }
+        }
+
         // Update user profile
-        await User.findByIdAndUpdate(existingStudent.userId,
+        await User.findByIdAndUpdate(existingStudent.userId._id,
             {
                 firstName,
                 lastName,
+                email,
                 phone,
                 address,
                 bloodType,
@@ -266,7 +279,7 @@ exports.deleteStudent = async (req, res) => {
 exports.getAllStudents = async (req, res) => {
 
     try {
-        let studentData = await Student.find()
+        const studentData = await Student.find()
             .populate('userId')
             .populate('classId')
             .populate('parent')
@@ -274,6 +287,13 @@ exports.getAllStudents = async (req, res) => {
             .populate('subjects')
             .populate('exams')
             .populate('assignments');
+
+        // Sort the results based on `userId.firstname`
+        studentData.sort((a, b) => {
+            const nameA = a.userId?.firstName?.toLowerCase() || '';
+            const nameB = b.userId?.firstName?.toLowerCase() || '';
+            return nameA.localeCompare(nameB);
+        });
 
         return res.status(200).json({
             success: true,

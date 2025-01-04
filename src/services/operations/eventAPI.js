@@ -23,7 +23,7 @@ export const createEvent = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE EVENT API RESPONSE............", response);
+            // console.log("CREATE EVENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -34,8 +34,8 @@ export const createEvent = (data, token, setOpen) => {
             dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE EVENT API ERROR............", error.message);
-            toast.error(error?.message || "Event Creation Failed!");
+            // console.log("CREATE EVENT API ERROR............", error.message);
+            toast.error("Event Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -57,7 +57,7 @@ export const updateEvent = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE EVENT API RESPONSE............", response);
+            // console.log("UPDATE EVENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -68,8 +68,8 @@ export const updateEvent = (data, token, setOpen) => {
             dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE EVENT API ERROR............", error.message);
-            toast.error(error?.message || "Event Updation Failed!");
+            // console.log("UPDATE EVENT API ERROR............", error.message);
+            toast.error("Event Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -90,7 +90,7 @@ export const deleteEvent = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE EVENT API RESPONSE............", response);
+            // console.log("DELETE EVENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,8 +101,8 @@ export const deleteEvent = (data, token, setOpen) => {
             dispatch(getAllEvents(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE EVENT API ERROR............", error.message);
-            toast.error(error?.message || "Event Deletion Failed!");
+            // console.log("DELETE EVENT API ERROR............", error.message);
+            toast.error("Event Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -112,7 +112,7 @@ export const deleteEvent = (data, token, setOpen) => {
 
 export const getAllEvents = (token) => {
     return async (dispatch) => {
-        dispatch(setLoading(true)); // Set loading to true
+        dispatch(setLoading(true));
         const toastId = toast.loading('Loading...');
 
         try {
@@ -124,18 +124,17 @@ export const getAllEvents = (token) => {
 
             // Check for success in the response
             if (!response?.data?.success) {
-                throw new Error(response?.data?.message || "Failed to fetch subjects.");
+                throw new Error(response?.data?.message || "Failed to fetch events.");
             }
 
             dispatch(setAllEvents(response?.data?.data));
-
-            toast.success('Events loaded successfully!');
+            // toast.success('Events loaded successfully!');
         } catch (error) {
-            console.error("Error fetching subjects:", error.message);
-            toast.error(error.message || 'Failed to load subjects.');
+            // console.error("Error fetching events:", error.message);
+            toast.error('Failed to load events.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 }

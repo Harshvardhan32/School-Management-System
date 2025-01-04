@@ -125,7 +125,7 @@ exports.deleteAnnouncement = async (req, res) => {
 
 exports.getAllAnnouncement = async (req, res) => {
     try {
-        let announcementData = await Announcement.find();
+        let announcementData = await Announcement.find().sort({ date: -1 });
 
         return res.status(200).json({
             success: true,

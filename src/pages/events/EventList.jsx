@@ -1,17 +1,18 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit } from "react-icons/fa";
-import TableSearch from "../../components/common/TableSearch";
-import Table from "../../components/common/Table";
-import Pagination from "../../components/common/Pagination";
-import FormModal from "../../components/FormModal";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteEvent, getAllEvents } from "../../services/operations/eventAPI";
-import extractDateTime from '../../utils/extractDateTime';
 import { GrAdd } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { LuListFilter } from "react-icons/lu";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import Table from "../../components/common/Table";
+import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
+import extractDateTime from '../../utils/extractDateTime';
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
+import { deleteEvent, getAllEvents } from "../../services/operations/eventAPI";
 
 const EventList = () => {
+
     const { role } = useSelector(state => state?.profile?.user?.userId);
     const [currentPage, setCurrentPage] = useState(1);
     const [startDate, setStartDate] = useState({ start: '', end: '' });
@@ -24,6 +25,7 @@ const EventList = () => {
     const { token } = useSelector(state => state?.auth);
     const { allEvents } = useSelector(state => state?.event);
 
+    // Fetch all events on component mount or token change
     useEffect(() => {
         dispatch(getAllEvents(token));
     }, [token, dispatch]);
@@ -32,7 +34,7 @@ const EventList = () => {
         setCurrentPage(page);
     };
 
-    // Filter logic based on the selected date range, search query, and classes
+    // Filter events based on date range, search query, and class names
     const filteredEvents = allEvents?.filter((event) => {
         const eventStartDate = new Date(event.startDate).toISOString().split("T")[0];
         const eventEndDate = new Date(event.endDate).toISOString().split("T")[0];
@@ -54,6 +56,7 @@ const EventList = () => {
         return (isAfterStartDate && isBeforeStartDate && isAfterEndDate && isBeforeEndDate && (matchesSearchQuery || matchesClassSearch));
     });
 
+    // Pagination logic based on filtered events
     const totalPages = Math.ceil(filteredEvents?.length / itemsPerPage);
     const paginatedData = filteredEvents?.slice(
         (currentPage - 1) * itemsPerPage,
@@ -64,33 +67,33 @@ const EventList = () => {
         {
             Header: 'Title',
             accessor: 'title',
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: 'Classes',
             accessor: (row) => row?.classes.length > 0 ? row?.classes.map((item) => item.className).join(', ') : '_',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Start Date',
             accessor: 'startDate',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
             Cell: ({ value }) => extractDateTime(value)
         },
         {
             Header: 'End Date',
             accessor: 'endDate',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
             Cell: ({ value }) => extractDateTime(value)
         },
         {
             Header: 'Actions',
             accessor: 'action',
-            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"}`,
+            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"} table-cell p-4`, // Show actions only for Admin/Teacher
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -132,6 +135,7 @@ const EventList = () => {
                             </button>
                             {showFilter && (
                                 <div className="absolute top-10 right-0 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
+                                    {/* Filter by Start Date */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">Start Date</label>
                                         <div className="flex gap-2">
@@ -149,6 +153,7 @@ const EventList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Filter by End Date */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">End Date</label>
                                         <div className="flex gap-2">
@@ -166,6 +171,7 @@ const EventList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Clear filter button */}
                                     <button
                                         onClick={() => {
                                             setStartDate({ start: '', end: '' });
@@ -178,6 +184,7 @@ const EventList = () => {
                                     </button>
                                 </div>
                             )}
+                            {/* Show create button only for Admin/Teacher */}
                             {(role === 'Admin' || role === 'Teacher') && (
                                 <FormModal table='event' type='create' Icon={GrAdd} />
                             )}

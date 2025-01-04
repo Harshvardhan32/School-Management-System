@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom";
-import { IoEyeOutline } from "react-icons/io5";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrAdd } from "react-icons/gr";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteTeacher, getAllTeachers } from "../../services/operations/teacherAPI";
+import { IoEyeOutline } from "react-icons/io5";
 import Table from "../../components/common/Table";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
+import { deleteTeacher, getAllTeachers } from "../../services/operations/teacherAPI";
 
 const TeacherList = () => {
 
@@ -22,6 +22,7 @@ const TeacherList = () => {
     const { allTeachers, loading } = useSelector(state => state?.teacher);
     const teachersId = allTeachers?.map((teacher) => teacher?.teacherId) || [];
 
+    // Fetching all teachers
     useEffect(() => {
         dispatch(getAllTeachers(token));
     }, [token, dispatch]);
@@ -30,7 +31,7 @@ const TeacherList = () => {
         setCurrentPage(page);
     }
 
-    // Filter logic
+    // Filtering teachers based on the search query
     const filteredTeachers = allTeachers?.filter((teacher) => {
         const matchesTeacherSearch = (teacher?.userId.firstName + ' ' + teacher?.userId.lastName).toLowerCase().includes(searchQuery.toLowerCase().trim());
 
@@ -51,13 +52,14 @@ const TeacherList = () => {
         return (matchesTeacherSearch || matchesEmailSearch || matchesTeacherIdSearch || matchesSubjectSearch || matchesClassSearch || matchesPhoneSearch || matchesAddressSearch);
     });
 
-    // Pagination logic
+    // Paginating the filtered teachers
     const totalPages = Math.ceil(filteredTeachers?.length / itemsPerPage);
     const paginatedTeachers = filteredTeachers?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
+    // Defining table columns with headers and accessor functions
     const columns = [
         {
             Header: 'Info',
@@ -66,45 +68,47 @@ const TeacherList = () => {
                     <img src={row?.userId.photo || '/noAvatar.png'} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold dark:text-gray-200">{row?.userId.firstName} {row?.userId.lastName}</h3>
+                    <h3 className="font-semibold dark:text-gray-200 capitalize">{row?.userId.firstName} {row?.userId.lastName}</h3>
                     <p className="text-xs text-gray-500">{row?.userId.email}</p>
                 </div>
             </div>,
+            className: 'p-4',
             isSortable: false,
         },
         {
             Header: 'Teacher ID',
             accessor: 'teacherId',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Subjects',
             accessor: (row) => row?.subjects.length > 0 ? row?.subjects.map(subject => subject.subjectName).join(', ') : '_',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4 capitalize',
             isSortable: true,
         },
         {
             Header: 'Classes',
             accessor: (row) => row?.classes.length > 0 ? row?.classes.map(item => item?.className).join(', ') : '_',
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Phone',
             accessor: 'userId.phone',
-            className: 'hidden lg:table-cell',
+            className: 'hidden lg:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Address',
             accessor: 'userId.address',
-            className: 'hidden lg:table-cell',
+            className: 'hidden lg:table-cell p-4 capitalize',
             isSortable: false,
         },
         {
             Header: 'Actions',
             accessor: 'action',
+            className: 'table-cell p-4',
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row?.original;
@@ -134,7 +138,7 @@ const TeacherList = () => {
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
-            {/* TOP */}
+            {/* Header Section with Search and Create */}
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Teachers</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
@@ -146,11 +150,11 @@ const TeacherList = () => {
                     </div>
                 </div>
             </div>
-            {/* LIST */}
+            {/* Teachers List Table */}
             <div>
                 <Table columns={columns} data={paginatedTeachers} />
             </div>
-            {/* PAGINATION */}
+            {/* Pagination */}
             <div>
                 {
                     paginatedTeachers.length > 0 &&

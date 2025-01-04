@@ -12,10 +12,12 @@ const Teacher = () => {
     const { user } = useSelector(state => state?.profile);
     const { allCalendars } = useSelector(state => state?.calendar);
 
+    // Fetch calendars when the token changes
     useEffect(() => {
         dispatch(getAllCalendars(token));
     }, [token]);
 
+    // Filter the calendars to get the teacher's schedule based on class and teacher match
     const teacherCalendar = allCalendars?.filter((calendar) => {
         const isClassMatch = user?.classes.some((classItem) => {
             return calendar.classId._id === classItem._id;
@@ -28,19 +30,16 @@ const Teacher = () => {
         return isClassMatch && isTeacherMatch;
     });
 
-    console.log("TeacherCalendar: ", teacherCalendar);
-
+    // Map each teacher's calendar into events for the calendar component
     const events = teacherCalendar?.flatMap((calendar) => {
 
-        // Get the date of the dayOfWeek for the current week
         const targetDate = getDateOfWeek(calendar.dayOfWeek);
 
-        // Map each schedule item to an event
+        // Map each schedule item to an event object
         return calendar.schedule.map((item, index) => {
             const startTime = item.startTime.split(':');
             const endTime = item.endTime.split(':');
 
-            // Create start and end Date objects based on the targetDate
             const startDate = new Date(
                 targetDate.getFullYear(),
                 targetDate.getMonth(),

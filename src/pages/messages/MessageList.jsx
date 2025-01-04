@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrAdd } from "react-icons/gr";
 import { FaRegEdit } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Table from "../../components/common/Table";
 import FormModal from "../../components/FormModal";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
 import { deleteMessage, getAllMessages } from "../../services/operations/messageAPI";
@@ -15,27 +15,22 @@ const MessageList = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 10;
 
-    const dispatch = useDispatch();
-    const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { role } = user?.userId;
     const { allMessages } = useSelector(state => state?.message);
-
-    useEffect(() => {
-        dispatch(getAllMessages(token));
-    }, [token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     }
 
+    // Filter messages based on title or content matching the search query
     const searchedData = allMessages?.filter((data) => {
         const matchedTitleSearch = data?.title?.toLowerCase().includes(searchQuery.trim().toLowerCase());
         const matchedContentSearch = data?.content.toLowerCase().includes(searchQuery.trim().toLowerCase());
         return allMessages && (matchedTitleSearch || matchedContentSearch);
     });
 
-    // Pagination logic
+    // Pagination logic based on searched data
     const totalPages = Math.ceil(searchedData?.length / itemsPerPage);
     const paginatedMessage = searchedData.slice(
         (currentPage - 1) * itemsPerPage,
@@ -46,19 +41,19 @@ const MessageList = () => {
         {
             Header: 'Title',
             accessor: 'title',
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: 'Content',
             accessor: 'content',
-            className: 'hidden min-[440px]:table-cell',
+            className: 'hidden min-[440px]:table-cell p-4 capitalize',
             isSortable: false,
         },
         {
             Header: "Actions",
             accessor: "actions",
-            className: `${!(role === 'Admin' || role === 'Teacher') && 'hidden'}`,
+            className: `${!(role === 'Admin' || role === 'Teacher') && 'hidden'} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -89,8 +84,9 @@ const MessageList = () => {
             <div className="flex items-center justify-between gap-4">
                 <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Messages</h1>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Search input */}
                     <div className="relative flex items-center gap-4 self-end">
+                        {/* Show create modal for Admin or Teacher */}
                         {(role === 'Admin' || role === 'Teacher') &&
                             <FormModal table='message' type='create' Icon={GrAdd} />
                         }
@@ -99,6 +95,7 @@ const MessageList = () => {
             </div>
             {/* LIST */}
             <div>
+                {/* Table displaying messages */}
                 <Table columns={columns} data={paginatedMessage} />
             </div>
             {/* PAGINATION */}

@@ -24,7 +24,7 @@ export const createAttendance = (data, token) => {
                 }
             );
 
-            console.log("CREATE ATTENDANCE API RESPONSE............", response);
+            // console.log("CREATE ATTENDANCE API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -33,7 +33,7 @@ export const createAttendance = (data, token) => {
             toast.dismiss(toastId);
             toast.success('Attendance Created Successfully!');
         } catch (error) {
-            console.log("CREATE ATTENDANCE API ERROR............", error.message);
+            // console.log("CREATE ATTENDANCE API ERROR............", error.message);
             toast.error("Attendance Creation Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -56,7 +56,7 @@ export const updateAttendance = (data, token) => {
                 }
             );
 
-            console.log("UPDATE ATTENDANCE API RESPONSE............", response);
+            // console.log("UPDATE ATTENDANCE API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -65,7 +65,7 @@ export const updateAttendance = (data, token) => {
             toast.dismiss(toastId);
             toast.success('Attendance Updated Successfully!');
         } catch (error) {
-            console.log("UPDATE ATTENDANCE API ERROR............", error.message);
+            // console.log("UPDATE ATTENDANCE API ERROR............", error.message);
             toast.error("Attendance Updation Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -89,10 +89,10 @@ export const getAllAttendance = (token) => {
                 throw new Error(response?.data?.message || "Failed to fetch attendance.");
             }
 
-            dispatch(setAttendance(response.data.data));
-            toast.success('Attendance loaded successfully!');
+            dispatch(setAttendance(response?.data?.data));
+            // toast.success('Attendance loaded successfully!');
         } catch (error) {
-            console.log("ALL ATTENDANCE API ERROR............", error.message);
+            // console.log("ALL ATTENDANCE API ERROR............", error.message);
             toast.error('Failed to load attendance.');
         } finally {
             toast.dismiss(toastId);

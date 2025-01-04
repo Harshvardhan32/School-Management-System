@@ -149,7 +149,7 @@ exports.updateTeacher = async (req, res) => {
         }
 
         // Check for existing Teacher by id
-        const existingTeacher = await Teacher.findById(id);
+        const existingTeacher = await Teacher.findById(id).populate('userId');
 
         if (!existingTeacher) {
             return res.status(400).json({
@@ -158,11 +158,24 @@ exports.updateTeacher = async (req, res) => {
             });
         }
 
+        if (email !== existingTeacher?.userId.email) {
+            // Check for existing user by email
+            const existingUser = await User.findOne({ email });
+
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User already registered with this email.'
+                });
+            }
+        }
+
         // Update user profile
-        await User.findByIdAndUpdate(existingTeacher.userId,
+        await User.findByIdAndUpdate(existingTeacher.userId._id,
             {
                 firstName,
                 lastName,
+                email,
                 phone,
                 address,
                 bloodType,
@@ -176,19 +189,19 @@ exports.updateTeacher = async (req, res) => {
             { teacherId, classes, subjects }, { new: true });
 
         // Handle added and removed classes
-        const addedClasses = classes.filter(classId => !existingTeacher.classes.includes(classId));
+        const addedClasses = classes && classes.filter(classId => !existingTeacher.classes.includes(classId));
 
-        const removedClasses = existingTeacher.classes.filter(classId => !classes.includes(classId));
+        const removedClasses = classes && existingTeacher.classes.filter(classId => !classes.includes(classId));
 
         // Update class relationships
-        if (addedClasses?.length > 0) {
+        if (classes && addedClasses?.length > 0) {
             await Class.updateMany(
                 { _id: { $in: addedClasses } }, // Match classes in the addedClasses array
                 { $addToSet: { teachers: id } } // Add teacher ID to the teachers array, avoiding duplicates
             );
         }
 
-        if (removedClasses?.length > 0) {
+        if (classes && removedClasses?.length > 0) {
             await Class.updateMany(
                 { _id: { $in: removedClasses } }, // Match classes in the removedClasses array
                 { $pull: { teachers: id } } // Remove teacher ID from the teachers array
@@ -196,19 +209,19 @@ exports.updateTeacher = async (req, res) => {
         }
 
         // Handle added and removed subjects
-        const addedSubjects = subjects.filter(subjectId => !existingTeacher.subjects.includes(subjectId));
+        const addedSubjects = subjects && subjects.filter(subjectId => !existingTeacher.subjects.includes(subjectId));
 
-        const removedSubjects = existingTeacher.subjects.filter(subjectId => !subjects.includes(subjectId));
+        const removedSubjects = subjects && existingTeacher.subjects.filter(subjectId => !subjects.includes(subjectId));
 
         // Update subject relationships
-        if (addedSubjects?.length > 0) {
+        if (subjects && addedSubjects?.length > 0) {
             await Subject.updateMany(
                 { _id: { $in: addedSubjects } }, // Match subjects in the addedSubjects array
                 { $addToSet: { teachers: id } } // Add teacher ID to the teachers array, avoiding duplicates
             );
         }
 
-        if (removedSubjects.length > 0) {
+        if (subjects && removedSubjects.length > 0) {
             await Subject.updateMany(
                 { _id: { $in: removedSubjects } }, // Match subjects in the removedSubjects array
                 { $pull: { teachers: id } } // Remove teacher ID from the teachers array
@@ -287,6 +300,13 @@ exports.getAllTeachers = async (req, res) => {
             .populate('userId')
             .populate('classes')
             .populate('subjects');
+
+        // Sort the results based on `userId.firstName`
+        teacherData.sort((a, b) => {
+            const nameA = a.userId?.firstName?.toLowerCase() || '';
+            const nameB = b.userId?.firstName?.toLowerCase() || '';
+            return nameA.localeCompare(nameB);
+        });
 
         return res.status(200).json({
             success: true,

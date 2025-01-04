@@ -1,15 +1,15 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit } from "react-icons/fa";
-import TableSearch from "../../components/common/TableSearch";
-import Table from "../../components/common/Table";
-import Pagination from "../../components/common/Pagination";
-import FormModal from "../../components/FormModal";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteAssignment, getAllAssignments } from "../../services/operations/assignmentAPI";
-import { extractDate } from '../../utils/extractDate';
 import { GrAdd } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { LuListFilter } from "react-icons/lu";
+import Table from "../../components/common/Table";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import FormModal from "../../components/FormModal";
+import { extractDate } from '../../utils/extractDate';
+import { useDispatch, useSelector } from "react-redux";
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
+import { deleteAssignment, getAllAssignments } from "../../services/operations/assignmentAPI";
 
 const AssignmentList = () => {
 
@@ -35,6 +35,7 @@ const AssignmentList = () => {
         setCurrentPage(page);
     };
 
+    // Assignment data based on role specific
     const roleBasedAssignment = role === 'Teacher'
         ? allAssignments.filter((assignment) =>
             user?.classes?.some((userClass) =>
@@ -53,7 +54,7 @@ const AssignmentList = () => {
                 )
                 : allAssignments;
 
-    // Filter logic
+    // Filter logic based on search query
     const filteredAssignments = roleBasedAssignment?.filter((assignment) => {
         const assignmentAssignedDate = new Date(assignment.assignedDate).toISOString().split("T")[0];
         const assignmentDueDate = new Date(assignment.dueDate).toISOString().split("T")[0];
@@ -71,7 +72,7 @@ const AssignmentList = () => {
         return (isAfterAssignedDate && isBeforeAssignedDate && isAfterDueDate && isBeforeDueDate && (matchesSearchQuery || matchesClassSearch || matchesTeacherSearch));
     });
 
-    // Pagination logic
+    // Pagination logic based on filtered assignments
     const totalPages = Math.ceil(filteredAssignments?.length / itemsPerPage);
     const paginatedAssignments = filteredAssignments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -79,39 +80,39 @@ const AssignmentList = () => {
         {
             Header: "Subject",
             accessor: "subject.subjectName",
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: "Class",
             accessor: "classId.className",
-            className: 'hidden min-[400px]:table-cell',
+            className: 'hidden min-[400px]:table-cell p-4',
             isSortable: true,
         },
         {
             Header: "Teacher",
             accessor: (row) => `${row.teacher.userId.firstName} ${row.teacher.userId.lastName}`,
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4 capitalize',
             isSortable: true,
         },
         {
             Header: "Assigned Date",
             accessor: "assignedDate",
-            className: 'hidden sm:table-cell',
+            className: 'hidden sm:table-cell p-4',
             isSortable: true,
             Cell: ({ value }) => extractDate(value)
         },
         {
             Header: "Due Date",
             accessor: "dueDate",
-            className: 'hidden sm:table-cell',
+            className: 'hidden sm:table-cell p-4',
             isSortable: true,
             Cell: ({ value }) => extractDate(value),
         },
         {
             Header: "Actions",
             accessor: "actions",
-            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"}`,
+            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -139,20 +140,24 @@ const AssignmentList = () => {
     return (
         <div className="min-h-[50vh]">
             <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                {/* Header */}
+                {/* Header Section */}
                 <div className="flex items-center justify-between gap-4">
                     <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Assignments</h1>
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
+                        {/* Search Bar for filtering assignments */}
                         <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                         <div className="relative flex items-center gap-4 self-end">
+                            {/* Filter Button */}
                             <button
                                 onClick={() => setShowFilter(!showFilter)}
                                 className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                             >
                                 <LuListFilter fontSize={18} color="#4b5563" />
                             </button>
+                            {/* Filter Modal that appears when showFilter is true */}
                             {showFilter && (
                                 <div className="absolute top-10 -right-4 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
+                                    {/* Assigned Date Filter Inputs */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">Assigned Date</label>
                                         <div className="flex gap-2">
@@ -170,6 +175,7 @@ const AssignmentList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Due Date Filter Inputs */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">Due Date</label>
                                         <div className="flex gap-2">
@@ -187,6 +193,7 @@ const AssignmentList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Clear Filter Button */}
                                     <button
                                         onClick={() => { setAssignedDate({ start: '', end: '' }); setDueDate({ start: '', end: '' }); setShowFilter(false); }}
                                         className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
@@ -195,15 +202,18 @@ const AssignmentList = () => {
                                     </button>
                                 </div>
                             )}
+                            {/* Admin and Teacher Role: Modal for creating new assignment */}
                             {(role === 'Admin' || role === 'Teacher') && <FormModal table='assignment' type='create' Icon={GrAdd} />}
                         </div>
                     </div>
                 </div>
 
-                {/* Table */}
+                {/* Table Section displaying paginated assignments */}
                 <div>
                     <Table columns={columns} data={paginatedAssignments || []} />
                 </div>
+
+                {/* Pagination controls */}
                 <div>
                     {
                         paginatedAssignments.length > 0 &&

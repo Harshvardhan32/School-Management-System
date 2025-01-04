@@ -1,12 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { IoArrowBack } from 'react-icons/io5';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import * as z from 'zod';
-import { resetPassword } from '../services/operations/authAPI';
 import { useDispatch } from 'react-redux';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { resetPassword } from '../services/operations/authAPI';
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
 

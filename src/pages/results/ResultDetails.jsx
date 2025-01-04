@@ -53,16 +53,16 @@ const ResultDetails = () => {
             {/* Bottom */}
             <div className="flex flex-col gap-8 bg-white dark:bg-slate-900 p-4 rounded-[6px] shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                 <p className="text-xl font-medium dark:text-gray-200">Result Details</p>
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="w-full border-collapse border border-gray-300 overflow-hidden table-fixed">
                     <thead className="dark:text-gray-200">
                         <tr>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Subject</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Exam</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Score</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Max Score</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Percentage</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Grade</th>
-                            <th className="py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700">Subject Grade</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 w-1/6">Subject</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 hidden sm:table-cell w-1/6">Exam</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 w-1/6">Score</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 w-1/6">Max Score</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 w-1/6">Percentage</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 hidden md:table-cell w-1/6">Grade</th>
+                            <th className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 bg-gray-200 dark:bg-gray-700 hidden sm:table-cell w-1/6">Subject Grade</th>
                         </tr>
                     </thead>
                     <tbody className="dark:text-gray-200">
@@ -73,20 +73,20 @@ const ResultDetails = () => {
                                     {index === 0 && (
                                         <td
                                             rowSpan={subjectResult.exams.length}
-                                            className="py-3 border-2 border-gray-300 font-medium"
+                                            className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 font-medium"
                                         >
                                             {subjectResult.subject}
                                         </td>
                                     )}
-                                    <td className="py-3 border-2 border-gray-300">{exam.exam}</td>
-                                    <td className="py-3 border-2 border-gray-300">{exam.score}</td>
-                                    <td className="py-3 border-2 border-gray-300">{exam.maxScore}</td>
-                                    <td className="py-3 border-2 border-gray-300">{exam.percentage}</td>
-                                    <td className="py-3 border-2 border-gray-300">{exam.grade}</td>
+                                    <td className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 hidden sm:table-cell">{exam.exam}</td>
+                                    <td className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300">{exam.score}</td>
+                                    <td className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300">{exam.maxScore}</td>
+                                    <td className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300">{exam.percentage}</td>
+                                    <td className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 hidden md:table-cell">{exam.grade}</td>
                                     {index === 0 && (
                                         <td
                                             rowSpan={subjectResult.exams.length}
-                                            className="py-3 border-2 border-gray-300 font-medium"
+                                            className="overflow-hidden whitespace-nowrap text-ellipsis py-3 border-2 border-gray-300 font-medium hidden sm:table-cell"
                                         >
                                             {subjectResult.subjectGrade}
                                         </td>

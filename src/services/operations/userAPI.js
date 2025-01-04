@@ -1,32 +1,57 @@
 import toast from "react-hot-toast";
-import { userEndPoints } from "../apis";
+import { profileEndPoints, adminEndPoints } from "../apis";
+import { setUser } from "../../slices/profileSlice";
 import apiConnector from "../apiConnect";
 
-const {
-    CREATE_USER_API,
-} = userEndPoints;
+const { UPDATE_ADMIN_API } = adminEndPoints;
+const { UPDATE_PROFILE_PICTURE_API } = profileEndPoints;
 
-export const createUser = (data, setOpen) => {
-    return async () => {
+export const updateAdmin = (data, token) => {
+    return async (dispatch) => {
         const toastId = toast.loading('Loading...');
 
         try {
-            const response = await apiConnector("POST", CREATE_USER_API, data);
-
-            console.log("CREATE USER API RESPONSE............", response);
+            const response = await apiConnector("PUT", UPDATE_ADMIN_API, data, {
+                "Authorization": `Bearer ${token}`,
+            });
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
             toast.dismiss(toastId);
-            toast.success(`${data?.role} Created Successfully!`);
-            setOpen(false);
+            toast.success("Admin Updated Successfully!");
+            console.log("Data: ", response.data.data);
+            dispatch(setUser(response?.data?.data));
         } catch (error) {
-            console.log("CREATE USER API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            console.error("Error details: ", error.message);
+            toast.error('Admin Updation Failed!');
         } finally {
             toast.dismiss(toastId);
         }
     }
 }
+
+export const uploadProfilePicture = (data, token) => {
+    return async () => {
+        const toastId = toast.loading('Loading...');
+
+        try {
+            const response = await apiConnector("PUT", UPDATE_PROFILE_PICTURE_API, data, {
+                "Authorization": `Bearer ${token}`,
+            });
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success('Profile Picture Updated Successfully!');
+        } catch (error) {
+            console.error("Error details:", error.message);
+            toast.error('Profile Picture Updation Failed!');
+        } finally {
+            toast.dismiss(toastId);
+        }
+    };
+};

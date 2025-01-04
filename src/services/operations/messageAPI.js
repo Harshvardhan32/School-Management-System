@@ -57,7 +57,7 @@ export const updateMessage = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE MESSAGE API RESPONSE............", response);
+            // console.log("UPDATE MESSAGE API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -68,7 +68,7 @@ export const updateMessage = (data, token, setOpen) => {
             dispatch(getAllMessages(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE MESSAGE API ERROR............", error.message);
+            // console.log("UPDATE MESSAGE API ERROR............", error.message);
             toast.error("Message Updation Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -90,7 +90,7 @@ export const deleteMessage = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE MESSAGE API RESPONSE............", response);
+            // console.log("DELETE MESSAGE API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,7 +101,7 @@ export const deleteMessage = (data, token, setOpen) => {
             dispatch(getAllMessages(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE MESSAGE API ERROR............", error.message);
+            // console.log("DELETE MESSAGE API ERROR............", error.message);
             toast.error("Message Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -128,10 +128,9 @@ export const getAllMessages = (token) => {
             }
 
             dispatch(setAllMessages(response?.data?.data));
-
-            toast.success('Messages loaded successfully!');
+            // toast.success('Messages loaded successfully!');
         } catch (error) {
-            console.log("ALL MESSAGES API ERROR............", error.message);
+            // console.log("ALL MESSAGES API ERROR............", error.message);
             toast.error('Failed to load messages.');
         } finally {
             dispatch(setLoading(false));

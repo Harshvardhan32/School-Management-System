@@ -34,10 +34,13 @@ const PORT = process.env.PORT || 8000;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir: '/tmp/'
-}));
+
+app.use(
+    fileUpload({
+        useTempFiles: true,
+        tempFileDir: "/tmp",
+    })
+);
 
 app.use(morgan('dev'));
 app.use(helmet());
@@ -47,6 +50,9 @@ const limiter = rateLimit({
     max: 100 // limit each IP to 100 requests per window
 });
 // app.use(limiter);
+
+cloudinaryConnect();
+dbConnect();
 
 // Mount all router with the API
 app.use('/api/v1/user/admin', AdminRoutes);
@@ -69,7 +75,7 @@ app.use('/api/v1/calendar', CalendarRoutes);
 
 // Homepage Route
 app.get('/', (req, res) => {
-    res.send('<h1>This is homepage.</h1>')
+    res.send('<h1>This is Homepage.</h1>')
 });
 
 // Global error handler 
@@ -86,6 +92,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Server started successfully at port ${PORT}`);
 });
-
-cloudinaryConnect();
-dbConnect();

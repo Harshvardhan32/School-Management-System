@@ -192,7 +192,9 @@ exports.deleteExam = async (req, res) => {
 
 exports.getAllExams = async (req, res) => {
     try {
-        let examData = await Exam.find().populate('subjects').populate('classes');
+        let examData = await Exam.find()
+            .populate('subjects')
+            .populate('classes').sort({ examName: 1 });
 
         return res.status(200).json({
             success: true,

@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
-import { setLoading, setExams } from "../../slices/examSlice";
 import { examEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
+import { setLoading, setExams } from "../../slices/examSlice";
 
 const {
     CREATE_EXAM_API,
@@ -24,7 +24,7 @@ export const createExam = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE EXAM API RESPONSE............", response);
+            // console.log("CREATE EXAM API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -36,7 +36,7 @@ export const createExam = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("CREATE EXAM API ERROR............", error.message);
-            toast.error(error?.message || "Exam Creation Failed!");
+            toast.error("Exam Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -57,7 +57,7 @@ export const updateExam = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE EXAM API RESPONSE............", response);
+            // console.log("UPDATE EXAM API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -69,7 +69,7 @@ export const updateExam = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("UPDATE EXAM API ERROR............", error.message);
-            toast.error(error?.message || "Exam Updation Failed!");
+            toast.error("Exam Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -90,7 +90,7 @@ export const deleteExam = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE EXAM API RESPONSE............", response);
+            // console.log("DELETE EXAM API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,8 +101,8 @@ export const deleteExam = (data, token, setOpen) => {
             dispatch(getAllExams(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE EXAM API ERROR............", error.message);
-            toast.error(error?.message || "Exam Deletion Failed!");
+            // console.log("DELETE EXAM API ERROR............", error.message);
+            toast.error("Exam Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -127,15 +127,14 @@ export const getAllExams = (token) => {
                 throw new Error(response?.data?.message || "Failed to fetch exams.");
             }
 
-            dispatch(setExams(response.data.data));
-
-            toast.success('Exams loaded successfully!');
+            dispatch(setExams(response?.data?.data));
+            // toast.success('Exams loaded successfully!');
         } catch (error) {
-            console.log("ALL EXAMS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load exams.');
+            // console.log("ALL EXAMS API ERROR............", error.message);
+            toast.error('Failed to load exams.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));
         }
     };
-};
+}

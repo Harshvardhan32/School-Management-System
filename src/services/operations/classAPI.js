@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { classEndPoints } from "../apis";
-import { setLoading, setAllClasses } from "../../slices/classSlice";
 import apiConnector from "../apiConnect";
+import { setLoading, setAllClasses } from "../../slices/classSlice";
 
 const {
     CREATE_CLASS_API,
@@ -24,7 +24,7 @@ export const createClass = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE CLASS API RESPONSE............", response);
+            // console.log("CREATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -36,7 +36,7 @@ export const createClass = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("CREATE CLASS API ERROR............", error.message);
-            toast.error(error?.message || "Class Creation Failed!");
+            toast.error("Class Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -58,7 +58,7 @@ export const updateClass = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE CLASS API RESPONSE............", response);
+            // console.log("UPDATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -70,7 +70,7 @@ export const updateClass = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("UPDATE CLASS API ERROR............", error.message);
-            toast.error(error?.message || "Class Updation Failed!");
+            toast.error("Class Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -91,7 +91,7 @@ export const deleteClass = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE CLASS API RESPONSE............", response);
+            // console.log("DELETE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -102,8 +102,8 @@ export const deleteClass = (data, token, setOpen) => {
             dispatch(getAllClasses(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE CLASS API ERROR............", error.message);
-            toast.error(error?.message || "Class Deletion Failed!");
+            // console.log("DELETE CLASS API ERROR............", error.message);
+            toast.error("Class Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -115,6 +115,7 @@ export const getAllClasses = (token) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const toastId = toast.loading('Loading classes...');
+
         try {
             const response = await apiConnector("GET", ALL_CLASSES_API, null, {
                 "Content-Type": "application/json",
@@ -126,14 +127,14 @@ export const getAllClasses = (token) => {
                 throw new Error(response?.data?.message || "Failed to fetch classes.");
             }
 
-            dispatch(setAllClasses(response.data.data));
-            toast.success('Classes loaded successfully!');
+            dispatch(setAllClasses(response?.data?.data));
+            // toast.success('Classes loaded successfully!');
         } catch (error) {
             console.error("Error fetching classes:", error.message);
-            toast.error(error.message || 'Failed to load classes.');
+            toast.error('Failed to load classes.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
-};
+}

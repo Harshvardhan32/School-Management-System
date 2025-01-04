@@ -242,7 +242,7 @@ exports.getAllClasses = async (req, res) => {
                     path: 'userId'
                 }
             })
-            .populate('subjects');
+            .populate('subjects').sort({ className: 1 });
 
         return res.status(200).json({
             success: true,

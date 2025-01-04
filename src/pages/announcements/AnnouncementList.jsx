@@ -1,17 +1,18 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit } from "react-icons/fa";
-import TableSearch from "../../components/common/TableSearch";
-import Table from "../../components/common/Table";
-import Pagination from "../../components/common/Pagination";
-import FormModal from "../../components/FormModal";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteAnnouncement, getAllAnnouncement } from "../../services/operations/announcementAPI";
-import extractDateTime from "../../utils/extractDateTime";
 import { GrAdd } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { useState } from "react";
 import { LuListFilter } from "react-icons/lu";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import Table from "../../components/common/Table";
+import FormModal from "../../components/FormModal";
+import { useSelector } from "react-redux";
+import extractDateTime from "../../utils/extractDateTime";
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
+import { deleteAnnouncement, getAllAnnouncement } from "../../services/operations/announcementAPI";
 
 const AnnouncementList = () => {
+
     const { role } = useSelector((state) => state?.profile?.user?.userId);
     const [currentPage, setCurrentPage] = useState(1);
     const [startDate, setStartDate] = useState({ start: '', end: '' });
@@ -19,19 +20,13 @@ const AnnouncementList = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 10;
 
-    const dispatch = useDispatch();
-    const { token } = useSelector((state) => state?.auth);
     const { allAnnouncements } = useSelector((state) => state?.announcement);
-
-    useEffect(() => {
-        dispatch(getAllAnnouncement(token));
-    }, [token, dispatch]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    // Filter logic based on the selected date range and search quer
+    // Filter announcements based on date range and search query
     const filteredAnnouncements = allAnnouncements?.filter((announcement) => {
         const announcementDate = new Date(announcement.date).toISOString().split("T")[0];
 
@@ -40,7 +35,7 @@ const AnnouncementList = () => {
 
         const matchesSearchQuery = announcement.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
 
-        return isAfterDate && isBeforeDate && matchesSearchQuery;
+        return (isAfterDate && isBeforeDate && matchesSearchQuery);
     })
 
     const totalPages = Math.ceil(filteredAnnouncements?.length / itemsPerPage);
@@ -53,20 +48,20 @@ const AnnouncementList = () => {
         {
             Header: "Title",
             accessor: "title",
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: "Date",
             accessor: "date",
-            className: "hidden md:table-cell",
+            className: "hidden md:table-cell p-4",
             isSortable: true,
             Cell: ({ value }) => extractDateTime(value),
         },
         {
             Header: "Actions",
             accessor: "action",
-            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"}`,
+            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -98,7 +93,8 @@ const AnnouncementList = () => {
                 <div className="flex items-center justify-between gap-4">
                     <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Announcements</h1>
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                        <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Pass the search props */}
+                        {/* Search functionality */}
+                        <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                         <div className="flex items-center gap-4 self-end relative">
                             <button
                                 onClick={() => setShowFilter(!showFilter)}
@@ -126,7 +122,7 @@ const AnnouncementList = () => {
                                     <button
                                         onClick={() => {
                                             setStartDate({ start: '', end: '' });
-                                            setShowFilter(false)
+                                            setShowFilter(false);
                                         }}
                                         className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
                                     >
@@ -142,6 +138,7 @@ const AnnouncementList = () => {
                 </div>
                 {/* LIST */}
                 <div>
+                    {/* Display the filtered and paginated table */}
                     <Table columns={columns} data={paginatedData} />
                 </div>
                 {/* PAGINATION */}

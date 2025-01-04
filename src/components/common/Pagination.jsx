@@ -20,15 +20,17 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
             newPages.push(totalPages);
         }
 
-        setPages(newPages);
+        setPages(newPages); // Update pages array with new pages
     }, [currentPage, totalPages]);
 
+    // Handle previous page navigation
     const handlePrevClick = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
         }
     };
 
+    // Handle next page navigation
     const handleNextClick = () => {
         if (currentPage < totalPages) {
             onPageChange(currentPage + 1);
@@ -41,7 +43,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
             <button
                 title="Prev"
                 onClick={handlePrevClick}
-                disabled={currentPage === 1}
+                disabled={currentPage === 1} // Disable if on the first page
                 className="py-2 px-4 mr-2 rounded-[6px] bg-[#51DFC3] text-gray-800 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Prev
@@ -57,7 +59,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
                     ) : (
                         <button
                             key={`page-${page}`}
-                            onClick={() => onPageChange(page)}
+                            onClick={() => onPageChange(page)} // Change page on click
                             className={`px-2 rounded-sm ${page === currentPage && "bg-[#51DFC3] text-gray-800"}`}
                         >
                             {page}

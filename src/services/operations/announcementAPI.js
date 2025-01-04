@@ -23,7 +23,7 @@ export const createAnnouncement = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
+            // console.log("CREATE ANNOUNCEMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -34,8 +34,8 @@ export const createAnnouncement = (data, token, setOpen) => {
             dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Creation Failed!");
+            // console.log("CREATE ANNOUNCEMENT API ERROR............", error.message);
+            toast.error("Announcement Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -56,7 +56,7 @@ export const updateAnnouncement = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE ANNOUNCEMENT API RESPONSE............", response);
+            // console.log("UPDATE ANNOUNCEMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -67,8 +67,8 @@ export const updateAnnouncement = (data, token, setOpen) => {
             dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Updation Failed!");
+            // console.log("UPDATE ANNOUNCEMENT API ERROR............", error.message);
+            toast.error("Announcement Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -89,7 +89,7 @@ export const deleteAnnouncement = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE ANNOUNCEMENT API RESPONSE............", response);
+            // console.log("DELETE ANNOUNCEMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -100,8 +100,8 @@ export const deleteAnnouncement = (data, token, setOpen) => {
             dispatch(getAllAnnouncement(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE ANNOUNCEMENT API ERROR............", error.message);
-            toast.error(error?.message || "Announcement Deletion Failed!");
+            // console.log("DELETE ANNOUNCEMENT API ERROR............", error.message);
+            toast.error("Announcement Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -128,13 +128,13 @@ export const getAllAnnouncement = (token) => {
 
             dispatch(setAnnouncements(response?.data?.data));
 
-            toast.success('Announcements loaded successfully!');
+            // toast.success('Announcements loaded successfully!');
         } catch (error) {
-            console.log("ALL ANNOUNCEMENTS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load announcements.');
+            // console.log("ALL ANNOUNCEMENTS API ERROR............", error.message);
+            toast.error('Failed to load announcements.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 };

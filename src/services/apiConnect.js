@@ -5,7 +5,7 @@ const apiConnector = (method, url, bodyData, header, params) => {
     return axiosInstance({
         method: `${method}`,
         url: `${url}`,
-        timeout: 10000,
+        timeout: 100000,
         headers: header ? header : null,
         data: bodyData ? bodyData : null,
         params: params ? params : null,

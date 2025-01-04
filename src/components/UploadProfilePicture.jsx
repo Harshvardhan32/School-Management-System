@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
 import { TbUpload } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
+import { uploadProfilePicture } from "../services/operations/userAPI";
 
 const UploadProfilePicture = ({ data }) => {
 
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state?.auth);
+    const { user } = useSelector(state => state?.profile);
+
     const {
         register,
-        handleSubmit,
-        formState: { errors }
+        handleSubmit
     } = useForm();
 
     const handleImageChange = (e) => {
@@ -22,12 +27,16 @@ const UploadProfilePicture = ({ data }) => {
         }
     };
 
-    const onSubmit = handleSubmit((formData) => {
-        if (formData?.photo.length === 0) {
+    const onSubmit = handleSubmit((data) => {
+        if (!data?.photo?.length) {
             toast.error('Profile Photo is required!');
             return;
         }
-        console.log(formData);
+
+        let formData = new FormData();
+        formData.append('id', user?.userId._id);
+        formData.append('photo', data.photo[0]);
+        dispatch(uploadProfilePicture(formData, token));
     });
 
     const [imagePreview, setImagePreview] = useState(null);

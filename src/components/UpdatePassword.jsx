@@ -1,11 +1,13 @@
 import * as z from 'zod';
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { changePassword } from '../services/operations/authAPI';
+import { useDispatch, useSelector } from 'react-redux';
 
-const UpdatePassword = () => {
+const UpdatePassword = ({ userId }) => {
 
     const schema = z.object({
         password: z.string().min(8, { message: 'Password must be at least 8 characters long!' }),
@@ -22,14 +24,21 @@ const UpdatePassword = () => {
         formState: { errors }
     } = useForm({ resolver: zodResolver(schema) });
 
-    const onSubmit = handleSubmit((data) => {
-        console.log(data);
-    })
-
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { token } = useSelector(state => state.auth);
     const [showPassword, setShowPassword] = useState(false);
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const onSubmit = handleSubmit((data) => {
+        console.log(data);
+        const formData = new FormData();
+        formData.append('userId', userId);
+        formData.append('oldPassword', data.oldPassword);
+        formData.append('newPassword', data.confirmPassword);
+        dispatch(changePassword(formData, token));
+    });
 
     return (
         <form onSubmit={onSubmit}

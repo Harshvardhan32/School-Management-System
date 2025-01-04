@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import UpdatePassword from "../components/UpdatePassword";
+import { updateAdmin } from '../services/operations/userAPI';
 import UploadProfilePicture from "../components/UploadProfilePicture";
 import { getAllParents, updateParent } from '../services/operations/parentAPI';
 import { getAllTeachers, updateTeacher } from '../services/operations/teacherAPI';
@@ -31,9 +32,7 @@ const Settings = () => {
     }, [token, dispatch]);
 
     let userId = [];
-    if (role === 'Admin') {
-
-    } else if (role === 'Teacher') {
+    if (role === 'Teacher') {
         const { allTeachers } = useSelector(state => state?.teacher);
 
         userId = allTeachers?.map((teacher) => teacher?.teacherId);
@@ -43,7 +42,7 @@ const Settings = () => {
 
         userId = allStudents?.map((student) => student?.studentId);
         userId = userId.filter((item) => item !== user?.studentId);
-    } else {
+    } else if (role === 'Parent') {
         const { allParents } = useSelector(state => state?.parent);
 
         userId = allParents?.map((parent) => parent?.parentId);
@@ -54,8 +53,7 @@ const Settings = () => {
         userId: z.string()
             .min(3, { message: 'User ID must be at least 3 characters long!' })
             .max(20, { message: "User ID must be at most 20 characters long!" })
-            .regex(/^\S+$/, { message: "User ID must not contain spaces!" })
-            .refine(
+            .regex(/^\S+$/, { message: "User ID must not contain spaces!" }).refine(
                 (id) => !userId.includes(id),
                 { message: "User ID already exists!" }
             ),
@@ -93,31 +91,35 @@ const Settings = () => {
     } = useForm({ resolver: zodResolver(schema) });
 
     const onSubmit = handleSubmit((formData) => {
-        console.log("formData: ", formData);
 
         formData.id = user?._id;
         if (role === 'Admin') {
+            formData.adminId = formData.userId;
+            formData.userId = undefined;
 
+            dispatch(updateAdmin(formData, token));
         } else if (role === 'Teacher') {
             formData.teacherId = formData.userId;
             formData.userId = undefined;
-            // dispatch(updateTeacher(token, formData));
+
+            dispatch(updateTeacher(formData, token));
         } else if (role === 'Student') {
             formData.studentId = formData.userId;
             formData.userId = undefined;
             formData.classId = user?.classId;
-            // dispatch(updateStudent(token, formData));
+
+            dispatch(updateStudent(formData, token));
         } else {
             formData.parentId = formData.userId;
             formData.userId = undefined;
-            // dispatch(updateParent(token, formData));
+
+            dispatch(updateParent(formData, token));
         }
-        console.log("formData: ", formData);
     });
 
     return (
         <div className="flex flex-col gap-2 mx-4">
-            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">Edit Profile</p>
+            <p className="bg-white dark:bg-slate-900 p-4 rounded-[6px] dark:text-gray-200 text-2xl font-medium shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">Settings</p>
 
             <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 flex flex-row gap-4 items-center justify-between shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
                 <UploadProfilePicture data={user} />
@@ -323,7 +325,7 @@ const Settings = () => {
                 </div>
             </form >
 
-            <UpdatePassword />
+            <UpdatePassword userId={user?.userId._id} />
         </div >
     );
 }

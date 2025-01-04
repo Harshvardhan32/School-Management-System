@@ -106,7 +106,7 @@ exports.deleteMessage = async (req, res) => {
 
 exports.getAllMessages = async (req, res) => {
     try {
-        const messageData = await Message.find();
+        const messageData = await Message.find().sort({ createdAt: -1 });
 
         return res.status(200).json({
             success: true,

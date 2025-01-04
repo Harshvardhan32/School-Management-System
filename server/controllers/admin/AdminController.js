@@ -3,7 +3,6 @@ const Teacher = require('../../models/Teacher');
 const User = require('../../models/User');
 
 exports.createAdmin = async (req, res) => {
-
     try {
         const {
             firstName,
@@ -99,7 +98,82 @@ exports.createAdmin = async (req, res) => {
 }
 
 exports.updateAdmin = async (req, res) => {
+    try {
+        const {
+            id,
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            bloodType,
+            dateOfBirth,
+            sex,
+            adminId,
+            remarks
+        } = req.body;
 
+        if (!id || !firstName || !email || !phone || !address || !sex || !adminId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please fill all required details!'
+            });
+        }
+
+        // Check for existing Admin by id
+        const existingAdmin = await Admin.findById(id).populate('userId');
+
+        if (!existingAdmin) {
+            return res.status(404).json({
+                success: false,
+                message: 'Admin not found with the given ID!'
+            });
+        }
+
+        if (email !== existingAdmin?.userId.email) {
+            // Check for existing user by email
+            const existingUser = await User.findOne({ email });
+
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User already registered with this email.'
+                });
+            }
+        }
+
+        // Update user profile
+        await User.findByIdAndUpdate(existingAdmin.userId, {
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            bloodType,
+            dateOfBirth,
+            sex,
+            remarks
+        });
+
+        // Update Admin Record
+        const updatedAdmin = await Admin.findByIdAndUpdate(id,
+            { adminId },
+            { new: true }
+        ).populate('userId');
+
+        return res.status(200).json({
+            success: true,
+            data: updatedAdmin,
+            message: 'Admin Updated Successfully!'
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: 'Internal Server Error!'
+        });
+    }
 }
 
 exports.getAdminDetails = async (req, res) => {

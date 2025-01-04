@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { GrAdd } from "react-icons/gr";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
-import { deleteParent, getAllParents } from "../../services/operations/parentAPI";
+import { useEffect, useState } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Table from "../../components/common/Table";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
+import { deleteParent, getAllParents } from "../../services/operations/parentAPI";
 
 const ParentList = () => {
 
@@ -41,7 +41,7 @@ const ParentList = () => {
             )
             : allParents;
 
-    // Filter logic
+    // Filter logic based on search query
     const filteredParent = roleBasedParent?.filter((parent) => {
         const matchesParentQuery = (parent.userId.firstName + ' ' + parent.userId.lastName).toLowerCase().includes(searchQuery.toLowerCase().trim());
         const matchesParentIdQuery = parent.parentId.toLowerCase().includes(searchQuery.toLowerCase().trim());
@@ -68,34 +68,35 @@ const ParentList = () => {
                     <img src={row?.userId.photo} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold dark:text-gray-200">{row?.userId.firstName} {row?.userId.lastName}</h3>
+                    <h3 className="font-semibold dark:text-gray-200 capitalize">{row?.userId.firstName} {row?.userId.lastName}</h3>
                     <p className="text-xs text-gray-500">{row?.parentId}</p>
                 </div>
             </div>,
+            className: 'p-4',
             isSortable: false,
         },
         {
             Header: 'Students',
             accessor: (row) => row?.students.length > 0 ? row?.students.map(student => { return student.userId.firstName + " " + student.userId.lastName }).join(', ') : '_',
-            className: 'hidden sm:table-cell',
+            className: 'hidden sm:table-cell p-4 capitalize',   
             isSortable: true,
         },
         {
             Header: 'Phone',
             accessor: (row) => row?.userId?.phone,
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Address',
             accessor: (row) => row?.userId?.address,
-            className: 'hidden md:table-cell',
+            className: 'hidden md:table-cell p-4 capitalize',
             isSortable: false,
         },
         {
             Header: 'Actions',
             accessor: 'action',
-            className: `${!(role === 'Admin' || role === 'Parent') && 'hidden'}`,
+            className: `${!(role === 'Admin' || role === 'Parent') && 'hidden'} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row?.original;

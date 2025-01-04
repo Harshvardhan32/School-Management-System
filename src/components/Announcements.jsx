@@ -9,9 +9,10 @@ const Announcements = () => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
 
+    // Fetching all announcements
     useEffect(() => {
         dispatch(getAllAnnouncement(token));
-    }, []);
+    }, [token]);
 
     const { allAnnouncements } = useSelector((state) => state?.announcement);
 
@@ -25,6 +26,7 @@ const Announcements = () => {
                         <Link to='/list/announcements' className="text-sm text-gray-400">View All</Link>
                     </div>
                     <div className="flex flex-col gap-4 mt-4">
+                        {/* Displaying the latest 3 announcements */}
                         {
                             allAnnouncements?.slice(0, 3).map((item) =>
                                 <div

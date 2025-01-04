@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
-import { setLoading, setParents } from "../../slices/parentSlice";
-import { parentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
+import { parentEndPoints } from "../apis";
+import { setLoading, setParents } from "../../slices/parentSlice";
 
 const {
     CREATE_PARENT_API,
@@ -21,7 +21,7 @@ export const createParent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE PARENT API RESPONSE............", response);
+            // console.log("CREATE PARENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -32,8 +32,8 @@ export const createParent = (data, token, setOpen) => {
             dispatch(getAllParents(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE PARENT API ERROR............", error.message);
-            toast.error(error?.message || 'Parent Creation Failed!');
+            // console.log("CREATE PARENT API ERROR............", error.message);
+            toast.error('Parent Creation Failed!');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(true));
@@ -52,7 +52,7 @@ export const updateParent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("UPDATE PARENT API RESPONSE............", response);
+            // console.log("UPDATE PARENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -61,10 +61,12 @@ export const updateParent = (data, token, setOpen) => {
             toast.dismiss(toastId);
             toast.success('Parent Updated Successfully!');
             dispatch(getAllParents(token));
-            setOpen(false);
+            if (data.students) {
+                setOpen(false);
+            }
         } catch (error) {
-            console.log("UPDATE PARENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Updation Failed!`);
+            // console.log("UPDATE PARENT API ERROR............", error.message);
+            toast.error('Parent Updation Failed!');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(true));
@@ -83,7 +85,7 @@ export const deleteParent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("DELETE PARENT API RESPONSE............", response);
+            // console.log("DELETE PARENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -94,8 +96,8 @@ export const deleteParent = (data, token, setOpen) => {
             dispatch(getAllParents(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE PARENT API ERROR............", error.message);
-            toast.error(error?.message || 'Parent Deletion Failed!');
+            // console.log("DELETE PARENT API ERROR............", error.message);
+            toast.error('Parent Deletion Failed!');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(true));
@@ -121,11 +123,10 @@ export const getAllParents = (token) => {
             }
 
             dispatch(setParents(response?.data?.data));
-
-            toast.success('Parents loaded successfully!');
+            // toast.success('Parents loaded successfully!');
         } catch (error) {
-            console.log("ALL PARENTS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load parents.');
+            // console.log("ALL PARENTS API ERROR............", error.message);
+            toast.error('Failed to load parents.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));

@@ -18,6 +18,7 @@ const {
 export const createTeacher = (data, token, setOpen) => {
     return async () => {
         const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
         try {
             const response = await apiConnector("POST", CREATE_TEACHER_API, data, {
@@ -25,7 +26,7 @@ export const createTeacher = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE TEACHER API RESPONSE............", response);
+            // console.log("CREATE TEACHER API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -36,17 +37,19 @@ export const createTeacher = (data, token, setOpen) => {
             dispatch(getAllTeachers(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE TEACHER API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            // console.log("CREATE TEACHER API ERROR............", error.message);
+            toast.error('Teacher Creation Failed!');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(false));
         }
     }
 }
 
 export const updateTeacher = (data, token, setOpen = true) => {
-    return async () => {
+    return async (dispatch) => {
         const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
         try {
             const response = await apiConnector("PUT", UPDATE_TEACHER_API, data, {
@@ -54,7 +57,7 @@ export const updateTeacher = (data, token, setOpen = true) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("UPDATE TEACHER API RESPONSE............", response);
+            // console.log("UPDATE TEACHER API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -63,12 +66,15 @@ export const updateTeacher = (data, token, setOpen = true) => {
             toast.dismiss(toastId);
             toast.success('Teacher Updated Successfully!');
             dispatch(getAllTeachers(token));
-            setOpen(false);
+            if (data.classes) {
+                setOpen(false);
+            }
         } catch (error) {
-            console.log("UPDATE TEACHER API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Updation Failed!`);
+            // console.log("UPDATE TEACHER API ERROR............", error.message);
+            toast.error('Teacher Updation Failed!');
         } finally {
             toast.dismiss(toastId);
+            dispatch(setLoading(false));
         }
     }
 }
@@ -84,7 +90,7 @@ export const deleteTeacher = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("DELETE TEACHER API RESPONSE............", response);
+            // console.log("DELETE TEACHER API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -95,8 +101,8 @@ export const deleteTeacher = (data, token, setOpen) => {
             dispatch(getAllTeachers(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE TEACHER API ERROR............", error.message);
-            toast.error(error?.message || 'Teacher Deletion Failed!');
+            // console.log("DELETE TEACHER API ERROR............", error.message);
+            toast.error('Teacher Deletion Failed!');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(true));
@@ -122,17 +128,16 @@ export const getAllTeachers = (token) => {
             }
 
             dispatch(setTeachers(response?.data?.data));
-            toast.dismiss(toastId);
-            toast.success('Teachers loaded successfully!');
+            // toast.success('Teachers loaded successfully!');
         } catch (error) {
-            console.log("ALL TEACHERS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load teachers.');
+            // console.log("ALL TEACHERS API ERROR............", error.message);
+            toast.error('Failed to load teachers.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));
         }
     };
-};
+}
 
 export const getTeacherDetails = (token, teacherId) => {
     return async (dispatch) => {
@@ -153,13 +158,13 @@ export const getTeacherDetails = (token, teacherId) => {
             }
 
             dispatch(setTeacherDetails(response?.data?.data));
-            toast.success('Teachers details fetched successfully!');
+            // toast.success('Teachers details fetched successfully!');
         } catch (error) {
-            console.log("TEACHER DETAILS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load teacher details.');
+            // console.log("TEACHER DETAILS API ERROR............", error.message);
+            toast.error('Failed to load teacher details.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // End loading
+            dispatch(setLoading(false));
         }
     };
-};
+}

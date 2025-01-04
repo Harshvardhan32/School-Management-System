@@ -1,14 +1,16 @@
-import { authEndPoints } from '../apis';
-import { setLoading, setToken } from "../../slices/authSlice";
-import { setUser } from "../../slices/profileSlice";
 import toast from "react-hot-toast";
+import { authEndPoints, settingsEndPoints } from '../apis';
 import apiConnector from "../apiConnect";
+import { setUser } from "../../slices/profileSlice";
+import { setLoading, setToken } from "../../slices/authSlice";
 
 const {
     LOGIN_API,
     RESET_PASSWORD_TOKEN_API,
     RESET_PASSWORD_API
 } = authEndPoints;
+
+const { CHANGE_PASSWORD_API } = settingsEndPoints;
 
 export const login = (data) => {
     return async (dispatch) => {
@@ -21,7 +23,7 @@ export const login = (data) => {
                 password: data?.password
             });
 
-            console.log("LOGIN API RESPONSE............", response);
+            // console.log("LOGIN API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -47,8 +49,8 @@ export const login = (data) => {
                 })
             );
         } catch (error) {
-            console.log("LOGIN API ERROR............", error.message);
-            toast.error(error?.message || "Login Failed!");
+            // console.log("LOGIN API ERROR............", error.message);
+            toast.error("Login Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -72,7 +74,7 @@ export const checkAuthExpiration = () => {
             }
         }
     };
-};
+}
 
 export const logout = (navigate) => {
     return (dispatch) => {
@@ -92,7 +94,7 @@ export const resetPasswordToken = (email, setEmailSent) => {
         try {
             const response = await apiConnector("POST", RESET_PASSWORD_TOKEN_API, { email });
 
-            console.log("RESET PASSWORD TOKEN API RESPONSE............", response);
+            // console.log("RESET PASSWORD TOKEN API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -102,7 +104,7 @@ export const resetPasswordToken = (email, setEmailSent) => {
             toast.dismiss(toastId);
             toast.success("Reset Email Sent Successfully!");
         } catch (error) {
-            console.log("LOGIN API ERROR............", error.message);
+            // console.log("LOGIN API ERROR............", error.message);
             toast.error('Failed to send email for resetting password.');
         } finally {
             dispatch(setLoading(false));
@@ -124,7 +126,7 @@ export const resetPassword = (data, token) => {
                     token
                 });
 
-            console.log("RESET PASSWORD API RESPONSE............", response);
+            // console.log("RESET PASSWORD API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -133,10 +135,37 @@ export const resetPassword = (data, token) => {
             toast.dismiss(toastId);
             toast.success("Password Reset Successfully!");
         } catch (error) {
-            console.log("LOGIN API ERROR............", error.message);
+            // console.log("LOGIN API ERROR............", error.message);
             toast.error('Failed to reset password.');
         } finally {
             dispatch(setLoading(false));
+            toast.dismiss(toastId);
+        }
+    }
+}
+
+export const changePassword = (data, token) => {
+    return async () => {
+        const toastId = toast.loading("Loading...");
+
+        try {
+            const response = await apiConnector("PUT", CHANGE_PASSWORD_API, data, {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            });
+
+            // console.log("CHANGE PASSWORD API RESPONSE............", response);
+
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message || "Something went wrong!");
+            }
+
+            toast.dismiss(toastId);
+            toast.success("Password Updated Successfully!");
+        } catch (error) {
+            // console.log("CHANGE PASSWORD API ERROR............", error.message);
+            toast.error('Failed to update password.');
+        } finally {
             toast.dismiss(toastId);
         }
     }

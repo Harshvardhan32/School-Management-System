@@ -1,13 +1,13 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { deleteLesson, getAllLessons } from "../../services/operations/lessonAPI";
 import { GrAdd } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Table from "../../components/common/Table";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
+import { deleteLesson, getAllLessons } from "../../services/operations/lessonAPI";
 
 const LessonList = () => {
 
@@ -20,17 +20,15 @@ const LessonList = () => {
     const { token } = useSelector((state) => state?.auth);
     const { allLessons } = useSelector((state) => state?.lesson);
 
-    // Fetch lessons
     useEffect(() => {
         dispatch(getAllLessons(token));
     }, [token, dispatch]);
 
-    // Handle page change
     const handlePageChange = (page) => {
         setCurrentPage(page);
     }
 
-    // Filter logic
+    // Filter logic based on search query
     const filteredLessons = allLessons?.filter((lesson) => {
         const matchesTitleSearch = lesson?.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
         const matchesDescriptionSearch = lesson?.description.toLowerCase().includes(searchQuery.toLowerCase().trim());
@@ -38,7 +36,7 @@ const LessonList = () => {
         return (matchesTitleSearch || matchesDescriptionSearch);
     });
 
-    // Pagination logic
+    // Pagination logic based on filtered lessons
     const totalPages = Math.ceil(filteredLessons?.length / itemsPerPage);
     const paginatedLessons = filteredLessons.slice(
         (currentPage - 1) * itemsPerPage,
@@ -49,7 +47,7 @@ const LessonList = () => {
         {
             Header: "Lesson Name",
             accessor: "title",
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
@@ -58,13 +56,13 @@ const LessonList = () => {
                 row?.description.length > 20
                     ? `${row?.description.slice(0, 50)}...`
                     : row?.description,
-            className: "hidden sm:table-cell",
+            className: "hidden sm:table-cell p-4 capitalize",
             isSortable: false,
         },
         {
             Header: "Actions",
             accessor: "action",
-            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"}`,
+            className: `${!(role === 'Admin' || role === 'Teacher') && "hidden"} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;

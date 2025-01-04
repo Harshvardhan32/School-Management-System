@@ -231,7 +231,7 @@ exports.getAllSubjects = async (req, res) => {
                     path: 'userId'
                 }
             })
-            .populate('lessons');
+            .populate('lessons').sort({ subjectName: 1 });
 
         return res.status(200).json({
             success: true,

@@ -7,6 +7,7 @@ const cloudinaryConnect = () => {
         api_key: process.env.API_KEY,
         api_secret: process.env.API_SECRET,
     });
+    console.log('Cloudinary Connected Successfully!');
 }
 
 module.exports = cloudinaryConnect;

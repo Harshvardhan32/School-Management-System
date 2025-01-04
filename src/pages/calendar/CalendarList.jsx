@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { GrAdd } from "react-icons/gr";
 import { FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Table from "../../components/common/Table";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
-import { deleteCalendar, getAllCalendars } from "../../services/operations/calendarAPI";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { getAllCalendars } from "../../services/operations/calendarAPI";
 
 const CalendarList = () => {
 
@@ -29,42 +29,40 @@ const CalendarList = () => {
         setCurrentPage(page);
     }
 
+    // filter data based on search query
     const searchedData = allCalendars?.filter((calendar) => {
         const normalizeQuery = searchQuery.toLowerCase().trim();
 
         const matchedClassSearch = calendar?.classId.className.toLowerCase().includes(normalizeQuery);
-
         const matchedDaySearch = calendar?.dayOfWeek.toLowerCase().includes(normalizeQuery)
-
         return allCalendars && (matchedClassSearch || matchedDaySearch);
     })
 
-    // Pagination logic
+    // Pagination logic based on search data
     const totalPages = Math.ceil(searchedData?.length / itemsPerPage);
     const paginatedCalendars = searchedData?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
-    console.log("allCalendars: ", allCalendars);
-
+    // create column for the calendar
     const columns = [
         {
             Header: 'Day',
             accessor: 'dayOfWeek',
-            className: 'font-medium ',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: 'Class',
             accessor: 'classId.className',
-            className: 'hidden min-[440px]:table-cell',
+            className: 'hidden min-[440px]:table-cell p-4',
             isSortable: true,
         },
         {
             Header: 'Actions',
             accessor: "actions",
-            className: `${role !== 'Admin' && 'hidden'}`,
+            className: `${role !== 'Admin' && 'hidden'} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -81,7 +79,6 @@ const CalendarList = () => {
                             type='delete'
                             Icon={RiDeleteBin6Line}
                             data={data}
-                            deleteFunction={deleteCalendar}
                         />
                     </div>
                 );

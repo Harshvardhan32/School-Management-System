@@ -32,7 +32,7 @@ const StudentList = () => {
         setCurrentPage(page);
     }
 
-    // Role based data
+    // Role-based filtering of students
     const roleBasedStudent = role === 'Parent'
         ? allStudents.filter((student) =>
             user?.students?.some((userStudent) =>
@@ -47,18 +47,13 @@ const StudentList = () => {
             )
             : allStudents;
 
-    // Filter logic
+    // Filter logic based on search query
     const filteredStudents = roleBasedStudent?.filter((student) => {
         const matchesStudentSearch = (student?.userId.firstName + ' ' + student?.userId.lastName).toLowerCase().includes(searchQuery.toLowerCase().trim());
-
         const matchesEmailSearch = student?.userId.email?.toLowerCase().includes(searchQuery.toLowerCase().trim());
-
         const matchesStudentIdSearch = student?.studentId?.toLowerCase().includes(searchQuery.toLowerCase().trim());
-
         const matchesClassSearch = student?.classId.className.toLowerCase().includes(searchQuery.toLowerCase().trim());
-
         const matchesPhoneSearch = student?.userId.phone.toString().includes(searchQuery.trim());
-
         const matchesAddressSearch = student?.userId.address.toLowerCase().includes(searchQuery.toLowerCase().trim());
 
         return (matchesStudentSearch || matchesEmailSearch || matchesStudentIdSearch || matchesClassSearch || matchesPhoneSearch || matchesAddressSearch);
@@ -79,7 +74,7 @@ const StudentList = () => {
                     <img src={row?.userId.photo || '/noAvatar.png'} alt="" className="w-10 h-10 md:hidden xl:block rounded-full object-cover" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold dark:text-gray-200">{row?.userId.firstName} {row?.userId.lastName}</h3>
+                    <h3 className="font-semibold dark:text-gray-200 capitalize">{row?.userId.firstName} {row?.userId.lastName}</h3>
                     <p className="text-xs text-gray-500">{row?.userId.email}</p>
                 </div>
             </div>,
@@ -107,13 +102,13 @@ const StudentList = () => {
         {
             Header: 'Address',
             accessor: 'userId.address',
-            className: 'hidden lg:table-cell p-4',
+            className: 'hidden lg:table-cell p-4 capitalize',
             isSortable: false,
         },
         {
             Header: 'Actions',
             accessor: 'action',
-            className: 'p-4',
+            className: 'p-4 table-cell',
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;

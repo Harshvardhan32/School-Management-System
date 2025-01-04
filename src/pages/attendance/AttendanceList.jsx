@@ -52,7 +52,7 @@ const AttendanceList = () => {
 
         if (selectedDate) {
             if (dateBasedAttendance.length > 0) {
-                allData = dateBasedAttendance[0]?.studentAttendance.map((attendance) => ({
+                allData = dateBasedAttendance[0]?.studentAttendance?.map((attendance) => ({
                     type: 'update',
                     id: dateBasedAttendance[0]._id,
                     studentId: attendance.student._id,
@@ -89,6 +89,7 @@ const AttendanceList = () => {
             const matchedStudentSearch = data?.studentName?.toLowerCase().includes(normalizedSearchQuery);
             const matchedRollNumberSearch = String(data?.rollNumber).includes(searchQuery.trim());
             const matchedClassSearch = data?.className?.toLowerCase().includes(normalizedSearchQuery);
+
             return matchedStudentSearch || matchedRollNumberSearch || matchedClassSearch;
         });
     }, [searchQuery, attendanceData]);
@@ -104,14 +105,14 @@ const AttendanceList = () => {
     const classOptions = useMemo(() => {
         let allClass = [...allClasses];
         if (role !== 'Admin') {
-            allClass = user?.classes;
+            allClass = [...user?.classes];
         }
         return allClass?.sort((a, b) => (a.className < b.className ? -1 : 1))
-            .map((classItem) => ({
+            ?.map((classItem) => ({
                 label: classItem?.className,
                 value: classItem?._id,
             }));
-    }, [allClasses, user?.classes]);
+    }, [allClasses, user?.classes, role]);
 
     // Memoized status change handler
     const handleStatusChange = (studentId, newStatus) => {
@@ -155,24 +156,24 @@ const AttendanceList = () => {
         {
             Header: "Roll No.",
             accessor: "rollNumber",
-            className: "font-medium",
+            className: "font-medium p-4",
             isSortable: true,
         },
         {
             Header: "Student Name",
             accessor: "studentName",
-            className: "hidden sm:table-cell",
+            className: "hidden sm:table-cell p-4 capitalize",
             isSortable: true,
         },
         {
             Header: "Class",
             accessor: "className",
-            className: "hidden md:table-cell",
+            className: "hidden md:table-cell p-4",
             isSortable: true,
         },
         {
             Header: "Present",
-            className: "hidden sm:table-cell",
+            className: "hidden sm:table-cell p-4",
             isSortable: false,
             Cell: ({ row }) => (
                 <input
@@ -185,7 +186,7 @@ const AttendanceList = () => {
         },
         {
             Header: "Absent",
-            className: "hidden sm:table-cell",
+            className: "hidden sm:table-cell p-4",
             isSortable: false,
             Cell: ({ row }) => (
                 <input
@@ -196,56 +197,65 @@ const AttendanceList = () => {
                 />
             ),
         }
-    ]
+    ];
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
-            <div className="flex items-center justify-between gap-4">
-                <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Attendance</h1>
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
-                    <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <div className='min-h-[60vh]'>
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[6px] flex-1 mx-4 shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                {/* Header Section with Title and Search Bar */}
+                <div className="flex items-center justify-between gap-4">
+                    <h1 className="hidden md:block text-lg font-semibold dark:text-gray-200">All Attendance</h1>
+                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
+                        {/* Search Bar for filtering attendance records */}
+                        <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </div>
                 </div>
-            </div>
 
-            <div className="max-w-[500px] flex flex-wrap items-center justify-between gap-4 py-2">
-                <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-sm font-semibold dark:text-gray-200">Date</label>
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        placeholder="Date of Birth"
-                        className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
-                    />
+                {/* Filter Section for Date and Class */}
+                <div className="max-w-[500px] flex flex-wrap items-center justify-between gap-4 py-2">
+                    {/* Date Filter */}
+                    <div className="flex flex-col gap-2 flex-1">
+                        <label className="text-sm font-semibold dark:text-gray-200">Date</label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            placeholder="Date of Birth"
+                            className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
+                        />
+                    </div>
+                    {/* Class Filter */}
+                    <div className="min-w-[150px] flex flex-col gap-2 flex-1">
+                        <label className="text-sm font-semibold dark:text-gray-200">Class</label>
+                        <Select
+                            options={classOptions}
+                            placeholder="Select Class"
+                            value={selectedClass}
+                            onChange={setSelectedClass}
+                            getOptionLabel={(e) => e.label}
+                            getOptionValue={(e) => e.value}
+                            styles={customStyles(darkMode)}
+                            isSearchable
+                        />
+                    </div>
                 </div>
-                <div className="min-w-[150px] flex flex-col gap-2 flex-1">
-                    <label className="text-sm font-semibold dark:text-gray-200">Class</label>
-                    <Select
-                        options={classOptions}
-                        placeholder="Select Class"
-                        value={selectedClass}
-                        onChange={setSelectedClass}
-                        getOptionLabel={(e) => e.label}
-                        getOptionValue={(e) => e.value}
-                        styles={customStyles(darkMode)}
-                        isSearchable
-                    />
+
+                {/* Attendance Table */}
+                <div>
+                    <Table columns={columns} data={studentsData} />
                 </div>
-            </div>
 
-            <div>
-                <Table columns={columns} data={studentsData} />
-            </div>
-
-            <div className="flex justify-end pt-5">
-                {studentsData?.length > 0 && (
-                    <button
-                        onClick={submitHandler}
-                        className="bg-[#51DFC3] text-gray-800 font-semibold py-2 px-4 rounded-[6px]"
-                    >
-                        Submit
-                    </button>
-                )}
+                {/* Submit Button to submit attendance */}
+                <div className="flex justify-end pt-5">
+                    {studentsData?.length > 0 && (
+                        <button
+                            onClick={submitHandler}
+                            className="bg-[#51DFC3] text-gray-800 font-semibold py-2 px-4 rounded-[6px]"
+                        >
+                            Submit
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );

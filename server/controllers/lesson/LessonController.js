@@ -125,7 +125,7 @@ exports.deleteLesson = async (req, res) => {
 
 exports.getAllLessons = async (req, res) => {
     try {
-        const lessonData = await Lesson.find();
+        const lessonData = await Lesson.find().sort({ title: 1 });
 
         return res.status(200).json({
             success: true,

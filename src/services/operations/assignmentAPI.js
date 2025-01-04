@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
+import apiConnector from "../apiConnect";
 import { assignmentEndPoints } from "../apis";
 import { setAssignments, setLoading } from "../../slices/assignmentSlice";
-import apiConnector from "../apiConnect";
 
 const {
     CREATE_ASSIGNMENT_API,
@@ -24,7 +24,7 @@ export const createAssignment = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE ASSIGNMENT API RESPONSE............", response);
+            // console.log("CREATE ASSIGNMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -35,8 +35,8 @@ export const createAssignment = (data, token, setOpen) => {
             dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE ASSIGNMENT API ERROR............", error.message);
-            toast.error(error?.message || "Assignment Creation Failed!");
+            // console.log("CREATE ASSIGNMENT API ERROR............", error.message);
+            toast.error("Assignment Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -57,7 +57,7 @@ export const updateAssignment = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE ASSIGNMENT API RESPONSE............", response);
+            // console.log("UPDATE ASSIGNMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -68,8 +68,8 @@ export const updateAssignment = (data, token, setOpen) => {
             dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE ASSIGNMENT API ERROR............", error.message);
-            toast.error(error?.message || "Assignment Updation Failed!");
+            // console.log("UPDATE ASSIGNMENT API ERROR............", error.message);
+            toast.error("Assignment Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -90,7 +90,7 @@ export const deleteAssignment = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE ASSIGNMENT API RESPONSE............", response);
+            // console.log("DELETE ASSIGNMENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,8 +101,8 @@ export const deleteAssignment = (data, token, setOpen) => {
             dispatch(getAllAssignments(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE ASSIGNMENT API ERROR............", error.message);
-            toast.error(error?.message || "Assignment Deletion Failed!");
+            // console.log("DELETE ASSIGNMENT API ERROR............", error.message);
+            toast.error("Assignment Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -127,12 +127,12 @@ export const getAllAssignments = (token) => {
                 throw new Error(response?.data?.message || "Failed to fetch assignments.");
             }
 
-            dispatch(setAssignments(response.data.data));
+            dispatch(setAssignments(response?.data?.data));
 
-            toast.success('Assignments loaded successfully!');
+            // toast.success('Assignments loaded successfully!');
         } catch (error) {
-            console.log("ALL ASSIGNMENT API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load assignments.');
+            // console.log("ALL ASSIGNMENT API ERROR............", error.message);
+            toast.error('Failed to load assignments.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false)); // Set loading to false

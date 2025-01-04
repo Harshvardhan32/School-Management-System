@@ -23,7 +23,7 @@ export const createCalendar = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE CLASS API RESPONSE............", response);
+            // console.log("CREATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -35,7 +35,7 @@ export const createCalendar = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("CREATE CLASS API ERROR............", error.message);
-            toast.error(error?.message || "Class Creation Failed!");
+            toast.error("Class Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -57,7 +57,7 @@ export const updateCalendar = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE CLASS API RESPONSE............", response);
+            // console.log("UPDATE CLASS API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -69,47 +69,12 @@ export const updateCalendar = (data, token, setOpen) => {
             setOpen(false);
         } catch (error) {
             // console.log("UPDATE CLASS API ERROR............", error.message);
-            toast.error(error?.message || "Class Updation Failed!");
+            toast.error("Class Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
         }
     }
-}
-
-export const deleteCalendar = (data, token, setOpen) => {
-    // return async (dispatch) => {
-    //     const toastId = toast.loading('Loading...');
-    //     dispatch(setLoading(true));
-
-    //     try {
-    //         const response = await apiConnector("PUT", UPDATE_CALENDAR_API,
-    //             data,
-    //             {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`
-    //             }
-    //         );
-
-    //         console.log("UPDATE CLASS API RESPONSE............", response);
-
-    //         if (!response?.data?.success) {
-    //             throw new Error(response?.data?.message || "Something went wrong!");
-    //         }
-
-    //         toast.dismiss(toastId);
-    //         toast.success('Class Updated Successfully!');
-    //         setOpen(false);
-    //     } catch (error) {
-    //         // console.log("UPDATE CLASS API ERROR............", error.message);
-    //         toast.error(error?.message || "Class Updation Failed!");
-    //     } finally {
-    //         dispatch(setLoading(false));
-    //         toast.dismiss(toastId);
-    //     }
-    // }
-
-    console.log("Deleted calendar successfully!");
 }
 
 export const getAllCalendars = (token) => {
@@ -128,8 +93,8 @@ export const getAllCalendars = (token) => {
                 throw new Error(response?.data?.message);
             }
 
-            dispatch(setAllCalendars(response.data.data));
-            toast.success('Calendar loaded successfully!');
+            dispatch(setAllCalendars(response?.data?.data));
+            // toast.success('Calendar loaded successfully!');
         } catch (error) {
             console.error("Error fetching calendar:", error.message);
             toast.error('Failed to load calendar.');

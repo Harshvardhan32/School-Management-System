@@ -172,7 +172,7 @@ exports.getAllAssignments = async (req, res) => {
                 populate: {
                     path: 'userId'
                 }
-            });
+            }).sort({ assignedDate: 1 });
 
         return res.status(200).json({
             success: true,

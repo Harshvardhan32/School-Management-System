@@ -20,10 +20,12 @@ const Parent = () => {
     const { darkMode } = useContext(ThemeContext);
     const styles = customStyles(darkMode);
 
+    // Fetch all calendars
     useEffect(() => {
         dispatch(getAllCalendars(token));
     }, [token]);
 
+    // Generate options for the student
     const studentOptions = user?.students.map((student) => {
         return {
             label: `${student.userId.firstName} ${student.userId.lastName}`,
@@ -31,8 +33,10 @@ const Parent = () => {
         }
     }) || [];
 
+    // Filter calendars for the selected student
     const studentCalendar = studentId && allCalendars?.filter((calendar) => calendar.classId._id.toString() === studentId);
 
+    // Memoize events based on the selected student and calendar data
     const events = useMemo(() => {
         if (!studentId || !allCalendars) return [];
 
@@ -78,10 +82,11 @@ const Parent = () => {
 
     return (
         <div className="w-[98.5%] p-4 flex gap-4 flex-col 2xl:flex-row">
-            {/* LEFT */}
+            {/* LEFT Section */}
             <div className="w-full 2xl:w-2/3 flex flex-col gap-8">
                 <div className="h-[1300px] flex flex-col gap-4 bg-white dark:bg-slate-900 rounded-[6px] p-4">
                     <h1 className="text-xl dark:text-gray-200 font-semibold">Schedule</h1>
+                    {/* Student Select Dropdown */}
                     <Select
                         name='supervisor'
                         options={studentOptions}
@@ -91,12 +96,15 @@ const Parent = () => {
                         styles={styles}
                         className="max-w-[300px] w-full"
                     />
+                    {/* Display Big Calendar */}
                     <BigCalender events={events} />
                 </div>
             </div>
-            {/* RIGHT */}
+            {/* RIGHT Section */}
             <div className="w-full 2xl:w-1/3 flex flex-col gap-8">
+                {/* Event Calendar Component */}
                 <EventCalendar />
+                {/* Announcements Component */}
                 <Announcements />
             </div>
         </div>

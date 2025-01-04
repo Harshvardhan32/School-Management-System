@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrAdd } from "react-icons/gr";
 import { FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { LuListFilter } from "react-icons/lu";
-import { deleteClass, getAllClasses } from "../../services/operations/classAPI";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Table from "../../components/common/Table";
 import FormModal from "../../components/FormModal";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../components/common/Pagination";
 import TableSearch from "../../components/common/TableSearch";
+import { deleteClass, getAllClasses } from "../../services/operations/classAPI";
 
 const ClassList = () => {
 
@@ -25,6 +25,7 @@ const ClassList = () => {
     const classNames = allClasses?.map((item) => item?.className) || [];
     const { role } = user?.userId;
 
+    // Fetch all classes
     useEffect(() => {
         dispatch(getAllClasses(token));
     }, [token, dispatch]);
@@ -33,6 +34,7 @@ const ClassList = () => {
         setCurrentPage(page);
     }
 
+    // Filter classes based on user role (Teacher or other roles)
     const roleBasedClasses = role === 'Teacher'
         ? allClasses.filter((classItem) =>
             user?.classes.some((userClasses) =>
@@ -41,36 +43,36 @@ const ClassList = () => {
         )
         : allClasses;
 
-    // Filter logic
+    // Filter classes based on search query and capacity range
     const filteredClasses = roleBasedClasses?.filter((data) => {
         const isAfterCapacity = !capacity.start || data.capacity >= capacity.start;
         const isBeforeCapacity = !capacity.end || data.capacity <= capacity.end;
-
         const matchesClassSearch = data.className.toLowerCase().includes(searchQuery.toLowerCase().trim());
         const matchesCapacitySearch = data?.capacity.toString().includes(searchQuery.trim());
-
         const matchesSupervisorSearch = data?.supervisor && (data?.supervisor.userId.firstName + ' ' + data?.supervisor.userId.lastName).toLowerCase().includes(searchQuery.toLowerCase().trim());
+
         return (isAfterCapacity && isBeforeCapacity && (matchesClassSearch || matchesCapacitySearch || matchesSupervisorSearch));
     });
 
-    // Pagination logic
+    // Calculate total pages based on filtered classes
     const totalPages = Math.ceil(filteredClasses?.length / itemsPerPage);
     const paginatedClasses = filteredClasses.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
+    // Define table columns and their behavior
     const columns = [
         {
             Header: 'Class Name',
             accessor: 'className',
-            className: 'font-medium',
+            className: 'font-medium p-4',
             isSortable: true,
         },
         {
             Header: 'Capacity',
             accessor: 'capacity',
-            className: 'hidden min-[440px]:table-cell',
+            className: 'hidden min-[440px]:table-cell p-4',
             isSortable: true,
         },
         {
@@ -79,13 +81,13 @@ const ClassList = () => {
                 row.supervisor
                     ? `${row.supervisor.userId.firstName} ${row.supervisor.userId.lastName}`
                     : '_',
-            className: 'hidden sm:table-cell',
+            className: 'hidden sm:table-cell p-4 capitalize',
             isSortable: true,
         },
         {
             Header: "Actions",
             accessor: "actions",
-            className: `${role !== 'Admin' && 'hidden'}`,
+            className: `${role !== 'Admin' && 'hidden'} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -120,12 +122,15 @@ const ClassList = () => {
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
                         <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                         <div className="relative flex items-center gap-4 self-end">
+                            {/* Filter button */}
                             <button
                                 onClick={() => setShowFilter(!showFilter)}
                                 className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                             >
                                 <LuListFilter fontSize={18} color='#4b5563' />
                             </button>
+
+                            {/* Filter options */}
                             {showFilter && (
                                 <div className="absolute top-10 right-0 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
                                     <div className="min-w-[150px] flex flex-col gap-2 text-xs dark:text-gray-200">
@@ -147,6 +152,7 @@ const ClassList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Clear filter button */}
                                     <button
                                         onClick={() => { setCapacity({ start: '', end: '' }); setShowFilter(false) }}
                                         className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
@@ -155,6 +161,7 @@ const ClassList = () => {
                                     </button>
                                 </div>
                             )}
+                            {/* Create class button (Admin only) */}
                             {role === 'Admin' &&
                                 <FormModal table='class' type='create' Icon={GrAdd} allData={classNames} />
                             }

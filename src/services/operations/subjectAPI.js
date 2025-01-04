@@ -23,7 +23,7 @@ export const createSubject = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE SUBJECT API RESPONSE............", response);
+            // console.log("CREATE SUBJECT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -34,8 +34,8 @@ export const createSubject = (data, token, setOpen) => {
             dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE SUBJECT API ERROR............", error.message);
-            toast.error(error?.message || "Subject Creation Failed!");
+            // console.log("CREATE SUBJECT API ERROR............", error.message);
+            toast.error("Subject Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -56,7 +56,7 @@ export const updateSubject = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE SUBJECT API RESPONSE............", response);
+            // console.log("UPDATE SUBJECT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -67,8 +67,8 @@ export const updateSubject = (data, token, setOpen) => {
             dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE SUBJECT API ERROR............", error.message);
-            toast.error(error?.message || "Subject Updation Failed!");
+            // console.log("UPDATE SUBJECT API ERROR............", error.message);
+            toast.error("Subject Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -89,7 +89,7 @@ export const deleteSubject = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE SUBJECT API RESPONSE............", response);
+            // console.log("DELETE SUBJECT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -100,8 +100,8 @@ export const deleteSubject = (data, token, setOpen) => {
             dispatch(getAllSubjects(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE SUBJECT API ERROR............", error.message);
-            toast.error(error?.message || "Subject Deletion Failed!");
+            // console.log("DELETE SUBJECT API ERROR............", error.message);
+            toast.error("Subject Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -127,14 +127,13 @@ export const getAllSubjects = (token) => {
             }
 
             dispatch(setAllSubjects(response?.data.data));
-
-            toast.success('Subjects loaded successfully!');
+            // toast.success('Subjects loaded successfully!');
         } catch (error) {
-            console.error("Error fetching subjects:", error.message);
-            toast.error(error.message || 'Failed to load subjects.');
+            // console.error("Error fetching subjects:", error.message);
+            toast.error('Failed to load subjects.');
         } finally {
             toast.dismiss(toastId);
-            dispatch(setLoading(false)); // Set loading to false
+            dispatch(setLoading(false));
         }
     };
 }

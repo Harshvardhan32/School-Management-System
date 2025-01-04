@@ -1,11 +1,11 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import * as z from 'zod';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "../services/operations/authAPI";
+import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 
 const Login = () => {
 

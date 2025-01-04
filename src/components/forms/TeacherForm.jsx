@@ -128,7 +128,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
             dispatch(createTeacher(formData, token, setOpen));
         } else {
             formData.id = data._id;
-            // dispatch(updateTeacher(formData, token, setOpen));
+            dispatch(updateTeacher(formData, token, setOpen));
         }
         console.log(formData);
     });

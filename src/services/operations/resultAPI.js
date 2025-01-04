@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
+import apiConnector from "../apiConnect";
 import { resultEndPoints } from "../apis";
 import { setLoading, setResultDetails, setResults } from "../../slices/resultSlice";
-import apiConnector from "../apiConnect";
 
 const {
     CREATE_RESULT_API,
@@ -24,7 +24,7 @@ export const createResult = (data, token, setOpen) => {
                 }
             );
 
-            console.log("CREATE RESULT API RESPONSE............", response);
+            // console.log("CREATE RESULT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -35,8 +35,8 @@ export const createResult = (data, token, setOpen) => {
             dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE RESULT API ERROR............", error.message);
-            toast.error(error?.message || "Result Creation Failed!");
+            // console.log("CREATE RESULT API ERROR............", error.message);
+            toast.error("Result Creation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -57,7 +57,7 @@ export const updateResult = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE RESULT API RESPONSE............", response);
+            // console.log("UPDATE RESULT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -68,8 +68,8 @@ export const updateResult = (data, token, setOpen) => {
             dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE RESULT API ERROR............", error.message);
-            toast.error(error?.message || "Result Updation Failed!");
+            // console.log("UPDATE RESULT API ERROR............", error.message);
+            toast.error("Result Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -90,7 +90,7 @@ export const deleteResult = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE RESULT API RESPONSE............", response);
+            // console.log("DELETE RESULT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,7 +101,7 @@ export const deleteResult = (data, token, setOpen) => {
             dispatch(getAllResults(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE RESULT API ERROR............", error.message);
+            // console.log("DELETE RESULT API ERROR............", error.message);
             toast.error("Result Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
@@ -128,10 +128,9 @@ export const getAResult = (resultId, token) => {
             }
 
             dispatch(setResultDetails(response?.data?.data));
-
-            toast.success('Result loaded successfully!');
+            // toast.success('Result details loaded successfully!');
         } catch (error) {
-            console.log("ALL RESULTS API ERROR............", error.message);
+            // console.log("ALL RESULTS API ERROR............", error.message);
             toast.error('Failed to load result.');
         } finally {
             toast.dismiss(toastId);
@@ -158,11 +157,10 @@ export const getAllResults = (token) => {
             }
 
             dispatch(setResults(response?.data?.data));
-
-            toast.success('Results loaded successfully!');
+            // toast.success('Results loaded successfully!');
         } catch (error) {
-            console.log("ALL RESULTS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load results.');
+            // console.log("ALL RESULTS API ERROR............", error.message);
+            toast.error('Failed to load results.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));

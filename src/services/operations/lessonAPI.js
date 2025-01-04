@@ -57,7 +57,7 @@ export const updateLesson = (data, token, setOpen) => {
                 }
             );
 
-            console.log("UPDATE LESSON API RESPONSE............", response);
+            // console.log("UPDATE LESSON API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -68,8 +68,8 @@ export const updateLesson = (data, token, setOpen) => {
             dispatch(getAllLessons(token));
             setOpen(false);
         } catch (error) {
-            console.log("UPDATE LESSON API ERROR............", error.message);
-            toast.error(error?.message || "Lesson Updation Failed!");
+            // console.log("UPDATE LESSON API ERROR............", error.message);
+            toast.error("Lesson Updation Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -90,7 +90,7 @@ export const deleteLesson = (data, token, setOpen) => {
                 }
             );
 
-            console.log("DELETE LESSON API RESPONSE............", response);
+            // console.log("DELETE LESSON API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -101,8 +101,8 @@ export const deleteLesson = (data, token, setOpen) => {
             dispatch(getAllLessons(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE LESSON API ERROR............", error.message);
-            toast.error(error?.message || "Lesson Deletion Failed!");
+            // console.log("DELETE LESSON API ERROR............", error.message);
+            toast.error("Lesson Deletion Failed!");
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);
@@ -127,12 +127,11 @@ export const getAllLessons = (token) => {
                 throw new Error(response?.data?.message || "Something went wrong!");
             }
 
-            dispatch(setAllLessons(response.data.data));
-
-            toast.success('Lessons loaded successfully!');
+            dispatch(setAllLessons(response?.data?.data));
+            // toast.success('Lessons loaded successfully!');
         } catch (error) {
-            console.log("ALL LESSONS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load lessons.');
+            // console.log("ALL LESSONS API ERROR............", error.message);
+            toast.error('Failed to load lessons.');
         } finally {
             dispatch(setLoading(false));
             toast.dismiss(toastId);

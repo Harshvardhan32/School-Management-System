@@ -133,7 +133,9 @@ exports.deleteEvent = async (req, res) => {
 
 exports.getAllEvents = async (req, res) => {
     try {
-        let eventData = await Event.find().populate('classes');
+        let eventData = await Event.find()
+            .populate('classes')
+            .sort({ title: 1 });
 
         return res.status(200).json({
             success: true,

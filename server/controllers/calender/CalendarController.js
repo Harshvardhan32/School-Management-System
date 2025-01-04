@@ -94,7 +94,7 @@ exports.getAllCalendars = async (req, res) => {
                 populate: {
                     path: 'userId'
                 }
-            });
+            }).sort({ dayOfWeek: 1 });
 
         return res.status(200).json({
             success: true,

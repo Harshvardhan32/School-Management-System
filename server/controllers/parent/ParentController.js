@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
+const User = require("../../models/User");
 const Parent = require("../../models/Parent");
 const Student = require("../../models/Student");
-const User = require("../../models/User");
 
 exports.createParent = async (req, res) => {
     try {
@@ -127,7 +127,7 @@ exports.updateParent = async (req, res) => {
         }
 
         // Check for existing Parent by id
-        const existingParent = await Parent.findById(id);
+        const existingParent = await Parent.findById(id).populate('userId');
 
         if (!existingParent) {
             return res.status(400).json({
@@ -136,30 +136,44 @@ exports.updateParent = async (req, res) => {
             });
         }
 
+        if (email !== existingParent?.userId?.email) {
+
+            // Check for existing user by email
+            const existingUser = await User.findOne({ email });
+
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User already registered with this email.'
+                });
+            }
+        }
+
         // Update user profile
-        await User.findByIdAndUpdate(existingParent?.userId,
+        await User.findByIdAndUpdate(existingParent?.userId._id,
             {
                 firstName,
                 lastName,
+                email,
                 phone,
                 address,
                 sex,
             });
 
         // Determine added and removed students
-        const addedStudents = students.filter((studentId) => !existingParent?.students.includes(studentId));
+        const addedStudents = students && students.filter((studentId) => !existingParent?.students.includes(studentId));
 
-        const removedStudents = existingParent?.students.filter((studentId) => !students.includes(studentId));
+        const removedStudents = students && existingParent?.students.filter((studentId) => !students.includes(studentId));
 
         // Update student relationships
-        if (addedStudents?.length > 0) {
+        if (students && addedStudents?.length > 0) {
             await Student.updateMany(
                 { _id: { $in: addedStudents } }, // Match all students whose _id is in the addedStudents array
                 { parent: id } // Set the parent field to the given id
             );
         }
 
-        if (removedStudents?.length > 0) {
+        if (students && removedStudents?.length > 0) {
             await Student.updateMany(
                 { _id: { $in: removedStudents } }, // Match all students whose _id is in the removedStudents array
                 { parent: null } // Set the parent field to null
@@ -175,7 +189,7 @@ exports.updateParent = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: updatedParent,
-            message: 'Parent updated Successfully!'
+            message: 'Parent Updated Successfully!'
         });
     } catch (error) {
         console.error(error.message);
@@ -238,6 +252,13 @@ exports.getAllParents = async (req, res) => {
                     { path: "classId" }
                 ]
             });
+
+        // Sort the results based on `userId.firstName`
+        parentData.sort((a, b) => {
+            const nameA = a.userId?.firstName?.toLowerCase() || '';
+            const nameB = b.userId?.firstName?.toLowerCase() || '';
+            return nameA.localeCompare(nameB);
+        });
 
         return res.status(200).json({
             success: true,

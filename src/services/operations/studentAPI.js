@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
-import { setLoading, setStudentDetails, setStudents } from "../../slices/studentSlice";
-import { studentEndPoints } from "../apis";
 import apiConnector from "../apiConnect";
+import { studentEndPoints } from "../apis";
+import { setLoading, setStudentDetails, setStudents } from "../../slices/studentSlice";
 
 const {
     CREATE_STUDENT_API,
@@ -14,6 +14,7 @@ const {
 export const createStudent = (data, token, setOpen) => {
     return async () => {
         const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
         try {
             const response = await apiConnector("POST", CREATE_STUDENT_API, data, {
@@ -21,7 +22,7 @@ export const createStudent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("CREATE STUDENT API RESPONSE............", response);
+            // console.log("CREATE STUDENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -32,17 +33,19 @@ export const createStudent = (data, token, setOpen) => {
             dispatch(getAllStudents(token));
             setOpen(false);
         } catch (error) {
-            console.log("CREATE STUDENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Creation Failed!`);
+            // console.log("CREATE STUDENT API ERROR............", error.message);
+            toast.error('Student Creation Failed!');
         } finally {
+            dispatch(setLoading(false));
             toast.dismiss(toastId);
         }
     }
 }
 
 export const updateStudent = (data, token, setOpen = true) => {
-    return async () => {
+    return async (dispatch) => {
         const toastId = toast.loading('Loading...');
+        dispatch(setLoading(true));
 
         try {
             const response = await apiConnector("PUT", UPDATE_STUDENT_API, data, {
@@ -50,7 +53,7 @@ export const updateStudent = (data, token, setOpen = true) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("UPDATE STUDENT API RESPONSE............", response);
+            // console.log("UPDATE STUDENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -59,11 +62,15 @@ export const updateStudent = (data, token, setOpen = true) => {
             toast.dismiss(toastId);
             toast.success('Student Updated Successfully!');
             dispatch(getAllStudents(token));
-            setOpen(false);
+            if (data.userId !== undefined) {
+                setOpen(false);
+            }
         } catch (error) {
-            console.log("UPDATE STUDENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Updation Failed!`);
+            // console.log("UPDATE STUDENT API ERROR............", error.message);
+            toast.error('Student Updation Failed!');
+            // toast.dismiss(toastId);
         } finally {
+            dispatch(setLoading(false));
             toast.dismiss(toastId);
         }
     }
@@ -80,7 +87,7 @@ export const deleteStudent = (data, token, setOpen) => {
                 "Authorization": `Bearer ${token}`,
             });
 
-            console.log("DELETE STUDENT API RESPONSE............", response);
+            // console.log("DELETE STUDENT API RESPONSE............", response);
 
             if (!response?.data?.success) {
                 throw new Error(response?.data?.message || "Something went wrong!");
@@ -91,8 +98,8 @@ export const deleteStudent = (data, token, setOpen) => {
             dispatch(getAllStudents(token));
             setOpen(false);
         } catch (error) {
-            console.log("DELETE STUDENT API ERROR............", error.message);
-            toast.error(error?.message || `${data?.role} Deletion Failed!`);
+            // console.log("DELETE STUDENT API ERROR............", error.message);
+            toast.error(error?.message || 'Student Deletion Failed!');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));
@@ -120,12 +127,10 @@ export const getAllStudents = (token) => {
             }
 
             dispatch(setStudents(response?.data?.data));
-
-            toast.dismiss(toastId);
-            toast.success('Students loaded successfully!');
+            // toast.success('Students loaded successfully!');
         } catch (error) {
-            console.log("ALL STUDENTS API ERROR............", error.message);
-            toast.error(error.message || 'Failed to load students.');
+            // console.log("ALL STUDENTS API ERROR............", error.message);
+            toast.error('Failed to load students.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));
@@ -152,10 +157,10 @@ export const getStudentDetails = (token, studentId) => {
             }
 
             dispatch(setStudentDetails(response?.data?.data));
-            toast.success('Student details fetched successfully!');
+            // toast.success('Student details fetched successfully!');
         } catch (error) {
-            console.log("STUDENT DETAILS API ERROR............", error?.message);
-            toast.error(error?.message || 'Failed to load teacher details.');
+            // console.log("STUDENT DETAILS API ERROR............", error?.message);
+            toast.error('Failed to load teacher details.');
         } finally {
             toast.dismiss(toastId);
             dispatch(setLoading(false));

@@ -8,9 +8,13 @@ export const authEndPoints = {
     RESET_PASSWORD_API: BASE_URL + '/api/v1/auth/reset-password'
 }
 
-// USER ENDPOINTS
-export const userEndPoints = {
-    CREATE_USER_API: BASE_URL + '/api/v1/auth/signup'
+export const profileEndPoints = {
+    UPDATE_PROFILE_PICTURE_API: BASE_URL + '/api/v1/user/update-profile-picture'
+}
+
+// ADMIN ENDPOINTS
+export const adminEndPoints = {
+    UPDATE_ADMIN_API: BASE_URL + '/api/v1/user/admin/update',
 }
 
 // STUDENT ENDPOINTS
@@ -129,7 +133,5 @@ export const messageEndPoints = {
 
 // SETTINGS PAGE API
 export const settingsEndPoints = {
-    UPDATE_PROFILE_PICTURE_API: BASE_URL + '',
-    UPDATE_PROFILE_API: BASE_URL + '',
-    CHANGE_PASSWORD_API: BASE_URL + '/change-password'
+    CHANGE_PASSWORD_API: BASE_URL + '/api/v1/auth/change-password'
 }

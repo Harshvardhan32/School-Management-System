@@ -1,15 +1,15 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaRegEdit } from "react-icons/fa";
-import TableSearch from "../../components/common/TableSearch";
-import Table from "../../components/common/Table";
-import Pagination from "../../components/common/Pagination";
-import FormModal from "../../components/FormModal";
 import { GrAdd } from "react-icons/gr";
-import { LuListFilter } from "react-icons/lu";
+import { FaRegEdit } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { LuListFilter } from "react-icons/lu";
+import Table from "../../components/common/Table";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import FormModal from "../../components/FormModal";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteExam, getAllExams } from "../../services/operations/examAPI";
 import extractDateTime from "../../utils/extractDateTime";
+import Pagination from "../../components/common/Pagination";
+import TableSearch from "../../components/common/TableSearch";
+import { deleteExam, getAllExams } from "../../services/operations/examAPI";
 
 const ExamList = () => {
 
@@ -34,10 +34,12 @@ const ExamList = () => {
         setCurrentPage(page);
     };
 
-    const classId = role === 'Parent' && user?.students.map((student) => {
+    // extract classId based on specific role
+    const classId = (role === 'Parent') && user?.students.map((student) => {
         return student.classId._id;
     });
 
+    // exam data based on specific role
     const roleBasedExam = role === 'Student'
         ? allExams?.filter((exam) =>
             exam.classes.some((classItem) => user.classId?._id === classItem._id)
@@ -69,7 +71,7 @@ const ExamList = () => {
         return (isAfterStartDate && isBeforeStartDate && isAfterEndDate && isBeforeEndDate && (matchesSearchQuery || matchesClassSearch));
     });
 
-    // Pagination logic
+    // Pagination logic based on filtered exams
     const totalPages = Math.ceil(filteredExams?.length / itemsPerPage);
     const paginatedExams = filteredExams?.slice(
         (currentPage - 1) * itemsPerPage,
@@ -80,33 +82,33 @@ const ExamList = () => {
         {
             Header: "Exam Name",
             accessor: "examName",
-            className: 'font-medium',
+            className: 'font-medium p-4 capitalize',
             isSortable: true,
         },
         {
             Header: "Class",
             accessor: (row) => row?.classes?.map((item) => item.className).join(", "),
-            className: "hidden sm:table-cell",
+            className: "hidden sm:table-cell p-4",
             isSortable: true,
         },
         {
             Header: "Start Date",
             accessor: "startDate",
-            className: "hidden md:table-cell",
+            className: "hidden md:table-cell p-4",
             isSortable: true,
             Cell: ({ value }) => extractDateTime(value)
         },
         {
             Header: "End Date",
             accessor: "endDate",
-            className: "hidden md:table-cell",
+            className: "hidden md:table-cell p-4",
             isSortable: true,
             Cell: ({ value }) => extractDateTime(value)
         },
         {
             Header: "Actions",
             accessor: "action",
-            className: `${role !== "Admin" && "hidden"}`,
+            className: `${role !== "Admin" && "hidden"} table-cell p-4`,
             isSortable: false,
             Cell: ({ row }) => {
                 const data = row.original;
@@ -140,16 +142,20 @@ const ExamList = () => {
                         All Exams
                     </h1>
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full md:w-auto">
+                        {/* Search bar for filtering exams */}
                         <TableSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                         <div className="relative flex items-center gap-4 self-end">
+                            {/* Filter button */}
                             <button
                                 onClick={() => setShowFilter(!showFilter)}
                                 className="w-8 h-8 flex items-center justify-center bg-[#51DFC3] rounded-full"
                             >
                                 <LuListFilter fontSize={18} color='#4b5563' />
                             </button>
+                            {/* Filter modal when showFilter is true */}
                             {showFilter && (
                                 <div className="absolute top-10 -right-4 border-[1.5px] border-gray-300 shadow-lg bg-white dark:bg-slate-900 p-4 rounded-md z-20 flex flex-col gap-2">
+                                    {/* Start Date filter inputs */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">Start Date</label>
                                         <div className="flex gap-2">
@@ -167,6 +173,7 @@ const ExamList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* End Date filter inputs */}
                                     <div className="flex flex-col gap-2 text-xs dark:text-gray-200">
                                         <label className="font-medium">End Date</label>
                                         <div className="flex gap-2">
@@ -184,6 +191,7 @@ const ExamList = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Clear filter button */}
                                     <button
                                         onClick={() => { setStartDate({ start: '', end: '' }); setEndDate({ start: '', end: '' }); setShowFilter(false) }}
                                         className="mt-2 px-4 py-2 bg-[#51DFC3] rounded-md"
@@ -192,6 +200,7 @@ const ExamList = () => {
                                     </button>
                                 </div>
                             )}
+                            {/* Modal for Admin to create new exam */}
                             {role === "Admin" && (
                                 <FormModal table="exam" type="create" Icon={GrAdd} />
                             )}
@@ -199,12 +208,12 @@ const ExamList = () => {
                     </div>
                 </div>
 
-                {/* Table */}
+                {/* Table displaying paginated exams */}
                 <div>
                     <Table columns={columns} data={paginatedExams} />
                 </div>
 
-                {/* Pagination */}
+                {/* Pagination controls */}
                 <div>
                     {
                         paginatedExams?.length > 0 &&
