@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const User = require("../../models/User");
 const Parent = require("../../models/Parent");
 const Student = require("../../models/Student");
+const mailSender = require('../../utils/mailSender');
+const { userCredentialsEmail } = require('../../mail/templates/userCredentialsEmail');
 
 exports.createParent = async (req, res) => {
     try {
@@ -88,14 +90,27 @@ exports.createParent = async (req, res) => {
             );
         }
 
+        await mailSender(
+            email,
+            'Welcome to ABCD School: Your Login Credentials',
+            userCredentialsEmail(
+                'ABCD School',
+                firstName + ' ' + lastName,
+                email,
+                parentId,
+                password,
+                'http://localhost:5173/',
+                'support@abcdschool.com'
+            )
+        );
+
         // Send the successful response
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: userResponse,
-            message: 'Parent registered successfully!'
+            message: 'Parent created successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -183,7 +198,15 @@ exports.updateParent = async (req, res) => {
         // Update parent with new students array
         const updatedParent = await Parent.findByIdAndUpdate(id,
             { parentId, students },
-            { new: true });
+            { new: true })
+            .populate('userId')
+            .populate({
+                path: "students",
+                populate: [
+                    { path: "userId" },
+                    { path: "classId" }
+                ]
+            });
 
         // Send the successful response
         return res.status(200).json({
@@ -192,7 +215,6 @@ exports.updateParent = async (req, res) => {
             message: 'Parent Updated Successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -233,10 +255,14 @@ exports.deleteParent = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedParent,
-            message: "Parent Deleted Successfully!"
+            message: "Parent deleted successfully!"
         });
     } catch (error) {
-
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
     }
 }
 
@@ -266,7 +292,6 @@ exports.getAllParents = async (req, res) => {
             message: 'Parents fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

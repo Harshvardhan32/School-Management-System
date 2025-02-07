@@ -1,5 +1,5 @@
-const Attendance = require('../../models/Attendance');
 const Student = require('../../models/Student');
+const Attendance = require('../../models/Attendance');
 
 // Function to create attendance
 exports.createAttendance = async (req, res) => {
@@ -20,7 +20,7 @@ exports.createAttendance = async (req, res) => {
         if (existingAttendance) {
             return res.status(400).json({
                 success: false,
-                message: 'Attendance record already exists for the selected date and class!',
+                message: 'Attendance record already exists for the selected date and class.',
             });
         }
 
@@ -37,13 +37,12 @@ exports.createAttendance = async (req, res) => {
             { attendance: attendanceResponse?._id }
         );
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: attendanceResponse,
             message: 'Attendance Created Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -78,7 +77,7 @@ exports.updateAttendance = async (req, res) => {
         let hasChanges = false;
 
         // Update status only if it has changed
-        existingAttendance.studentAttendance.forEach((existingRecord) => {
+        existingAttendance?.studentAttendance.forEach((existingRecord) => {
             const updatedRecord = studentAttendance.find(
                 (newRecord) => String(newRecord.student) === String(existingRecord.student)
             );
@@ -99,7 +98,6 @@ exports.updateAttendance = async (req, res) => {
             message: 'Attendance Updated Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -126,7 +124,6 @@ exports.getAllAttendance = async (req, res) => {
             message: 'Attendance records fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

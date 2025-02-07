@@ -82,13 +82,12 @@ exports.createResult = async (req, res) => {
 
         await Student.findByIdAndUpdate(student, { results: resultResponse._id });
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: resultResponse,
-            message: "Result Created Successfully!"
+            message: "Result created successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -217,7 +216,6 @@ exports.updateResult = async (req, res) => {
             message: "Result updated successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -260,10 +258,8 @@ exports.deleteResult = async (req, res) => {
             success: true,
             data: deletedResult,
             message: "Subject deleted successfully!"
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -277,8 +273,6 @@ exports.getResult = async (req, res) => {
     try {
 
         const resultId = req.query.resultId;
-
-        console.log("ID: ", resultId);
 
         if (!resultId) {
             return res.status(400).json({
@@ -308,15 +302,13 @@ exports.getResult = async (req, res) => {
             success: true,
             data: resultResponse,
             message: "Subject fetched successfully!"
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: "Internal Server Error!"
-        })
+        });
     }
 }
 
@@ -348,7 +340,6 @@ exports.getAllResult = async (req, res) => {
             message: "Results fetched successfully!",
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

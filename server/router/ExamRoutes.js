@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
+const { isAuth, isAdmin } = require('../middlewares/Auth');
 const {
     createExam,
     updateExam,
     deleteExam,
     getAllExams
 } = require('../controllers/exam/ExamController');
-const { isAuth, isAdmin } = require('../middlewares/Auth');
+const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createExam);
 router.put('/update', isAuth, isAdmin, updateExam);

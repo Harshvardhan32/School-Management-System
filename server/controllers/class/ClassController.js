@@ -1,13 +1,13 @@
-const Assignment = require('../../models/Assignment');
-const Attendance = require('../../models/Attendance');
+const Exam = require('../../models/Exam');
 const Class = require('../../models/Class');
 const Event = require('../../models/Event');
-const Exam = require('../../models/Exam');
 const Result = require('../../models/Result');
-const Student = require('../../models/Student');
 const Parent = require('../../models/Parent');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
+const Student = require('../../models/Student');
+const Attendance = require('../../models/Attendance');
+const Assignment = require('../../models/Assignment');
 
 // Function to create class
 exports.createClass = async (req, res) => {
@@ -58,7 +58,6 @@ exports.createClass = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -80,8 +79,7 @@ exports.updateClass = async (req, res) => {
             subjects
         } = req.body;
 
-        if (!id || !className ||
-            !capacity) {
+        if (!id || !className || !capacity) {
             return res.status(400).json({
                 success: true,
                 message: 'Please fill all required details!'
@@ -157,7 +155,6 @@ exports.updateClass = async (req, res) => {
             message: 'Class Update Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -214,10 +211,9 @@ exports.deleteClass = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedClass,
-            message: 'Class Deleted Successfully!',
+            message: 'Class deleted successfully!',
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -250,7 +246,6 @@ exports.getAllClasses = async (req, res) => {
             message: 'Classes fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

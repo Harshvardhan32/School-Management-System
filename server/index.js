@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
-const rateLimit = require('express-rate-limit');
+// const rateLimit = require('express-rate-limit');
 const dbConnect = require('./config/database');
 const cloudinaryConnect = require('./config/cloudinary');
 require('dotenv').config();
@@ -29,7 +29,7 @@ const UserRoutes = require('./router/UserRoutes');
 const CalendarRoutes = require('./router/CalendarRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 4000;
 
 // Middlewares
 app.use(express.json());
@@ -45,10 +45,10 @@ app.use(
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per window
-});
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100 // limit each IP to 100 requests per window
+// });
 // app.use(limiter);
 
 cloudinaryConnect();
@@ -75,7 +75,7 @@ app.use('/api/v1/calendar', CalendarRoutes);
 
 // Homepage Route
 app.get('/', (req, res) => {
-    res.send('<h1>This is Homepage.</h1>')
+    res.send('<h1>This is Homepage.</h1>');
 });
 
 // Global error handler 

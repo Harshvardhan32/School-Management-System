@@ -55,7 +55,6 @@ exports.updateProfilePicture = async (req, res) => {
             message: 'Profile Picture Updated Successsfully!'
         });
     } catch (error) {
-        console.log("Error: ", error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

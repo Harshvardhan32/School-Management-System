@@ -1,0 +1,13 @@
+export { default as ExamForm } from './ExamForm';
+export { default as ClassForm } from './ClassForm';
+export { default as EventForm } from './EventForm';
+export { default as LessonForm } from './LessonForm';
+export { default as ParentForm } from './ParentForm';
+export { default as ResultForm } from './ResultForm';
+export { default as MessageForm } from './MessageForm';
+export { default as StudentForm } from './StudentForm';
+export { default as SubjectForm } from './SubjectForm';
+export { default as TeacherForm } from './TeacherForm';
+export { default as CalendarForm } from './CalendarForm';
+export { default as AssignmentForm } from './AssignmentForm';
+export { default as AnnouncementForm } from './AnnouncementForm';

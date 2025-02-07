@@ -2,7 +2,6 @@ const Announcement = require('../../models/Announcement');
 
 exports.createAnnouncement = async (req, res) => {
     try {
-
         const {
             title,
             description,
@@ -20,13 +19,12 @@ exports.createAnnouncement = async (req, res) => {
             title, description, date
         });
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: announcementResponse,
-            message: "Announcement  Created Successfully!"
+            message: "Announcement Created Successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -37,7 +35,6 @@ exports.createAnnouncement = async (req, res) => {
 
 exports.updateAnnouncement = async (req, res) => {
     try {
-
         const {
             id,
             title,
@@ -62,11 +59,8 @@ exports.updateAnnouncement = async (req, res) => {
         }
 
         const updatedAnnouncement = await Announcement.findByIdAndUpdate(id,
-            {
-                title,
-                description,
-                date
-            }, { new: true });
+            { title, description, date },
+            { new: true });
 
         return res.status(200).json({
             success: true,
@@ -75,7 +69,6 @@ exports.updateAnnouncement = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -114,7 +107,6 @@ exports.deleteAnnouncement = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -133,7 +125,6 @@ exports.getAllAnnouncement = async (req, res) => {
             message: 'Announcements fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

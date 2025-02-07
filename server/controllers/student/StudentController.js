@@ -1,10 +1,12 @@
-const Attendance = require("../../models/Attendance");
+const bcrypt = require('bcryptjs');
+const User = require("../../models/User");
 const Class = require("../../models/Class");
 const Parent = require("../../models/Parent");
 const Result = require("../../models/Result");
 const Student = require("../../models/Student");
-const User = require("../../models/User");
-const bcrypt = require('bcryptjs');
+const mailSender = require("../../utils/mailSender");
+const Attendance = require("../../models/Attendance");
+const { userCredentialsEmail } = require("../../mail/templates/userCredentialsEmail");
 require('dotenv').config();
 
 exports.createStudent = async (req, res) => {
@@ -95,14 +97,27 @@ exports.createStudent = async (req, res) => {
         // Update the students in Class Schema
         await Class.findByIdAndUpdate(classId, { $push: { students: userResponse?._id } });
 
+        await mailSender(
+            email,
+            'Welcome to ABCD School: Your Login Credentials',
+            userCredentialsEmail(
+                'ABCD School',
+                firstName + ' ' + lastName,
+                email,
+                studentId,
+                password,
+                'http://localhost:5173/',
+                'support@abcdschool.com'
+            )
+        );
+
         // Send the successful response
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: userResponse,
             message: 'Student registered successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -188,7 +203,9 @@ exports.updateStudent = async (req, res) => {
                 subjects,
                 rollNumber,
             },
-            { new: true });
+            { new: true })
+            .populate('userId')
+            .populate('classId');
 
         // if existing Student classId is not similar to fetched classId
         if (existingStudent?.classId.toString() !== classId) {
@@ -221,7 +238,6 @@ exports.updateStudent = async (req, res) => {
             message: 'Student updated successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -269,10 +285,14 @@ exports.deleteStudent = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedStudent,
-            message: "Student Deleted Successfully!"
+            message: "Student deleted successfully!"
         });
     } catch (error) {
-
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
     }
 }
 
@@ -301,7 +321,6 @@ exports.getAllStudents = async (req, res) => {
             message: 'Students fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -343,11 +362,10 @@ exports.getStudentDetails = async (req, res) => {
             message: 'Student details fetched successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }

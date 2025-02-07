@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const { isAuth, isAdminOrTeacher } = require('../middlewares/Auth');
 const {
     createMessage,
@@ -7,6 +6,7 @@ const {
     deleteMessage,
     getAllMessages
 } = require('../controllers/message/MessageController');
+const router = express.Router();
 
 router.post('/create', isAuth, isAdminOrTeacher, createMessage);
 router.put('/update', isAuth, isAdminOrTeacher, updateMessage);

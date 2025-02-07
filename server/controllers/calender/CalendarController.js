@@ -37,14 +37,13 @@ exports.createCalendar = async (req, res) => {
             message: "Calendar created successfully!",
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: "Internal Server Error!"
         });
     }
-};
+}
 
 // Update an existing calendar
 exports.updateCalendar = async (req, res) => {
@@ -61,7 +60,10 @@ exports.updateCalendar = async (req, res) => {
         // Find the calendar by ID
         const calendar = await Calendar.findById(id);
         if (!calendar) {
-            return res.status(404).json({ message: "Calendar not found." });
+            return res.status(404).json({
+                success: false,
+                message: "Calendar not found."
+            });
         }
 
         // Update the schedule
@@ -69,20 +71,45 @@ exports.updateCalendar = async (req, res) => {
 
         await calendar.save();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: calendar,
             message: "Calendar updated successfully!"
         });
     } catch (error) {
-        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            errorMessage: error.message,
+            message: "Internal Server Error!"
+        });
+    }
+}
+
+exports.deleteCalendar = async (req, res) => {
+    try {
+        const { _id } = req.body;
+
+        if (!_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Calendar ID is required!'
+            });
+        }
+
+        await Calendar.findByIdAndDelete(_id);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Calendar deleted successfully!'
+        });
+    } catch (error) {
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: "Internal Server Error!"
         })
     }
-};
+}
 
 exports.getAllCalendars = async (req, res) => {
     try {
@@ -102,7 +129,6 @@ exports.getAllCalendars = async (req, res) => {
             message: 'All Calendars fetched successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

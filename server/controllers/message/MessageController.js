@@ -13,13 +13,12 @@ exports.createMessage = async (req, res) => {
 
         const messageResponse = await Message.create({ title, content });
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: messageResponse,
             message: 'Message Created Successfully!'
-        })
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -53,10 +52,9 @@ exports.updateMessage = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: updatedMessage,
-            message: 'Message Updated Successfully!'
+            message: 'Message updated successfully!'
         })
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -92,10 +90,9 @@ exports.deleteMessage = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedMessage,
-            message: 'Message Deleted Successfully!'
-        })
+            message: 'Message deleted successfully!'
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -114,7 +111,6 @@ exports.getAllMessages = async (req, res) => {
             message: 'Messages fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

@@ -11,18 +11,16 @@ exports.isAuth = async (req, res, next) => {
         if (!token) {
             return res.status(400).json({
                 success: false,
-                message: `Token Missing`
+                message: 'Token Missing'
             });
         }
 
         try {
             // Verifying the JWT using the secret key stored in environment variables
-
             const decode = await jwt.verify(token, process.env.JWT_SECRET);
             req.user = decode;
         } catch (error) {
             // If JWT verification fails, return 401 Unauthorized response
-            console.log(error.message);
             return res.status(401).json({
                 success: false,
                 message: "Token is invalid"
@@ -32,8 +30,6 @@ exports.isAuth = async (req, res, next) => {
         // If JWT is valid, move on to the next middleware or request handler
         next();
     } catch (error) {
-        console.log(error.message);
-        console.log("IS AUTH ERROR!");
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -55,12 +51,11 @@ exports.isAdmin = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }
 
@@ -78,12 +73,11 @@ exports.isStudent = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }
 
@@ -101,12 +95,11 @@ exports.isTeacher = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }
 
@@ -124,12 +117,11 @@ exports.isParent = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 }
 
@@ -147,12 +139,11 @@ exports.isAdminOrTeacher = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 };
 
@@ -170,12 +161,11 @@ exports.isAdminOrParent = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 };
 
@@ -193,11 +183,10 @@ exports.isAdminOrTeacherOrStudent = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
-        })
+        });
     }
 };

@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router();
+const { isAuth, isAdmin } = require('../middlewares/Auth');
 const {
     createClass,
     updateClass,
     deleteClass,
     getAllClasses } = require('../controllers/class/ClassController');
-const { isAuth, isAdmin } = require('../middlewares/Auth');
+const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createClass);
 router.put('/update', isAuth, isAdmin, updateClass);

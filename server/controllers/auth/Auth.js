@@ -6,10 +6,11 @@ const Admin = require('../../models/Admin');
 const Parent = require('../../models/Parent');
 const Teacher = require('../../models/Teacher');
 const Student = require('../../models/Student');
+const mailSender = require('../../utils/mailSender');
+const { resetPasswordEmail } = require('../../mail/templates/resetPasswordEmail');
 require('dotenv').config();
 
 exports.login = async (req, res) => {
-
     try {
         const { userId, password } = req.body;
 
@@ -44,8 +45,8 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'User not found with this ID.',
-            })
+                message: 'User ID is incorrect.',
+            });
         }
 
         // Generate JWT token and Compare Password
@@ -89,7 +90,6 @@ exports.login = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -117,7 +117,7 @@ exports.changePassword = async (req, res) => {
         if (!isPasswordMatched) {
             return res.status(401).json({
                 success: false,
-                message: "The password is incorrect!"
+                message: "Password is incorrect!"
             });
         }
 
@@ -137,7 +137,6 @@ exports.changePassword = async (req, res) => {
             message: "Password Updated Successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -161,30 +160,26 @@ exports.resetPasswordToken = async (req, res) => {
 
         const token = crypto.randomBytes(20).toString("hex");
 
-        const updatedDetails = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             { email },
             {
                 token,
-                resetPasswordExpires: Date.now() + 3600000
-            },
-            { new: true }
-        )
+                resetPasswordExpires: Date.now() + 600000
+            });
 
         const url = `http://localhost:5173/update-password/${token}`;
 
-        // await mailSender(
-        //     email,
-        //     "Password Reset",
-        //     `<p>Your Link for email verification is ${url}. Please click this url to reset your password.</p>`
-        // )
+        await mailSender(
+            email,
+            'Reset Your Password',
+            resetPasswordEmail(url)
+        );
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
-            url,
             message: 'Email sent successfully, Please check your email to continue further.'
         })
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -205,11 +200,7 @@ exports.resetPassword = async (req, res) => {
             });
         }
 
-        console.log("TOken: ", token);
-
         const userDetails = await User.findOne({ token });
-
-        console.log("USERDETAILS: ", userDetails);
 
         if (!userDetails) {
             return res.status(404).json({
@@ -227,95 +218,20 @@ exports.resetPassword = async (req, res) => {
 
         const encryptedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             { token },
-            { password: encryptedPassword },
-            { new: true }
-        )
+            { password: encryptedPassword }
+        );
 
         return res.status(200).json({
             success: true,
             message: 'Password reset successfully!'
         })
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: 'Internal Server Error!'
         })
-    }
-}
-
-exports.deleteAccount = async (req, res) => {
-    try {
-
-        const { userId } = req.body;
-
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                message: "User ID is required!"
-            });
-        }
-
-        const user = await Admin.findOne({ adminId: userId }).populate('userId')
-            || await Teacher.findOne({ teacherId: userId }).populate('userId')
-            || await Student.findOne({ studentId: userId }).populate('userId')
-            || await Parent.findOne({ parentId: userId }).populate('userId');
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        console.log("User: ", user?.userId?.role);
-
-        const role = user?.userId?.role;
-        let deletedResponse;
-        if (role === 'Teacher') {
-            await User.findByIdAndDelete(user?.userId?._id);
-            deletedResponse = await Teacher.findByIdAndDelete(user?._id);
-
-            // TODO:
-            // 1. Delete Assignment Created by the teacher
-            // 2. Delete supervisor in the class Schema
-            // 3. Delete teachers in the class Schema
-            // 4. Delete teachers in the student Schema
-        } else if (role === 'Student') {
-            await User.findByIdAndDelete(user?.userId?._id);
-            deletedResponse = await Student.findByIdAndDelete(user?._id);
-
-            // TODO:
-            // 1. Delete student from Attendance Schema
-            // 2. Delete students from the Class Schema
-            // 3. Delete students from Parent Schema
-            // 4. Delete student from Result Schema
-
-        } else if (role === 'Parent') {
-            await User.findByIdAndDelete(user?.userId?._id);
-            deletedResponse = await Teacher.findByIdAndDelete(user?._id);
-
-            // TODO:
-            // 1. Delete Parent from the Parent Schema
-            // 2. Delete parent from the Student Schema
-            // 1. Delete Parent from the Parent Schema
-            // 1. Delete Parent from the Parent Schema
-        }
-
-        return res.status(200).json({
-            success: true,
-            data: deletedResponse,
-            message: "User deleted successfully",
-        });
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            success: false,
-            errorMessage: error.message,
-            message: "Internal Server Error!",
-        });
     }
 }

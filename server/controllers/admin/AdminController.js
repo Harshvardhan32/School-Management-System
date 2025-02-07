@@ -1,6 +1,7 @@
-const Admin = require('../../models/Admin');
-const Teacher = require('../../models/Teacher');
 const User = require('../../models/User');
+const Admin = require('../../models/Admin');
+const mailSender = require('../../utils/mailSender');
+const { userCredentialsEmail } = require('../../mail/templates/userCredentialsEmail');
 
 exports.createAdmin = async (req, res) => {
     try {
@@ -50,14 +51,14 @@ exports.createAdmin = async (req, res) => {
         if (existingAdminId) {
             return res.status(400).json({
                 success: false,
-                message: 'Admin ID should be unique!'
+                message: 'Admin ID must be unique!'
             });
         }
 
-        // Hash password and generate profile image
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Generate image with the firstName and lastName
+        // Generate profile image with the firstName and lastName
         const image = `https://api.dicebear.com/8.x/initials/svg?seed=${firstName} ${lastName}`;
 
         // Create the user
@@ -81,14 +82,27 @@ exports.createAdmin = async (req, res) => {
             adminId
         });
 
-        // Send the successful response
-        return res.status(200).json({
+        await mailSender(
+            email,
+            'Welcome to ABCD School: Your Login Credentials',
+            userCredentialsEmail(
+                'ABCD School',
+                firstName + ' ' + lastName,
+                email,
+                adminId,
+                password,
+                'http://localhost:5173/',
+                'support@abcdschool.com'
+            )
+        );
+
+        // Send the successfull response
+        return res.status(201).json({
             success: true,
             data: userResponse,
             message: 'User registered successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -167,7 +181,6 @@ exports.updateAdmin = async (req, res) => {
             message: 'Admin Updated Successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -187,23 +200,21 @@ exports.getAdminDetails = async (req, res) => {
             })
         }
 
-        const teacherDetails = await Admin.findOne({ adminId })
-            .populate('userId');
+        const teacherDetails = await Admin.findOne({ adminId }).populate('userId');
 
         if (!teacherDetails) {
             return res.status(404).json({
                 success: false,
-                message: 'Teacher is not found with the given ID.'
+                message: 'Admin is not found with the given ID.'
             })
         }
 
         return res.status(200).json({
             success: true,
             data: teacherDetails,
-            message: 'Teacher details fetched successfully!'
+            message: 'Admin details fetched successfully!'
         })
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

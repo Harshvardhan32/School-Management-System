@@ -4,7 +4,6 @@ const Student = require('../../models/Student');
 
 exports.createExam = async (req, res) => {
     try {
-
         const {
             examName,
             description,
@@ -38,13 +37,12 @@ exports.createExam = async (req, res) => {
             );
         }
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: examResponse,
-            message: 'Exam Created Successfully!'
-        })
+            message: 'Exam created successfully!'
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: true,
             errorMessage: error.message,
@@ -55,7 +53,6 @@ exports.createExam = async (req, res) => {
 
 exports.updateExam = async (req, res) => {
     try {
-
         const {
             id,
             examName,
@@ -119,10 +116,8 @@ exports.updateExam = async (req, res) => {
             success: true,
             data: updatedResponse,
             message: 'Exam Updated Successfully!'
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: true,
             errorMessage: error.message,
@@ -178,10 +173,8 @@ exports.deleteExam = async (req, res) => {
             success: true,
             data: deletedResponse,
             message: 'Exam deleted successfully!'
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: true,
             errorMessage: error.message,
@@ -192,7 +185,7 @@ exports.deleteExam = async (req, res) => {
 
 exports.getAllExams = async (req, res) => {
     try {
-        let examData = await Exam.find()
+        const examData = await Exam.find()
             .populate('subjects')
             .populate('classes').sort({ examName: 1 });
 
@@ -202,7 +195,6 @@ exports.getAllExams = async (req, res) => {
             message: 'Exams fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

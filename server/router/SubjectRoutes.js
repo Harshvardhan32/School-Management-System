@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
+const { isAuth, isAdmin, isAdminOrTeacher } = require('../middlewares/Auth');
 const {
     createSubject,
     updateSubject,
     deleteSubject,
     getAllSubjects
 } = require('../controllers/subject/SubjectController');
-const { isAuth, isAdmin, isAdminOrTeacher } = require('../middlewares/Auth');
+const router = express.Router();
 
 router.post('/create', isAuth, isAdmin, createSubject);
 router.put('/update', isAuth, isAdminOrTeacher, updateSubject);

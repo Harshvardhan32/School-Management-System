@@ -1,10 +1,10 @@
-const Assignment = require('../../models/Assignment');
-const Class = require('../../models/Class');
 const Exam = require('../../models/Exam');
+const Class = require('../../models/Class');
 const Result = require('../../models/Result');
 const Student = require('../../models/Student');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
+const Assignment = require('../../models/Assignment');
 
 exports.createSubject = async (req, res) => {
     try {
@@ -49,18 +49,17 @@ exports.createSubject = async (req, res) => {
             );
         }
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: subjectResponse,
             message: "Subject Created Successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
             message: "Internal Server Error!"
-        })
+        });
     }
 }
 
@@ -143,11 +142,9 @@ exports.updateSubject = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: updatedResponse,
-            message: "Subject Updated Successfully!"
+            message: "Subject updated successfully!"
         });
-
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -208,10 +205,9 @@ exports.deleteSubject = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedSubject,
-            message: "Subject Deleted Successfully!"
+            message: "Subject deleted successfully!"
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -239,7 +235,6 @@ exports.getAllSubjects = async (req, res) => {
             message: "Subjects fetched successfully!",
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

@@ -1,9 +1,8 @@
-const Assignment = require('../../models/Assignment');
 const Student = require('../../models/Student');
+const Assignment = require('../../models/Assignment');
 
 exports.createAssignment = async (req, res) => {
     try {
-
         const {
             subject,
             classId,
@@ -33,13 +32,12 @@ exports.createAssignment = async (req, res) => {
             { $push: { assignments: assignmentResponse._id } } // Push the assignment ID to their assignments array
         );
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: assignmentResponse,
             message: 'Assignment Created Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -50,7 +48,6 @@ exports.createAssignment = async (req, res) => {
 
 exports.updateAssignment = async (req, res) => {
     try {
-
         const {
             id,
             subject,
@@ -108,7 +105,6 @@ exports.updateAssignment = async (req, res) => {
             message: 'Assignment Updated Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -154,7 +150,6 @@ exports.deleteAssignment = async (req, res) => {
             message: 'Assignment Deleted Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error!'
@@ -164,7 +159,7 @@ exports.deleteAssignment = async (req, res) => {
 
 exports.getAllAssignments = async (req, res) => {
     try {
-        let assignmentData = await Assignment.find()
+        const assignmentData = await Assignment.find()
             .populate('subject')
             .populate('classId')
             .populate({
@@ -180,7 +175,6 @@ exports.getAllAssignments = async (req, res) => {
             message: 'Assignments fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

@@ -1,9 +1,11 @@
-const Assignment = require('../../models/Assignment');
+const bcrypt = require('bcryptjs');
+const User = require('../../models/User');
 const Class = require('../../models/Class');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
-const User = require('../../models/User');
-const bcrypt = require('bcryptjs');
+const mailSender = require('../../utils/mailSender');
+const Assignment = require('../../models/Assignment');
+const { userCredentialsEmail } = require('../../mail/templates/userCredentialsEmail');
 
 exports.createTeacher = async (req, res) => {
     try {
@@ -106,14 +108,27 @@ exports.createTeacher = async (req, res) => {
             );
         }
 
+        await mailSender(
+            email,
+            'Welcome to ABCD School: Your Login Credentials',
+            userCredentialsEmail(
+                'ABCD School',
+                firstName + ' ' + lastName,
+                email,
+                teacherId,
+                password,
+                'http://localhost:5173/',
+                'support@abcdschool.com'
+            )
+        );
+
         // Send the successful response
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: userResponse,
             message: 'Teacher registered successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -186,7 +201,10 @@ exports.updateTeacher = async (req, res) => {
 
         // Update Teacher record
         const updatedTeacher = await Teacher.findByIdAndUpdate(id,
-            { teacherId, classes, subjects }, { new: true });
+            { teacherId, classes, subjects }, { new: true })
+            .populate('userId')
+            .populate('classes')
+            .populate('subjects');
 
         // Handle added and removed classes
         const addedClasses = classes && classes.filter(classId => !existingTeacher.classes.includes(classId));
@@ -235,7 +253,6 @@ exports.updateTeacher = async (req, res) => {
             message: 'Teacher Update Successfully!'
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -284,7 +301,6 @@ exports.deleteTeacher = async (req, res) => {
             message: "Teacher Deleted Successfully!"
         });
     } catch (error) {
-        console.error(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -314,7 +330,6 @@ exports.getAllTeachers = async (req, res) => {
             message: 'Teachers fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -352,7 +367,6 @@ exports.getTeacherDetails = async (req, res) => {
             message: 'Teacher details fetched successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

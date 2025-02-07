@@ -26,14 +26,12 @@ exports.createEvent = async (req, res) => {
             endDate,
         });
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: eventResponse,
             message: 'Event created successfully!'
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error!'
@@ -82,11 +80,11 @@ exports.updateEvent = async (req, res) => {
             success: true,
             data: updatedEvent,
             message: 'Event updated successfully!'
-        })
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
+            errorMessage: error.message,
             message: 'Internal Server Error!'
         })
     }
@@ -119,10 +117,9 @@ exports.deleteEvent = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: deletedEvent,
-            message: 'Event Deleted Successfully!'
+            message: 'Event deleted successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -133,7 +130,7 @@ exports.deleteEvent = async (req, res) => {
 
 exports.getAllEvents = async (req, res) => {
     try {
-        let eventData = await Event.find()
+        const eventData = await Event.find()
             .populate('classes')
             .sort({ title: 1 });
 
@@ -143,7 +140,6 @@ exports.getAllEvents = async (req, res) => {
             message: 'Events fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,

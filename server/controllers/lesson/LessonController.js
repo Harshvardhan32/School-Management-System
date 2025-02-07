@@ -22,10 +22,8 @@ exports.createLesson = async (req, res) => {
             success: true,
             data: lessonResponse,
             message: 'Lesson created successfully!'
-        })
-
+        });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -68,7 +66,6 @@ exports.updateLesson = async (req, res) => {
             message: 'Lesson updated successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
@@ -115,7 +112,6 @@ exports.deleteLesson = async (req, res) => {
             message: 'Lesson Deleted Successfully!'
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error!'
@@ -133,7 +129,6 @@ exports.getAllLessons = async (req, res) => {
             message: 'Lessons fetched successfully!',
         });
     } catch (error) {
-        console.log(error.message);
         return res.status(500).json({
             success: false,
             errorMessage: error.message,
