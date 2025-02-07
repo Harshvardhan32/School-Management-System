@@ -42,7 +42,7 @@ const Admin = () => {
     const year = allStudents[0]?.updatedAt.split('-')[0];
     const lastTwoDigits = parseInt(year?.slice(-2));
     const modifiedLastTwo = lastTwoDigits + 1;
-    const date = year + '/' + modifiedLastTwo;
+    const date = year ? year + '/' + modifiedLastTwo : '';
 
     // Function to transform attendance data into a format suitable for the chart
     const transformAttendanceData = () => {
