@@ -307,7 +307,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
                         placeholder="Date of Birth"
                         className="min-w-[150px] w-full outline-none dark:text-gray-200 dark:bg-slate-800 ring-[1.5px] ring-gray-300 dark:ring-gray-500 p-2 rounded-[2px] text-sm"
                         {...register("dateOfBirth")}
-                        defaultValue={type === 'update' ? new Date(data?.userId.dateOfBirth).toISOString().slice(0, 10) : ''}
+                        defaultValue={type === 'update' && data?.userId.dateOfBirth ? new Date(data?.userId.dateOfBirth).toISOString().slice(0, 10) : ''}
                     />
                     {errors?.dateOfBirth && <p className="text-xs text-red-700 py-2">{errors?.dateOfBirth.message}</p>}
                 </div>

@@ -83,7 +83,7 @@ const Navbar = () => {
                             <p className="font-semibold">Messages</p>
                             <Link to='/list/messages' onClick={() => setShowPopup(false)}>View All</Link>
                         </div>
-                        {
+                        {allMessages?.length > 0 ?
                             allMessages?.slice(0, 3)?.map((message, i) => (
                                 <div
                                     className={`flex flex-col gap-1 p-2 ${i !== 2 && 'border-b border-gray-500'}`}
@@ -99,6 +99,7 @@ const Navbar = () => {
                                     <p className="text-justify">{message?.content.length > 80 ? `${message?.content.slice(0, 80)}...` : message?.content}</p>
                                 </div>
                             ))
+                            : <p className="text-center py-1">No data.</p>
                         }
                     </div>
                 }
@@ -121,7 +122,7 @@ const Navbar = () => {
                             <p className="font-semibold">Announcements</p>
                             <Link to='/list/announcements' onClick={() => setShowPopup(false)}>View All</Link>
                         </div>
-                        {
+                        {allAnnouncements?.length > 0 ?
                             allAnnouncements?.slice(0, 3)?.map((announcement, i) => (
                                 <div
                                     className={`flex flex-col gap-1 p-2 ${i !== 2 && 'border-b border-gray-500'}`}
@@ -137,6 +138,7 @@ const Navbar = () => {
                                     <p className="text-justify">{announcement?.description.length > 80 ? `${announcement?.description.slice(0, 80)}...` : announcement?.description}</p>
                                 </div>
                             ))
+                            : <p className="text-center py-1">No data.</p>
                         }
                     </div>
                 }
