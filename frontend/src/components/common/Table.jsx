@@ -36,7 +36,7 @@ const Table = ({ columns, data, loading }) => {
                                     <th
                                         key={key || j}
                                         {...restHeaderProps}
-                                        className={`flex gap-1 items-center p-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 ${column.className || ""
+                                        className={`overflow-hidden whitespace-nowrap text-ellipsis flex gap-1 items-center p-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 ${column.className || ""
                                             }`}
                                     >
                                         {column.render("Header")} {/* Rendering header label */}
@@ -86,7 +86,7 @@ const Table = ({ columns, data, loading }) => {
                                             <td
                                                 key={key || `cell-${rowIndex}-${cellIndex}`}
                                                 {...restCellProps}
-                                                className={`p-4 text-sm text-gray-700 dark:text-gray-300 ${columnClassName}`}
+                                                className={`overflow-hidden whitespace-nowrap text-ellipsis p-4 text-sm text-gray-700 dark:text-gray-300 ${columnClassName}`}
                                             >
                                                 {cell.render("Cell")} {/* Rendering cell content */}
                                             </td>

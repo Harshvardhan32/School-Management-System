@@ -66,11 +66,11 @@ const ParentList = () => {
             Header: 'Info',
             accessor: (row) => <div className="flex items-center gap-4">
                 <div>
-                    <img src={row?.userId?.photo} alt="" tabIndex={0} className="w-10 h-10 md:hidden xl:block rounded-full object-cover focus:border-2 focus:border-gray-400 dark:focus:border-gray-700" />
+                    <img src={row?.userId?.photo} alt="" tabIndex={0} className="w-10 h-10 hidden sm:block md:hidden xl:block rounded-full object-cover focus:border-2 focus:border-gray-400 dark:focus:border-gray-700" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold dark:text-gray-200 capitalize">{row?.userId?.firstName} {row?.userId?.lastName}</h3>
-                    <p className="text-xs text-gray-500">{row?.parentId}</p>
+                    <h3 className="overflow-hidden whitespace-nowrap text-ellipsis font-semibold dark:text-gray-200 capitalize">{row?.userId?.firstName} {row?.userId?.lastName}</h3>
+                    <p className="overflow-hidden whitespace-nowrap text-ellipsis text-xs text-gray-500">{row?.parentId}</p>
                 </div>
             </div>,
             className: 'p-4',
