@@ -24,6 +24,7 @@ const EventList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector(state => state?.auth);
     const { allEvents } = useSelector(state => state?.event);
+    const { loading } = useSelector(state => state?.event);
 
     // Fetch all events on component mount or token change
     useEffect(() => {
@@ -193,19 +194,22 @@ const EventList = () => {
                 </div>
                 {/* LIST */}
                 <div>
-                    <Table columns={columns} data={paginatedData} />
+                    <Table columns={columns} data={paginatedData} loading={loading} />
                 </div>
                 {/* PAGINATION */}
-                <div>
-                    {
-                        paginatedData?.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {
+                            paginatedData?.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

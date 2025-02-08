@@ -352,7 +352,12 @@ exports.getTeacherDetails = async (req, res) => {
         const teacherDetails = await Teacher.findById(teacherId)
             .populate('userId')
             .populate('classes')
-            .populate('subjects');
+            .populate({
+                path: 'subjects',
+                populate: {
+                    path: 'classes'
+                }
+            });
 
         if (!teacherDetails) {
             return res.status(404).json({

@@ -20,6 +20,7 @@ const TeacherList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector(state => state?.auth);
     const { allTeachers } = useSelector(state => state?.teacher);
+    const { loading } = useSelector(state => state?.teacher);
     const teachersId = allTeachers?.map((teacher) => teacher?.teacherId) || [];
 
     // Fetching all teachers
@@ -152,19 +153,22 @@ const TeacherList = () => {
             </div>
             {/* Teachers List Table */}
             <div>
-                <Table columns={columns} data={paginatedTeachers} />
+                <Table columns={columns} data={paginatedTeachers} loading={loading} />
             </div>
             {/* Pagination */}
-            <div>
-                {
-                    paginatedTeachers.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {
+                        paginatedTeachers?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div >
     )
 }

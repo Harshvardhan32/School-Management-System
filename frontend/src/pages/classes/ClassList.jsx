@@ -22,6 +22,7 @@ const ClassList = () => {
     const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { allClasses } = useSelector(state => state?.class);
+    const { loading } = useSelector(state => state?.class);
     const classNames = allClasses?.map((item) => item?.className) || [];
     const { role } = user?.userId;
 
@@ -167,18 +168,21 @@ const ClassList = () => {
                 </div>
                 {/* LIST */}
                 <div>
-                    <Table columns={columns} data={paginatedClasses || []} />
+                    <Table columns={columns} data={paginatedClasses || []} loading={loading} />
                 </div>
                 {/* PAGINATION */}
-                <div>
-                    {paginatedClasses?.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {paginatedClasses?.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

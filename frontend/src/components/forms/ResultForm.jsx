@@ -139,13 +139,13 @@ const ResultForm = ({ type, data, setOpen }) => {
     const studentOptions = useMemo(() =>
         allStudents?.map((item) => ({
             value: item?._id,
-            label: `${item?.userId?.firstName || ''} ${item?.userId?.lastName || ''} ${item.classId.className}`,
+            label: item?.userId?.firstName + ' ' + item?.userId?.lastName + ' ' + item.classId.className,
         })), [allStudents]);
 
     const subjectOptions = useMemo(() =>
         allSubjects?.map((item) => ({
             value: item?._id,
-            label: item?.subjectName,
+            label: item?.subjectName + ' ' + item?.classes?.map((classItem) => classItem?.className).join(', '),
         })), [allSubjects]);
 
     const examOptions = useMemo(() =>

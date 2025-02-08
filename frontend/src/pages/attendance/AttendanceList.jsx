@@ -51,15 +51,15 @@ const AttendanceList = () => {
         let allData = [];
 
         if (selectedDate) {
-            if (dateBasedAttendance.length > 0) {
+            if (dateBasedAttendance?.length > 0) {
                 allData = dateBasedAttendance[0]?.studentAttendance?.map((attendance) => ({
                     type: 'update',
                     id: dateBasedAttendance[0]._id,
                     studentId: attendance.student._id,
                     studentName: `${attendance.student.userId.firstName} ${attendance.student.userId.lastName}`,
                     rollNumber: attendance.student.rollNumber,
-                    classId: dateBasedAttendance[0].classId,
-                    className: dateBasedAttendance[0].classId.className,
+                    classId: attendance.student.classId._id,
+                    className: attendance.student.classId.className,
                     status: attendance.status,
                     date: dateBasedAttendance[0].date,
                 }));
@@ -72,8 +72,8 @@ const AttendanceList = () => {
                     studentId: student?._id,
                     studentName: `${student?.userId.firstName} ${student?.userId.lastName}`,
                     rollNumber: student?.rollNumber,
-                    classId: student?.classId._id,
-                    className: student?.classId.className,
+                    classId: student?.classId?._id,
+                    className: student?.classId?.className,
                     status: '',
                     date: new Date().toLocaleDateString('en-CA'),
                 }));
@@ -103,8 +103,10 @@ const AttendanceList = () => {
 
     // Class dropdown options
     const classOptions = useMemo(() => {
-        let allClass = [...allClasses];
-        if (role !== 'Admin') {
+        let allClass = [];
+        if (role === 'Admin') {
+            allClass = [...allClasses];
+        } else {
             allClass = [...user?.classes];
         }
         return allClass?.sort((a, b) => (a.className < b.className ? -1 : 1))

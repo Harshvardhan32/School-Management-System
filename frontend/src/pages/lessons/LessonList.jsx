@@ -19,6 +19,7 @@ const LessonList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
     const { allLessons } = useSelector((state) => state?.lesson);
+    const { loading } = useSelector((state) => state?.lesson);
 
     useEffect(() => {
         dispatch(getAllLessons(token));
@@ -105,19 +106,22 @@ const LessonList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={paginatedLessons || []} />
+                <Table columns={columns} data={paginatedLessons || []} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {
-                    paginatedLessons?.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {
+                        paginatedLessons?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 };

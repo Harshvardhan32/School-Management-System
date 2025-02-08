@@ -18,6 +18,7 @@ const MessageList = () => {
     const { user } = useSelector(state => state?.profile);
     const { role } = user?.userId;
     const { allMessages } = useSelector(state => state?.message);
+    const { loading } = useSelector(state => state?.message);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -27,7 +28,7 @@ const MessageList = () => {
     const searchedData = allMessages?.filter((data) => {
         const matchedTitleSearch = data?.title?.toLowerCase().includes(searchQuery.trim().toLowerCase());
         const matchedContentSearch = data?.content.toLowerCase().includes(searchQuery.trim().toLowerCase());
-        
+
         return allMessages && (matchedTitleSearch || matchedContentSearch);
     });
 
@@ -97,18 +98,21 @@ const MessageList = () => {
             {/* LIST */}
             <div>
                 {/* Table displaying messages */}
-                <Table columns={columns} data={paginatedMessage} />
+                <Table columns={columns} data={paginatedMessage} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {paginatedMessage.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {paginatedMessage.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 }

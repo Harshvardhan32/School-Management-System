@@ -345,7 +345,12 @@ exports.getStudentDetails = async (req, res) => {
             .populate('classId')
             .populate('parent')
             .populate('attendance')
-            .populate('subjects')
+            .populate({
+                path: 'subjects',
+                populate: {
+                    path: 'classes'
+                }
+            })
             .populate('exams')
             .populate('assignments');
 

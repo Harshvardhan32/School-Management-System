@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
 import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
 
-const Table = ({ columns, data }) => {
+const Table = ({ columns, data, loading }) => {
 
     // Memoizing columns to avoid unnecessary re-renders
     const memoizedColumns = useMemo(() => {
@@ -55,48 +55,58 @@ const Table = ({ columns, data }) => {
                     );
                 })}
             </thead>
+
             <tbody {...getTableBodyProps()}>
-                {rows.length > 0 ? (
-                    rows.map((row, rowIndex) => {
-                        prepareRow(row); // Preparing each row for rendering
-                        const { key, ...restRowProps } = row.getRowProps();
-                        return (
-                            <tr
-                                key={key || `row-${rowIndex}`}
-                                {...restRowProps}
-                                className={`${rowIndex % 2 !== 0
-                                    ? "bg-white dark:bg-slate-900"
-                                    : "bg-slate-100 dark:bg-slate-800"
-                                    } border-b dark:hover:bg-gray-700 hover:bg-purple-50`}
-                            >
-                                {row.cells.map((cell, cellIndex) => {
-                                    const { key, ...restCellProps } = cell.getCellProps();
-                                    const columnClassName =
-                                        cell.column.className || "";
-                                    return (
-                                        <td
-                                            key={key || `cell-${rowIndex}-${cellIndex}`}
-                                            {...restCellProps}
-                                            className={`p-4 text-sm text-gray-700 dark:text-gray-300 ${columnClassName}`}
-                                        >
-                                            {cell.render("Cell")} {/* Rendering cell content */}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })
-                ) : (
-                    // Display message if no data is available
+                {loading ?
                     <tr>
-                        <td
-                            colSpan={memoizedColumns.length}
-                            className="p-4 text-center text-gray-500 dark:text-gray-400"
-                        >
-                            No data available
+                        <td colSpan={memoizedColumns.length} className="p-4 text-center">
+                            <div className="flex justify-center items-center w-full">
+                                <div className="border-t-4 border-gray-300 dark:border-slate-700 border-solid w-12 h-12 rounded-full animate-spin"></div>
+                            </div>
                         </td>
                     </tr>
-                )}
+                    : rows.length > 0 ? (
+                        rows.map((row, rowIndex) => {
+                            prepareRow(row); // Preparing each row for rendering
+                            const { key, ...restRowProps } = row.getRowProps();
+                            return (
+                                <tr
+                                    key={key || `row-${rowIndex}`}
+                                    {...restRowProps}
+                                    className={`${rowIndex % 2 !== 0
+                                        ? "bg-white dark:bg-slate-900"
+                                        : "bg-slate-100 dark:bg-slate-800"
+                                        } border-b dark:hover:bg-gray-700 hover:bg-purple-50`}
+                                >
+                                    {row.cells.map((cell, cellIndex) => {
+                                        const { key, ...restCellProps } = cell.getCellProps();
+                                        const columnClassName =
+                                            cell.column.className || "";
+                                        return (
+                                            <td
+                                                key={key || `cell-${rowIndex}-${cellIndex}`}
+                                                {...restCellProps}
+                                                className={`p-4 text-sm text-gray-700 dark:text-gray-300 ${columnClassName}`}
+                                            >
+                                                {cell.render("Cell")} {/* Rendering cell content */}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        // Display message if no data is available
+                        <tr>
+                            <td
+                                colSpan={memoizedColumns.length}
+                                className="p-4 text-center text-gray-500 dark:text-gray-400"
+                            >
+                                No data available
+                            </td>
+                        </tr>
+                    )
+                }
             </tbody>
         </table>
     );

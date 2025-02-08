@@ -23,6 +23,7 @@ const ResultList = () => {
     const { user } = useSelector((state) => state?.profile);
     const { role } = user?.userId;
     const { allResults } = useSelector((state) => state?.result);
+    const { loading } = useSelector((state) => state?.result);
     const [rollNumber, setRollNumber] = useState({ start: '', end: '' });
     const [overallPercentage, setOverallPercentage] = useState({ start: '', end: '' });
     const [showFilter, setShowFilter] = useState(false);
@@ -228,20 +229,23 @@ const ResultList = () => {
 
                 {/* Table Section displaying paginated results */}
                 <div>
-                    <Table columns={columns} data={paginatedResults} />
+                    <Table columns={columns} data={paginatedResults} loading={loading} />
                 </div>
 
                 {/* Pagination Controls */}
-                <div>
-                    {
-                        paginatedResults.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {
+                            paginatedResults.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

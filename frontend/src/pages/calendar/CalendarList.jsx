@@ -19,6 +19,7 @@ const CalendarList = () => {
     const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { allCalendars } = useSelector(state => state?.calendar);
+    const { loading } = useSelector(state => state?.calendar);
     const { role } = user?.userId;
 
     useEffect(() => {
@@ -103,18 +104,21 @@ const CalendarList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={paginatedCalendars} />
+                <Table columns={columns} data={paginatedCalendars} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {paginatedCalendars?.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {paginatedCalendars?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 }

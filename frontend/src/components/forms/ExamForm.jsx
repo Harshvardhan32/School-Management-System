@@ -50,7 +50,8 @@ const ExamForm = ({ type, data, setOpen }) => {
     const subjectOptions = useMemo(() => {
         return (allSubjects?.map((item) => ({
             id: item?._id,
-            name: item?.subjectName,
+            name: item?.subjectName + ' ' +
+                item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || []);
     }, [allSubjects]);
 
@@ -65,7 +66,8 @@ const ExamForm = ({ type, data, setOpen }) => {
         ? data?.subjects?.map((subject) => {
             return {
                 id: subject?._id,
-                name: subject?.subjectName,
+                name: subject?.subjectName + ' ' +
+                    subject?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("subjects")?.map((id) =>
@@ -86,7 +88,7 @@ const ExamForm = ({ type, data, setOpen }) => {
     const onSubmit = handleSubmit(formData => {
         const start = new Date(formData?.startDate);
         const end = new Date(formData?.endDate);
-        
+
         if (end <= start) {
             toast.error('End date must be later than start date!');
             return;

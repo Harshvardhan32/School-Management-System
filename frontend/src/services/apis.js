@@ -1,4 +1,5 @@
-const BASE_URL = "https://api-school-management-system.vercel.app";
+// const BASE_URL = "https://api-school-management-system.vercel.app";
+const BASE_URL = "http://localhost:5000";
 
 // AUTH ENDPOINTS
 export const authEndPoints = {

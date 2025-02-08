@@ -186,7 +186,12 @@ exports.deleteExam = async (req, res) => {
 exports.getAllExams = async (req, res) => {
     try {
         const examData = await Exam.find()
-            .populate('subjects')
+            .populate({
+                path: 'subjects',
+                populate: {
+                    path: 'classes'
+                }
+            })
             .populate('classes').sort({ examName: 1 });
 
         return res.status(200).json({

@@ -49,7 +49,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
             id: item?._id,
-            name: item?.subjectName,
+            name: item?.subjectName + ' ' + item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || [];
     }, [allSubjects]);
 
@@ -63,7 +63,8 @@ const AssignmentForm = ({ type, data, setOpen }) => {
     const teacherOptions = useMemo(() => {
         return allTeachers?.map((item) => ({
             id: item?._id,
-            name: `${item?.userId?.firstName} ${item?.userId?.lastName}`,
+            name: item?.userId?.firstName + ' ' + item?.userId?.lastName + ' ' +
+                item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || [];
     }, [allTeachers]);
 
@@ -95,7 +96,7 @@ const AssignmentForm = ({ type, data, setOpen }) => {
                         name="subject"
                         control={control}
                         options={subjectOptions}
-                        defaultValue={(type === 'update' && data?.subject) ? data?.subject._id : ''}
+                        defaultValue={(type === 'update' && data?.subject) ? data?.subject?._id : ''}
                         placeholder="Please Select"
                         label="Subject"
                     />

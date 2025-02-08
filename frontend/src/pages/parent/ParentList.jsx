@@ -19,6 +19,7 @@ const ParentList = () => {
     const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { allParents } = useSelector(state => state?.parent);
+    const { loading } = useSelector(state => state?.parent);
     const parentsId = allParents?.map((parent) => parent?.parentId) || [];
     const { role } = user?.userId;
 
@@ -78,7 +79,7 @@ const ParentList = () => {
         {
             Header: 'Students',
             accessor: (row) => row?.students.length > 0 ? row?.students?.map(student => { return student.userId.firstName + " " + student.userId.lastName }).join(', ') : '_',
-            className: 'hidden sm:table-cell p-4 capitalize',   
+            className: 'hidden sm:table-cell p-4 capitalize',
             isSortable: true,
         },
         {
@@ -141,19 +142,22 @@ const ParentList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={paginatedParents} />
+                <Table columns={columns} data={paginatedParents} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {
-                    paginatedParents.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {
+                        paginatedParents.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 }

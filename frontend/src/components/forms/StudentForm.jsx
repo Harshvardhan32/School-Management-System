@@ -104,14 +104,14 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
     const parentOptions = useMemo(() => {
         return (allParents?.map((item) => ({
             id: item?._id,
-            name: item?.userId.firstName + " " + item?.userId.firstName,
+            name: item?.userId.firstName + " " + item?.userId.lastName,
         })) || []);
     }, [allParents]);
 
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
             id: item?._id,
-            name: item?.subjectName,
+            name: item?.subjectName + ' ' + item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || [];
     }, [allSubjects]);
 
@@ -119,7 +119,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
         ? data?.subjects?.map((subject) => {
             return {
                 id: subject?._id,
-                name: subject?.subjectName,
+                name: subject?.subjectName + ' ' + subject?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("subjects")?.map((id) =>
@@ -131,6 +131,7 @@ const StudentForm = ({ type, data, allData, setOpen }) => {
             dispatch(createStudent(formData, token, setOpen));
         } else {
             formData.id = data._id;
+            formData.userId = data.userId;
             dispatch(updateStudent(formData, token, setOpen));
         }
     });

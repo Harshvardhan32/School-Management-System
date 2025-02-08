@@ -223,9 +223,10 @@ exports.getAllSubjects = async (req, res) => {
             .populate('classes')
             .populate({
                 path: 'teachers',
-                populate: {
-                    path: 'userId'
-                }
+                populate: [
+                    { path: 'userId' },
+                    { path: 'classes' }
+                ]
             })
             .populate('lessons').sort({ subjectName: 1 });
 

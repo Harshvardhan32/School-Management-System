@@ -21,6 +21,7 @@ const AnnouncementList = () => {
     const itemsPerPage = 10;
 
     const { allAnnouncements } = useSelector((state) => state?.announcement);
+    const { loading } = useSelector((state) => state?.announcement);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -139,19 +140,22 @@ const AnnouncementList = () => {
                 {/* LIST */}
                 <div>
                     {/* Display the filtered and paginated table */}
-                    <Table columns={columns} data={paginatedData} />
+                    <Table columns={columns} data={paginatedData} loading={loading} />
                 </div>
                 {/* PAGINATION */}
-                <div>
-                    {
-                        paginatedData?.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {
+                            paginatedData?.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

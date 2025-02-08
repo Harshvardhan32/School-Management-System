@@ -25,6 +25,7 @@ const ExamList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
     const { allExams } = useSelector((state) => state?.exam);
+    const { loading } = useSelector((state) => state?.exam);
 
     useEffect(() => {
         dispatch(getAllExams(token));
@@ -210,20 +211,23 @@ const ExamList = () => {
 
                 {/* Table displaying paginated exams */}
                 <div>
-                    <Table columns={columns} data={paginatedExams} />
+                    <Table columns={columns} data={paginatedExams} loading={loading} />
                 </div>
 
                 {/* Pagination controls */}
-                <div>
-                    {
-                        paginatedExams?.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {
+                            paginatedExams?.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

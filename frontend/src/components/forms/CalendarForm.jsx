@@ -86,6 +86,7 @@ const CalendarForm = ({ type, data, setOpen }) => {
                     append({
                         type: item.type || '',
                         subject: item.subject._id || '',
+                        teacher: item.teacher._id || '',
                         startTime: item.startTime,
                         endTime: item.endTime,
                     });
@@ -189,7 +190,8 @@ const CalendarForm = ({ type, data, setOpen }) => {
                                     control={control}
                                     options={allSubjects?.map((subject) => ({
                                         id: subject?._id,
-                                        name: subject?.subjectName,
+                                        name: subject?.subjectName + ' ' +
+                                            subject?.classes?.map((classItem) => classItem?.className).join(', '),
                                     }))}
                                     isDisabled={watch('schedule')?.[index]?.type === 'break'}
                                     defaultValue={schedule.subject}
@@ -205,7 +207,7 @@ const CalendarForm = ({ type, data, setOpen }) => {
                                     control={control}
                                     options={allTeachers?.map((teacher) => ({
                                         id: teacher?._id,
-                                        name: `${teacher?.userId.firstName} ${teacher?.userId.lastName}`,
+                                        name: teacher?.userId.firstName + ' ' + teacher?.userId.lastName + ' ' + teacher?.classes?.map((classItem) => classItem?.className).join(', '),
                                     }))}
                                     isDisabled={watch('schedule')?.[index]?.type === 'break'}
                                     defaultValue={schedule?.teacher}

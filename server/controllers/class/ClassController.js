@@ -30,7 +30,7 @@ exports.createClass = async (req, res) => {
         const classResponse = await Class.create({
             className,
             capacity,
-            supervisor,
+            supervisor: supervisor ? supervisor : null,
             teachers,
             subjects
         });
@@ -100,7 +100,7 @@ exports.updateClass = async (req, res) => {
             {
                 className,
                 capacity,
-                supervisor,
+                supervisor: supervisor ? supervisor : null,
                 teachers,
                 subjects
             }, { new: true });
@@ -234,11 +234,17 @@ exports.getAllClasses = async (req, res) => {
             })
             .populate({
                 path: 'teachers',
-                populate: {
-                    path: 'userId'
-                }
+                populate: [
+                    { path: 'userId' },
+                    { path: 'classes' }
+                ]
             })
-            .populate('subjects').sort({ className: 1 });
+            .populate({
+                path: 'subjects',
+                populate: {
+                    path: 'classes'
+                }
+            }).sort({ className: 1 });
 
         return res.status(200).json({
             success: true,

@@ -163,7 +163,7 @@ const StudentDetailsPage = () => {
                         <div className="bg-white dark:bg-slate-900 min-w-[160px] p-4 rounded-[6px] flex flex-1 gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
                             <img src="/singleAttendance.png" alt="" width={24} height={24} className="w-6 h-6" />
                             <div>
-                                <h1 className="text-xl dark:text-gray-200 font-semibold">{((attendanceData.present * 100) / attendanceData.totalClass).toFixed(2)}%</h1>
+                                <h1 className="text-xl dark:text-gray-200 font-semibold">{attendanceData.present ? ((attendanceData.present * 100) / attendanceData.totalClass).toFixed(2) : 0}%</h1>
                                 <span className="text-sm text-gray-400">Attendance</span>
                             </div>
                         </div>

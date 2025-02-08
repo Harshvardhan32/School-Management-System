@@ -24,6 +24,7 @@ const AssignmentList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector((state) => state?.auth);
     const { allAssignments } = useSelector((state) => state?.assignment);
+    const { loading } = useSelector((state) => state?.assignment);
     const { role } = user?.userId;
 
     // Fetch assignments when state or page changes
@@ -210,20 +211,23 @@ const AssignmentList = () => {
 
                 {/* Table Section displaying paginated assignments */}
                 <div>
-                    <Table columns={columns} data={paginatedAssignments || []} />
+                    <Table columns={columns} data={paginatedAssignments || []} loading={loading} />
                 </div>
 
                 {/* Pagination controls */}
-                <div>
-                    {
-                        paginatedAssignments.length > 0 &&
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    }
-                </div>
+                {
+                    !loading &&
+                    <div>
+                        {
+                            paginatedAssignments.length > 0 &&
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        }
+                    </div>
+                }
             </div>
         </div>
     );

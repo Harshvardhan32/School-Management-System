@@ -66,14 +66,16 @@ const ClassForm = ({ type, data, allData, setOpen }) => {
     const teacherOptions = useMemo(() => {
         return allTeachers?.map((item) => ({
             id: item?._id,
-            name: item?.userId.firstName + " " + item?.userId.lastName,
+            name: item?.userId.firstName + " " + item?.userId.lastName + ' ' +
+                item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || [];
     }, [allTeachers]);
 
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
             id: item?._id,
-            name: item?.subjectName,
+            name: item?.subjectName + ' '
+                + item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || [];
     }, [allSubjects]);
 
@@ -81,8 +83,9 @@ const ClassForm = ({ type, data, allData, setOpen }) => {
     const selectedTeachers = type === 'update' && data?.teachers.length > 0
         ? data?.teachers.map((teacher) => {
             return {
-                id: teacher._id,
-                name: teacher.userId.firstName + " " + teacher.userId.lastName,
+                id: teacher?._id,
+                name: teacher?.userId.firstName + " " + teacher?.userId.lastName + ' ' +
+                    teacher?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("teachers")?.map((id) =>
@@ -93,7 +96,8 @@ const ClassForm = ({ type, data, allData, setOpen }) => {
         ? data?.subjects?.map((subject) => {
             return {
                 id: subject?._id,
-                name: subject?.subjectName,
+                name: subject?.subjectName + ' ' +
+                    subject?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("subjects")?.map((id) =>

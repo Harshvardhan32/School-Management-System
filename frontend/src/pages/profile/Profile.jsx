@@ -79,7 +79,7 @@ const Profile = () => {
                         </div>
                         <div>
                             <p className='text-base dark:text-gray-200 font-medium'>Gender</p>
-                            <p className="text-base dark:text-gray-400">{user?.userId.sex}</p>
+                            <p className="text-base dark:text-gray-400 capitalize">{user?.userId.sex}</p>
                         </div>
                         <div>
                             <p className='text-base dark:text-gray-200 font-medium'>Date Of Birth</p>

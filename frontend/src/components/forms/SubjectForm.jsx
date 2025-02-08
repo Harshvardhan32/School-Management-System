@@ -60,7 +60,8 @@ const SubjectForm = ({ type, data, setOpen }) => {
     const teacherOptions = useMemo(() => {
         return (allTeachers?.map((item) => ({
             id: item?._id,
-            name: item?.userId?.firstName + " " + item?.userId?.lastName,
+            name: item?.userId?.firstName + " " + item?.userId?.lastName +
+                ' ' + item?.classes?.map((classItem) => classItem?.className).join(', '),
         })) || []);
     }, [allTeachers]);
 
@@ -87,7 +88,8 @@ const SubjectForm = ({ type, data, setOpen }) => {
         ? data?.teachers?.map((teacher) => {
             return {
                 id: teacher?._id,
-                name: teacher?.userId?.firstName + " " + teacher?.userId?.lastName,
+                name: teacher?.userId?.firstName + " " + teacher?.userId?.lastName + ' '
+                    + teacher?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("teachers")?.map((id) =>

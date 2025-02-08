@@ -94,7 +94,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
     const subjectOptions = useMemo(() => {
         return allSubjects?.map((item) => ({
             id: item?._id, // Subject ID
-            name: item?.subjectName, // Subject name
+            name: item?.subjectName + ' ' + item?.classes?.map((classItem) => classItem?.className).join(', '), // Subject name
         })) || [];
     }, [allSubjects]);
 
@@ -115,7 +115,7 @@ const TeacherForm = ({ type, data, allData, setOpen }) => {
         ? data?.subjects?.map((subject) => {
             return {
                 id: subject?._id,
-                name: subject?.subjectName,
+                name: subject?.subjectName + ' ' + subject?.classes?.map((classItem) => classItem?.className).join(', '),
             }
         })
         : getValues("subjects")?.map((id) =>

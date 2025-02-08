@@ -20,6 +20,7 @@ const StudentList = () => {
     const { token } = useSelector(state => state?.auth);
     const { user } = useSelector(state => state?.profile);
     const { allStudents } = useSelector(state => state?.student);
+    const { loading } = useSelector(state => state?.student);
     const { role } = user?.userId;
     const studentsId = allStudents?.map((student) => student?.studentId);
     const rollNumber = allStudents?.map((student) => student?.rollNumber.toString());
@@ -155,19 +156,22 @@ const StudentList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={paginatedStudents} />
+                <Table columns={columns} data={paginatedStudents} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {
-                    paginatedStudents?.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {
+                        paginatedStudents?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 }

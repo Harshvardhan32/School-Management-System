@@ -19,6 +19,7 @@ const SubjectList = () => {
     const dispatch = useDispatch();
     const { token } = useSelector(state => state?.auth);
     const { allSubjects } = useSelector(state => state?.subject);
+    const { loading } = useSelector(state => state?.subject);
 
     useEffect(() => {
         dispatch(getAllSubjects(token));
@@ -119,19 +120,22 @@ const SubjectList = () => {
             </div>
             {/* LIST */}
             <div>
-                <Table columns={columns} data={paginatedSubjects} />
+                <Table columns={columns} data={paginatedSubjects} loading={loading} />
             </div>
             {/* PAGINATION */}
-            <div>
-                {
-                    paginatedSubjects?.length > 0 &&
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
-                }
-            </div>
+            {
+                !loading &&
+                <div>
+                    {
+                        paginatedSubjects?.length > 0 &&
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    }
+                </div>
+            }
         </div>
     );
 }
