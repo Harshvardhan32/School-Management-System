@@ -162,7 +162,7 @@ const AttendanceList = () => {
         {
             Header: "Student Name",
             accessor: "studentName",
-            className: "hidden sm:table-cell p-4 capitalize",
+            className: "table-cell min-[400px]:hidden sm:table-cell p-4 capitalize",
             isSortable: true,
         },
         {
@@ -173,7 +173,7 @@ const AttendanceList = () => {
         },
         {
             Header: "Present",
-            className: "hidden sm:table-cell p-4",
+            className: "hidden min-[400px]:table-cell p-4",
             isSortable: false,
             Cell: ({ row }) => (
                 <input
@@ -186,7 +186,7 @@ const AttendanceList = () => {
         },
         {
             Header: "Absent",
-            className: "hidden sm:table-cell p-4",
+            className: "hidden min-[400px]:table-cell p-4",
             isSortable: false,
             Cell: ({ row }) => (
                 <input
