@@ -123,13 +123,13 @@ The project has the following folder structure:
 
     School-Management-System/
     ├── frontend/
-    │   ├── public/               # Public assets such as favicon manifest, etc.
+    │   ├── public/               # Public assets such as favicon etc.
     │   ├── src/
-    │   │   ├── assets/           # Static files like images, icons, and fonts.
+    │   │   ├── assets/           # Static files like images, icons.
     │   │   ├── components/       # Reusable React components used throughout the app.
-    │   │   ├── data/             # Static data files like JSONs for dropdowns, sample data, etc.
+    │   │   ├── data/             # Static data files
     │   │   ├── pages/            # Pages for Admin, Teacher, Student, and Parent views.
-    │   │   ├── reducers/         # Reducers for state management (if using Redux).
+    │   │   ├── reducers/         # Reducers for state management.
     │   │   ├── services/         # API services for interacting with the backend.
     │   │   ├── slices/           # Redux Toolkit slices for state management.
     │   │   ├── utils/            # Utility functions and helpers.
@@ -139,10 +139,10 @@ The project has the following folder structure:
     │   └── index.html            # HTML template for the app.
 
     ├── server/
-    │   ├── config/               # Configuration files (e.g., database connection, email services).
+    │   ├── config/               # Configuration files (e.g., database connection, cloudinary services).
     │   ├── controllers/          # Backend logic for handling API requests.
-    │   ├── mail/                 # Logic for sending emails using `smtp.google.com`.
-    │   ├── middlewares/          # Middleware functions (e.g., authentication, error handling).
+    │   ├── mail/                 # mail templates.
+    │   ├── middlewares/          # Middleware functions (e.g., authentication, authorization).
     │   ├── models/               # MongoDB models for the database schema.
     │   ├── router/               # API route definitions.
     │   ├── utils/                # Utility functions and helpers for the backend.
