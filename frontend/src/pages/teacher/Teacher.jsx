@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getDateOfWeek } from "../../utils/getDateOfWeek";
 import Announcements from "../../components/Announcements";
 import { getAllCalendars } from "../../services/operations/calendarAPI";
+import EventCalendar from "../../components/EventCalender";
 
 const Teacher = () => {
 
@@ -77,6 +78,7 @@ const Teacher = () => {
             </div>
             {/* RIGHT */}
             <div className="w-full xl:w-1/3 flex flex-col gap-8">
+                <EventCalendar />
                 <Announcements />
             </div>
         </div>
