@@ -5,24 +5,35 @@
 The **School Management System** is a comprehensive web application designed to streamline the management of school operations. Built using the MERN stack, the system features four distinct roles: Admin, Teacher, Student, and Parent. Each role has specific functionalities tailored to their needs, creating a seamless experience for managing day-to-day school activities.
 
 ### Key Features:
+
 - **Admin**:
   - Manage Teachers, Students, Parents, Classes, Subjects, Calendar (Timetable), Lessons, Exams, Assignments, Results, Attendance, Events, Messages, and Announcements.
+  
 - **Teacher**:
   - Create and manage Lessons, Assignments, Results, Attendance records, Events, Messages, and Announcements.
+  
 - **Student**:
   - View Exams, Assignments, Results, Attendance, Events, Messages, and Announcements.
   - Edit profile details.
+  
 - **Parent**:
   - View details about their children, such as Exams, Assignments, Results, Attendance, Events, Messages, and Announcements.
   - Edit profile details.
+  
 - **Email Notifications**:
   - Integrated with `smtp.gmail.com` for sending emails to users, including login credentials and notifications.
+  
 - **Profile Picture Upload**:
   - Integrated with Cloudinary for uploading and managing profile pictures.
+  
 - **Form Validation**:
   - Powered by `react-hook-form` and Zod for efficient and secure form validation.
+  
 - **Dynamic Tables**:
   - Utilizes the `useTable` hook for displaying and managing data interactively.
+  
+- **Dark Mode**:
+  - Built-in dark mode toggle for users to switch between light and dark themes for a better visual experience.
 
 ## Table of Contents
 - [Project Setup](#project-setup)
@@ -31,7 +42,6 @@ The **School Management System** is a comprehensive web application designed to 
 - [Technologies Used](#technologies-used)
 - [Environment Variables](#environment-variables)
 - [Screenshots](#screenshots)
-- [Video Walkthrough](#video-walkthrough)
 
 ## Project Setup
 
@@ -110,7 +120,7 @@ Ensure you have the following installed:
 ## Folder Structure
 
 The project has the following folder structure:
-    ```bash
+
     School-Management-System/
     ├── frontend/
     │   ├── public/               # Public assets such as favicon manifest, etc.
@@ -169,8 +179,8 @@ Here are some screenshots of the School Management System in action:
 ### Teacher Dashboard
 ![Teacher Dashboard](./screenshots/Teacher.png)
 
-### Student Portal
-![Student Portal](./screenshots/Student.png)
+### Student Dashboard
+![Student Dashboard](./screenshots/Student.png)
 
-### Parent Portal
-![Parent Portal](./screenshots/Parent.png)
+### Parent Dashboard
+![Parent Dashboard](./screenshots/Parent.png)
