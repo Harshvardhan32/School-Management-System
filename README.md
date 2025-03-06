@@ -40,7 +40,6 @@ The **School Management System** is a comprehensive web application designed to 
 - [Usage](#usage)
 - [Folder Structure](#folder-structure)
 - [Technologies Used](#technologies-used)
-- [Environment Variables](#environment-variables)
 - [Screenshots](#screenshots)
 
 ## Project Setup
@@ -61,12 +60,27 @@ Ensure you have the following installed:
    ```bash
    git clone https://github.com/Harshvardhan32/School-Management-System.git
 
-2. **Install dependencies:**
+2. **Navigate to the Project Directory:**
    ```bash
    cd School-Management-System
-   npm install
-   
-3. **Set up environment variables:** Create a .env file in the root directory of server folder and add the following variables:
+
+3. **Install dependencies:**
+    #### Prerequisites:
+    - Node.js and npm must be installed on your system.
+    - A terminal or command prompt to run the commands.
+    
+    **Install Frontend Dependencies:** Move to the `frontend` directory and install required dependencies.
+    ```bash
+    cd frontend
+    npm install
+    ```
+
+    **Install Server Dependencies:** Move to the `server` directory from the root project folder (not from the frontend folder) and install dependencies.
+    ```bash
+    cd ../server
+    npm install
+
+4. **Set up environment variables:** Create a .env file in the root directory of server folder and add the following variables.
    ```bash
    # Port
    PORT = 4000
@@ -87,10 +101,26 @@ Ensure you have the following installed:
    MAIL_USER=your-email@gmail.com
    MAIL_PASS=your-email-app-password
 
-4. **Run the application:**
-   ```bash
-   npm run dev
+5. **Run the Project:**
+  Follow these steps to start the project:
 
+    **Running the Frontend**
+    ```bash
+    cd frontend
+    npm run vite
+    ```
+
+    **Running the Server**
+    ```bash
+    cd ../server
+    npm start
+    ```
+
+    **Running the Full Application:**
+    ```bash
+    cd frontend
+    npm run dev
+    ```
 ## Usage
 
 ### **Admin Dashboard**
