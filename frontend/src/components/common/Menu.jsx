@@ -14,7 +14,7 @@ const Menu = () => {
 
     return (
         <>
-            <div className='mt-4 text-sm'>
+            <div className='mt-4 text-sm max-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-gray-500'>
                 {
                     menuData?.map((data) => (
                         <div className='flex flex-col gap-2' key={data?.title}>
